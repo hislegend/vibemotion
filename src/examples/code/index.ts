@@ -7,6 +7,7 @@ import { progressBarExample } from "./progress-bar";
 import { textRotationExample } from "./text-rotation";
 import { typewriterHighlightExample } from "./typewriter-highlight";
 import { wordCarouselExample } from "./word-carousel";
+import { appPromoFinanceExample } from "./app-promo-finance";
 
 export interface RemotionExample {
   id: string;
@@ -28,6 +29,7 @@ export const examples: RemotionExample[] = [
   goldPriceChartExample,
   typewriterHighlightExample,
   wordCarouselExample,
+  appPromoFinanceExample,
 ];
 
 export function getExampleById(id: string): RemotionExample | undefined {

@@ -37,6 +37,7 @@ const EXAMPLE_SKILLS = [
   "example-gold-price-chart",
   "example-typewriter-highlight",
   "example-word-carousel",
+  "example-app-promo-finance",
 ] as const;
 
 export const SKILL_NAMES = [...GUIDANCE_SKILLS, ...EXAMPLE_SKILLS] as const;
@@ -68,6 +69,7 @@ const exampleIdMap: Record<(typeof EXAMPLE_SKILLS)[number], string> = {
   "example-gold-price-chart": "gold-price-chart",
   "example-typewriter-highlight": "typewriter-highlight",
   "example-word-carousel": "word-carousel",
+  "example-app-promo-finance": "app-promo-finance",
 };
 
 export function getSkillContent(skillName: SkillName): string {
@@ -125,5 +127,6 @@ Code examples (complete working references):
 - example-gold-price-chart: bar chart with Y-axis labels, monthly data, staggered animations
 - example-typewriter-highlight: typewriter effect with cursor blink, pause, and word highlight
 - example-word-carousel: rotating words with crossfade and blur transitions
+- example-app-promo-finance: app promotional video with 3D tilted phone mockup, detailed finance app UI, pastel gradients, bokeh, spring animations, 3 scenes
 
 Return an array of matching category names. Return an empty array if none apply.`;
