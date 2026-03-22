@@ -35,6 +35,8 @@ export const RenderControls: React.FC<{
     previousPropsRef.current = { code, durationInFrames, fps };
   }, [code, durationInFrames, fps, state.status, undo]);
 
+  const isWebCodecsSupported = typeof globalThis.VideoEncoder !== "undefined";
+
   if (
     state.status === "init" ||
     state.status === "invoking" ||
@@ -42,8 +44,11 @@ export const RenderControls: React.FC<{
   ) {
     return (
       <div>
+        {!isWebCodecsSupported && (
+          <ErrorComp message="Render requires Chrome/Edge 94+. Your browser doesn't support WebCodecs (VideoEncoder)." />
+        )}
         <Button
-          disabled={state.status === "invoking" || !code || !Component}
+          disabled={state.status === "invoking" || !code || !Component || !isWebCodecsSupported}
           loading={state.status === "invoking"}
           onClick={renderMedia}
         >

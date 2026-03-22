@@ -1,3 +1,14 @@
+export const ASPECT_RATIOS = [
+  { id: "16:9", name: "16:9 (Landscape)", width: 1920, height: 1080 },
+  { id: "9:16", name: "9:16 (Portrait/Reels)", width: 1080, height: 1920 },
+  { id: "1:1", name: "1:1 (Square)", width: 1080, height: 1080 },
+  { id: "4:5", name: "4:5 (Instagram)", width: 1080, height: 1350 },
+] as const;
+
+export type AspectRatioId = (typeof ASPECT_RATIOS)[number]["id"];
+
+export const DEFAULT_ASPECT_RATIO: AspectRatioId = "9:16";
+
 export const MODELS = [
   { id: "gpt-5.4:low", name: "GPT-5.4 (Low Reasoning)" },
   { id: "gpt-5.4:medium", name: "GPT-5.4 (Medium Reasoning)" },

@@ -11,7 +11,13 @@ import {
 } from "@/components/ui/select";
 import { examplePrompts } from "@/examples/prompts";
 import { useImageAttachments } from "@/hooks/useImageAttachments";
-import { MODELS, type ModelId } from "@/types/generation";
+import {
+  ASPECT_RATIOS,
+  DEFAULT_ASPECT_RATIO,
+  MODELS,
+  type AspectRatioId,
+  type ModelId,
+} from "@/types/generation";
 import {
   ArrowUp,
   BarChart3,
