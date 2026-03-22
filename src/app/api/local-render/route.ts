@@ -1,8 +1,5 @@
 import path from "path";
 import fs from "fs";
-import { bundle } from "@remotion/bundler";
-import { renderMedia, selectComposition } from "@remotion/renderer";
-import { webpackOverride } from "../../../remotion/webpack-override.mjs";
 import { COMP_NAME } from "../../../../types/constants";
 import { RenderRequest } from "../../../../types/schema";
 import { executeApi } from "../../../helpers/api-response";
@@ -11,6 +8,10 @@ let bundleLocation: string | null = null;
 
 const ensureBundle = async () => {
   if (bundleLocation) return bundleLocation;
+
+  // Dynamic imports to avoid Turbopack trying to parse esbuild binary
+  const { bundle } = await import("@remotion/bundler");
+  const { webpackOverride } = await import("../../../remotion/webpack-override.mjs");
 
   const entryPoint = path.join(process.cwd(), "src/remotion/index.ts");
   bundleLocation = await bundle({
@@ -23,6 +24,9 @@ const ensureBundle = async () => {
 export const POST = executeApi(RenderRequest, async (_req, body) => {
   const { code, durationInFrames, fps } = body.inputProps;
   const format = "mp4";
+
+  // Dynamic imports to avoid Turbopack parsing esbuild binary
+  const { renderMedia, selectComposition } = await import("@remotion/renderer");
 
   const bundled = await ensureBundle();
 
