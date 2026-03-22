@@ -9,12 +9,13 @@ import { ErrorComp } from "./Error";
 import { ProgressBar } from "./ProgressBar";
 
 export const RenderControls: React.FC<{
+  Component: React.ComponentType | null;
   code: string;
   durationInFrames: number;
   fps: number;
-}> = ({ code, durationInFrames, fps }) => {
+}> = ({ Component, code, durationInFrames, fps }) => {
   const { renderMedia, state, undo } = useRendering({
-    code,
+    Component,
     durationInFrames,
     fps,
   });
@@ -42,7 +43,7 @@ export const RenderControls: React.FC<{
     return (
       <div>
         <Button
-          disabled={state.status === "invoking" || !code}
+          disabled={state.status === "invoking" || !code || !Component}
           loading={state.status === "invoking"}
           onClick={renderMedia}
         >

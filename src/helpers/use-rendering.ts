@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
-import { z } from "zod";
-import { CompositionProps } from "../../types/constants";
+import { renderMediaOnWeb } from "@remotion/web-renderer";
+import type { ComponentType } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 export type State =
   | {
@@ -10,13 +10,10 @@ export type State =
       status: "invoking";
     }
   | {
-      renderId: string;
-      bucketName: string;
-      progress: number;
       status: "rendering";
+      progress: number;
     }
   | {
-      renderId: string | null;
       status: "error";
       error: Error;
     }
@@ -26,42 +23,72 @@ export type State =
       status: "done";
     };
 
-export const useRendering = (inputProps: z.infer<typeof CompositionProps>) => {
+interface RenderingOptions {
+  Component: ComponentType | null;
+  durationInFrames: number;
+  fps: number;
+}
+
+export const useRendering = ({
+  Component,
+  durationInFrames,
+  fps,
+}: RenderingOptions) => {
   const [state, setState] = useState<State>({
     status: "init",
   });
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const renderMedia = useCallback(async () => {
-    setState({
-      status: "invoking",
-    });
+    if (!Component) return;
+
+    setState({ status: "invoking" });
+
     try {
-      const result = await fetch("/api/local-render", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ inputProps }),
+      abortControllerRef.current = new AbortController();
+
+      setState({ status: "rendering", progress: 0 });
+
+      const result = await renderMediaOnWeb({
+        composition: {
+          component: Component,
+          id: "browser-render",
+          width: 1920,
+          height: 1080,
+          fps,
+          durationInFrames,
+        },
+        inputProps: {},
+        onProgress: ({ progress }) => {
+          setState({ status: "rendering", progress });
+        },
+        signal: abortControllerRef.current.signal,
       });
 
-      const json = await result.json();
-      if (json.type === "error") {
-        throw new Error(json.message);
-      }
+      const blob = await result.getBlob();
+      const url = URL.createObjectURL(blob);
 
       setState({
-        url: json.data.url,
-        size: json.data.size,
+        url,
+        size: blob.size,
         status: "done",
       });
     } catch (err) {
+      if ((err as Error).name === "AbortError") {
+        setState({ status: "init" });
+        return;
+      }
       setState({
         status: "error",
         error: err as Error,
-        renderId: null,
       });
     }
-  }, [inputProps]);
+  }, [Component, durationInFrames, fps]);
 
   const undo = useCallback(() => {
+    // Abort any in-progress render
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
     setState({ status: "init" });
   }, []);
 

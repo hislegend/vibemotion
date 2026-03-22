@@ -151,6 +151,7 @@ export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
         </div>
         <div className="flex items-center justify-between gap-6 mt-4">
           <RenderControls
+            Component={Component}
             code={code}
             durationInFrames={durationInFrames}
             fps={fps}
