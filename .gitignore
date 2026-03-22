@@ -41,3 +41,4 @@ build.env.local.save
 # local renders
 public/renders/*
 !public/renders/.gitkeep
+*.save

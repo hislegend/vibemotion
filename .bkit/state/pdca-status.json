@@ -1,10 +1,13 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-22T16:38:46.791Z",
+  "lastUpdated": "2026-03-22T17:01:52.274Z",
   "activeFeatures": [
     "skills",
     "generate",
-    "vibemotion"
+    "vibemotion",
+    "local-render",
+    "helpers",
+    "RenderControls"
   ],
   "primaryFeature": "skills",
   "features": {
@@ -46,6 +49,45 @@
         "lastUpdated": "2026-03-22T16:37:47.585Z"
       },
       "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/types/generation.ts"
+    },
+    "local-render": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-22T17:01:17.751Z",
+        "lastUpdated": "2026-03-22T17:01:17.751Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/local-render/route.ts"
+    },
+    "helpers": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-22T17:01:28.393Z",
+        "lastUpdated": "2026-03-22T17:01:28.393Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/helpers/use-rendering.ts"
+    },
+    "RenderControls": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-22T17:01:52.274Z",
+        "lastUpdated": "2026-03-22T17:01:52.274Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/AnimationPlayer/RenderControls/Error.tsx"
     }
   },
   "pipeline": {
@@ -56,7 +98,7 @@
   "session": {
     "startedAt": "2026-03-22T16:22:35.833Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-22T16:38:46.791Z"
+    "lastActivity": "2026-03-22T17:01:52.274Z"
   },
   "history": [
     {
@@ -140,6 +182,24 @@
     {
       "timestamp": "2026-03-22T16:38:46.791Z",
       "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-22T17:01:17.751Z",
+      "feature": "local-render",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-22T17:01:28.393Z",
+      "feature": "helpers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-22T17:01:52.274Z",
+      "feature": "RenderControls",
       "phase": "do",
       "action": "updated"
     }
