@@ -298,7 +298,7 @@ interface GenerateResponse {
 export async function POST(req: Request) {
   const {
     prompt,
-    model = process.env.AI_MODEL || "gpt-5.2",
+    model = process.env.AI_MODEL || "gpt-5.4",
     currentCode,
     conversationHistory = [],
     isFollowUp = false,
@@ -328,7 +328,7 @@ export async function POST(req: Request) {
 
   // Default model: prefer env AI_MODEL, else pick based on available keys
   const defaultModel = process.env.AI_MODEL ||
-    (anthropicApiKey ? "claude-sonnet-4-6" : "gpt-5.2");
+    (anthropicApiKey ? "claude-sonnet-4-6" : "gpt-5.4");
   const resolvedModel = modelName || defaultModel;
 
   // Create provider instance dynamically based on model name
