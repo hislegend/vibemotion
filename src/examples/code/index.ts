@@ -8,6 +8,12 @@ import { textRotationExample } from "./text-rotation";
 import { typewriterHighlightExample } from "./typewriter-highlight";
 import { wordCarouselExample } from "./word-carousel";
 import { appPromoFinanceExample } from "./app-promo-finance";
+import { appPromoSocialExample } from "./app-promo-social";
+import { appPromoFitnessExample } from "./app-promo-fitness";
+import { productLaunchExample } from "./product-launch";
+import { testimonialCardExample } from "./testimonial-card";
+import { dataShowcaseExample } from "./data-showcase";
+import { brandIntroExample } from "./brand-intro";
 
 export interface RemotionExample {
   id: string;
@@ -30,6 +36,12 @@ export const examples: RemotionExample[] = [
   typewriterHighlightExample,
   wordCarouselExample,
   appPromoFinanceExample,
+  appPromoSocialExample,
+  appPromoFitnessExample,
+  productLaunchExample,
+  testimonialCardExample,
+  dataShowcaseExample,
+  brandIntroExample,
 ];
 
 export function getExampleById(id: string): RemotionExample | undefined {

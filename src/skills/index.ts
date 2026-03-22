@@ -38,6 +38,12 @@ const EXAMPLE_SKILLS = [
   "example-typewriter-highlight",
   "example-word-carousel",
   "example-app-promo-finance",
+  "example-app-promo-social",
+  "example-app-promo-fitness",
+  "example-product-launch",
+  "example-testimonial-card",
+  "example-data-showcase",
+  "example-brand-intro",
 ] as const;
 
 export const SKILL_NAMES = [...GUIDANCE_SKILLS, ...EXAMPLE_SKILLS] as const;
@@ -70,6 +76,12 @@ const exampleIdMap: Record<(typeof EXAMPLE_SKILLS)[number], string> = {
   "example-typewriter-highlight": "typewriter-highlight",
   "example-word-carousel": "word-carousel",
   "example-app-promo-finance": "app-promo-finance",
+  "example-app-promo-social": "app-promo-social",
+  "example-app-promo-fitness": "app-promo-fitness",
+  "example-product-launch": "product-launch",
+  "example-testimonial-card": "testimonial-card",
+  "example-data-showcase": "data-showcase",
+  "example-brand-intro": "brand-intro",
 };
 
 export function getSkillContent(skillName: SkillName): string {
@@ -128,5 +140,11 @@ Code examples (complete working references):
 - example-typewriter-highlight: typewriter effect with cursor blink, pause, and word highlight
 - example-word-carousel: rotating words with crossfade and blur transitions
 - example-app-promo-finance: app promotional video with 3D tilted phone mockup, detailed finance app UI, pastel gradients, bokeh, spring animations, 3 scenes
+- example-app-promo-social: SNS app promo with Instagram/TikTok-style feed, story rings, lavender gradient, 3D phone mockup, staggered springs
+- example-app-promo-fitness: fitness app promo with mint/emerald gradient, circular calorie chart, step counter, weekly bar graph, workout dashboard
+- example-product-launch: product launch countdown (3-2-1) with dark navy gradient, glow typing reveal, sparkle particles, cinematic spring animations
+- example-testimonial-card: customer testimonial card on warm beige, typing review text, staggered star ratings, quote icon spring, minimal premium aesthetic
+- example-data-showcase: impact number showcase on indigo-violet gradient, count-up numbers (Users/Revenue/Growth), highlight underlines, glass cards
+- example-brand-intro: brand intro/outro on dark background, spring-scaled logo, letter-by-letter stagger name, slogan fade, glow/shadow premium effects
 
 Return an array of matching category names. Return an empty array if none apply.`;
