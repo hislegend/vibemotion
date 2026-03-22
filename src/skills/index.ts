@@ -9,6 +9,8 @@ import socialMediaSkill from "./social-media.md";
 import springPhysicsSkill from "./spring-physics.md";
 import transitionsSkill from "./transitions.md";
 import typographySkill from "./typography.md";
+import crabsBrandSkill from "./crabs-brand.md";
+import appPromoSkill from "./app-promo.md";
 
 // Guidance skills (markdown files with patterns/rules)
 const GUIDANCE_SKILLS = [
@@ -20,6 +22,8 @@ const GUIDANCE_SKILLS = [
   "transitions",
   "sequencing",
   "spring-physics",
+  "crabs-brand",
+  "app-promo",
 ] as const;
 
 // Example skills (complete working code references)
@@ -49,6 +53,8 @@ const guidanceSkillContent: Record<(typeof GUIDANCE_SKILLS)[number], string> = {
   transitions: transitionsSkill,
   sequencing: sequencingSkill,
   "spring-physics": springPhysicsSkill,
+  "crabs-brand": crabsBrandSkill,
+  "app-promo": appPromoSkill,
 };
 
 // Map example skill names to example IDs
@@ -106,6 +112,8 @@ Guidance categories (patterns and rules):
 - transitions: scene changes, fades between clips, slide transitions, wipes, multiple scenes
 - sequencing: multiple elements appearing at different times, staggered animations, choreographed entrances
 - spring-physics: bouncy animations, organic motion, elastic effects, overshoot animations
+- crabs-brand: Crabs brand colors (indigo/violet/amber), Inter font, clean modern style, vertical 9:16
+- app-promo: app promotional videos, device mockups, phone screens, pastel gradients, Walletvy style
 
 Code examples (complete working references):
 - example-histogram: animated bar chart with spring animations and @remotion/shapes

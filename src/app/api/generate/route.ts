@@ -297,7 +297,7 @@ interface GenerateResponse {
 export async function POST(req: Request) {
   const {
     prompt,
-    model = "gpt-5.2",
+    model = process.env.AI_MODEL || "gpt-5.2",
     currentCode,
     conversationHistory = [],
     isFollowUp = false,

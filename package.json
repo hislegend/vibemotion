@@ -1,7 +1,7 @@
 {
-  "name": "template-prompt-to-motion-graphics",
+  "name": "vibemotion",
   "version": "4.0.379",
-  "description": "SaaS template for AI-powered animation generation",
+  "description": "VibéMotion - AI-powered motion graphics generator by Crabs",
   "private": true,
   "repository": {
     "url": "https://github.com/remotion-dev/remotion/tree/main/packages/template-prompt-to-motion-graphics"
