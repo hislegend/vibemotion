@@ -4,6 +4,7 @@ import {
   SKILL_NAMES,
   type SkillName,
 } from "@/skills";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateObject, streamText } from "ai";
 import { z } from "zod";
@@ -307,13 +308,23 @@ export async function POST(req: Request) {
     frameImages,
   }: GenerateRequest = await req.json();
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+  const openaiApiKey = process.env.OPENAI_API_KEY;
+
+  // Determine provider: explicit env var, or infer from model name, or fallback
+  const aiProvider =
+    process.env.AI_PROVIDER ||
+    (model.startsWith("claude-") ? "anthropic" : null) ||
+    (anthropicApiKey ? "anthropic" : "openai");
+  const isAnthropic = aiProvider === "anthropic";
+
+  const apiKey = isAnthropic ? anthropicApiKey : openaiApiKey;
 
   if (!apiKey) {
+    const keyName = isAnthropic ? "ANTHROPIC_API_KEY" : "OPENAI_API_KEY";
     return new Response(
       JSON.stringify({
-        error:
-          'The environment variable "OPENAI_API_KEY" is not set. Add it to your .env file and try again.',
+        error: `The environment variable "${keyName}" is not set. Add it to your .env file and try again.`,
       }),
       {
         status: 400,
@@ -325,13 +336,23 @@ export async function POST(req: Request) {
   // Parse model ID - format can be "model-name" or "model-name:reasoning_effort"
   const [modelName, reasoningEffort] = model.split(":");
 
-  const openai = createOpenAI({ apiKey });
+  // Default models per provider
+  const defaultModel = isAnthropic
+    ? process.env.AI_MODEL || "claude-sonnet-4-6"
+    : process.env.AI_MODEL || "gpt-5.2";
+  const resolvedModel = modelName || defaultModel;
+
+  // Create provider instance
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const aiModel = isAnthropic
+    ? (id: string) => createAnthropic({ apiKey })(id) as any
+    : (id: string) => createOpenAI({ apiKey })(id) as any;
 
   // Validate the prompt first (skip for follow-ups with existing code)
   if (!isFollowUp) {
     try {
       const validationResult = await generateObject({
-        model: openai("gpt-5.2"),
+        model: aiModel(defaultModel),
         system: VALIDATION_PROMPT,
         prompt: `User prompt: "${prompt}"`,
         schema: z.object({ valid: z.boolean() }),
@@ -357,7 +378,7 @@ export async function POST(req: Request) {
   let detectedSkills: SkillName[] = [];
   try {
     const skillResult = await generateObject({
-      model: openai("gpt-5.2"),
+      model: aiModel(defaultModel),
       system: SKILL_DETECTION_PROMPT,
       prompt: `User prompt: "${prompt}"`,
       schema: z.object({
@@ -510,7 +531,7 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
       ];
 
       const editResult = await generateObject({
-        model: openai(modelName),
+        model: aiModel(resolvedModel),
         system: FOLLOW_UP_SYSTEM_PROMPT,
         messages: editMessages,
         schema: FollowUpResponseSchema,
@@ -613,16 +634,17 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
     ];
 
     const result = streamText({
-      model: openai(modelName),
+      model: aiModel(resolvedModel),
       system: enhancedSystemPrompt,
       messages: initialMessages,
-      ...(reasoningEffort && {
-        providerOptions: {
-          openai: {
-            reasoningEffort: reasoningEffort,
+      ...(reasoningEffort &&
+        !isAnthropic && {
+          providerOptions: {
+            openai: {
+              reasoningEffort: reasoningEffort,
+            },
           },
-        },
-      }),
+        }),
     });
 
     console.log(
@@ -678,7 +700,7 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
     console.error("Error generating code:", error);
     return new Response(
       JSON.stringify({
-        error: "Something went wrong while trying to reach OpenAI APIs.",
+        error: `Something went wrong while trying to reach ${isAnthropic ? "Anthropic" : "OpenAI"} APIs.`,
       }),
       { status: 500, headers: { "Content-Type": "application/json" } },
     );
