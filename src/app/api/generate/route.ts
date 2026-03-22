@@ -311,42 +311,37 @@ export async function POST(req: Request) {
   const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
   const openaiApiKey = process.env.OPENAI_API_KEY;
 
-  // Determine provider: explicit env var, or infer from model name, or fallback
-  const aiProvider =
-    process.env.AI_PROVIDER ||
-    (model.startsWith("claude-") ? "anthropic" : null) ||
-    (anthropicApiKey ? "anthropic" : "openai");
-  const isAnthropic = aiProvider === "anthropic";
-
-  const apiKey = isAnthropic ? anthropicApiKey : openaiApiKey;
-
-  if (!apiKey) {
-    const keyName = isAnthropic ? "ANTHROPIC_API_KEY" : "OPENAI_API_KEY";
+  if (!anthropicApiKey && !openaiApiKey) {
     return new Response(
       JSON.stringify({
-        error: `The environment variable "${keyName}" is not set. Add it to your .env file and try again.`,
+        error: 'No API key found. Set ANTHROPIC_API_KEY or OPENAI_API_KEY in your .env file.',
       }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      },
+      { status: 400, headers: { "Content-Type": "application/json" } },
     );
   }
 
   // Parse model ID - format can be "model-name" or "model-name:reasoning_effort"
   const [modelName, reasoningEffort] = model.split(":");
 
-  // Default models per provider
-  const defaultModel = isAnthropic
-    ? process.env.AI_MODEL || "claude-sonnet-4-6"
-    : process.env.AI_MODEL || "gpt-5.2";
+  // Determine provider per model: claude-* → anthropic, otherwise → openai
+  const isClaudeModel = (id: string) => id.startsWith("claude-");
+
+  // Default model: prefer env AI_MODEL, else pick based on available keys
+  const defaultModel = process.env.AI_MODEL ||
+    (anthropicApiKey ? "claude-sonnet-4-6" : "gpt-5.2");
   const resolvedModel = modelName || defaultModel;
 
-  // Create provider instance
+  // Create provider instance dynamically based on model name
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const aiModel = isAnthropic
-    ? (id: string) => createAnthropic({ apiKey })(id) as any
-    : (id: string) => createOpenAI({ apiKey })(id) as any;
+  const aiModel = (id: string) => {
+    if (isClaudeModel(id)) {
+      if (!anthropicApiKey) throw new Error("ANTHROPIC_API_KEY required for Claude models");
+      return createAnthropic({ apiKey: anthropicApiKey })(id) as any;
+    } else {
+      if (!openaiApiKey) throw new Error("OPENAI_API_KEY required for OpenAI models");
+      return createOpenAI({ apiKey: openaiApiKey })(id) as any;
+    }
+  };
 
   // Validate the prompt first (skip for follow-ups with existing code)
   if (!isFollowUp) {
@@ -638,7 +633,7 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
       system: enhancedSystemPrompt,
       messages: initialMessages,
       ...(reasoningEffort &&
-        !isAnthropic && {
+        !isClaudeModel(resolvedModel) && {
           providerOptions: {
             openai: {
               reasoningEffort: reasoningEffort,
@@ -700,7 +695,7 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
     console.error("Error generating code:", error);
     return new Response(
       JSON.stringify({
-        error: `Something went wrong while trying to reach ${isAnthropic ? "Anthropic" : "OpenAI"} APIs.`,
+        error: `Something went wrong while trying to reach ${isClaudeModel(resolvedModel) ? "Anthropic" : "OpenAI"} APIs.`,
       }),
       { status: 500, headers: { "Content-Type": "application/json" } },
     );
