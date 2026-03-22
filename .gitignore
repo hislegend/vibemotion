@@ -37,3 +37,7 @@ next-env.d.ts
 out/
 .env
 build.env.local.save
+
+# local renders
+public/renders/*
+!public/renders/.gitkeep

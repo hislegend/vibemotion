@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 import { CompositionProps } from "../../types/constants";
-import { getProgress, renderVideo } from "../lambda/api";
 
 export type State =
   | {
@@ -27,14 +26,6 @@ export type State =
       status: "done";
     };
 
-const wait = async (milliSeconds: number) => {
-  await new Promise<void>((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, milliSeconds);
-  });
-};
-
 export const useRendering = (inputProps: z.infer<typeof CompositionProps>) => {
   const [state, setState] = useState<State>({
     status: "init",
@@ -45,51 +36,22 @@ export const useRendering = (inputProps: z.infer<typeof CompositionProps>) => {
       status: "invoking",
     });
     try {
-      const { renderId, bucketName } = await renderVideo({ inputProps });
-      setState({
-        status: "rendering",
-        progress: 0,
-        renderId: renderId,
-        bucketName: bucketName,
+      const result = await fetch("/api/local-render", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ inputProps }),
       });
 
-      let pending = true;
-
-      while (pending) {
-        const result = await getProgress({
-          id: renderId,
-          bucketName: bucketName,
-        });
-        switch (result.type) {
-          case "error": {
-            setState({
-              status: "error",
-              renderId: renderId,
-              error: new Error(result.message),
-            });
-            pending = false;
-            break;
-          }
-          case "done": {
-            setState({
-              size: result.size,
-              url: result.url,
-              status: "done",
-            });
-            pending = false;
-            break;
-          }
-          case "progress": {
-            setState({
-              status: "rendering",
-              bucketName: bucketName,
-              progress: result.progress,
-              renderId: renderId,
-            });
-            await wait(1000);
-          }
-        }
+      const json = await result.json();
+      if (json.type === "error") {
+        throw new Error(json.message);
       }
+
+      setState({
+        url: json.data.url,
+        size: json.data.size,
+        status: "done",
+      });
     } catch (err) {
       setState({
         status: "error",
