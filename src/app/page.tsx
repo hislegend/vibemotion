@@ -677,7 +677,7 @@ const Home: NextPage = () => {
   const [isNavigating, setIsNavigating] = useState(false);
   const [prefillPrompt, setPrefillPrompt] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<RemotionExample | null>(null);
-  const [mode, setMode] = useState<"normal" | "smart">("normal");
+  const [isSmartSelected, setIsSmartSelected] = useState(false);
 
   // Smart analysis state (lifted from old SmartInlineFlow)
   const [smartStep, setSmartStep] = useState<SmartStep | null>(null);
@@ -750,7 +750,7 @@ const Home: NextPage = () => {
       attachedImages?: string[],
     ) => {
       // Smart mode: intercept and run analysis instead of navigating
-      if (mode === "smart") {
+      if (isSmartSelected) {
         if (!prompt.trim()) return;
         runSmartAnalysis(prompt.trim());
         return;
@@ -769,7 +769,7 @@ const Home: NextPage = () => {
       const params = new URLSearchParams({ prompt, model, aspectRatio });
       router.push(`/generate?${params.toString()}`);
     },
-    [router, selectedTemplate, mode, runSmartAnalysis],
+    [router, selectedTemplate, isSmartSelected, runSmartAnalysis],
   );
 
   const handleTemplateSelect = (example: RemotionExample) => {
@@ -779,20 +779,14 @@ const Home: NextPage = () => {
   };
 
   const handleSmartClick = () => {
-    setMode("smart");
+    setIsSmartSelected(true);
     setSelectedTemplate(null);
-    setPrefillPrompt("");
-    // Reset smart state
-    setSmartStep(null);
-    setAnalysis(null);
-    setStyles([]);
-    setSelectedStyle(null);
-    setSmartError("");
+    setPrefillPrompt(""); // User types their own content
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleBackToNormal = () => {
-    setMode("normal");
+    setIsSmartSelected(false);
     setSmartStep(null);
     setAnalysis(null);
     setStyles([]);
@@ -885,42 +879,16 @@ const Home: NextPage = () => {
 
   return (
     <PageLayout>
-      {/* Smart mode badge */}
-      {mode === "smart" && (
-        <div className="flex justify-center mb-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
-            🧠 스마트 모드
-            <button
-              type="button"
-              onClick={handleBackToNormal}
-              className="ml-1 rounded-full p-0.5 hover:bg-primary/20 transition-colors"
-              title="스마트 모드 끄기"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </span>
-        </div>
-      )}
-
       <LandingPageInput
         onNavigate={handleNavigate}
         isNavigating={isNavigating}
-        showCodeExamplesLink={mode === "normal"}
+        showCodeExamplesLink
         prefillPrompt={prefillPrompt}
         onPrefillConsumed={() => setPrefillPrompt("")}
       />
 
-      {mode === "normal" && (
-        <>
-          <TemplateGallery
-            onSelect={handleTemplateSelect}
-            onSmartClick={handleSmartClick}
-          />
-          <ProjectHistory />
-        </>
-      )}
-
-      {mode === "smart" && smartStep && (
+      {/* Smart analysis results (shown inline, gallery stays visible) */}
+      {smartStep && (
         <SmartInlineResults
           step={smartStep}
           analysis={analysis}
@@ -943,21 +911,18 @@ const Home: NextPage = () => {
         />
       )}
 
-      {/* Show error even when smartStep is null (analysis failed) */}
-      {mode === "smart" && !smartStep && smartError && (
-        <div className="mx-auto w-full max-w-2xl px-4 pb-8">
+            {smartError && (
+        <div className="mx-auto w-full max-w-2xl px-4 pb-4">
           <p className="text-sm text-destructive text-center">{smartError}</p>
-          <div className="flex justify-center mt-3">
-            <button
-              type="button"
-              onClick={handleBackToNormal}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              ← 돌아가기
-            </button>
-          </div>
         </div>
       )}
+
+      <TemplateGallery
+        onSelect={handleTemplateSelect}
+        onSmartClick={handleSmartClick}
+      />
+
+      <ProjectHistory />
     </PageLayout>
   );
 };
