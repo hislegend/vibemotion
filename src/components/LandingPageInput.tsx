@@ -45,6 +45,7 @@ interface LandingPageInputProps {
   onNavigate: (
     prompt: string,
     model: ModelId,
+    aspectRatio: AspectRatioId,
     attachedImages?: string[],
   ) => void;
   isNavigating?: boolean;
@@ -58,6 +59,8 @@ export function LandingPageInput({
 }: LandingPageInputProps) {
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<ModelId>("claude-sonnet-4-6");
+  const [aspectRatio, setAspectRatio] =
+    useState<AspectRatioId>(DEFAULT_ASPECT_RATIO);
   const {
     attachedImages,
     isDragging,
@@ -87,6 +90,7 @@ export function LandingPageInput({
     onNavigate(
       prompt,
       model,
+      aspectRatio,
       attachedImages.length > 0 ? attachedImages : undefined,
     );
   };
@@ -174,26 +178,51 @@ export function LandingPageInput({
           />
 
           <div className="flex justify-between items-center mt-3 pt-3 border-t border-border">
-            <Select
-              value={model}
-              onValueChange={(value) => setModel(value as ModelId)}
-              disabled={isNavigating}
-            >
-              <SelectTrigger className="w-auto bg-transparent border-none text-muted-foreground hover:text-foreground transition-colors">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-background-elevated border-border">
-                {MODELS.map((m) => (
-                  <SelectItem
-                    key={m.id}
-                    value={m.id}
-                    className="text-foreground focus:bg-secondary focus:text-foreground"
-                  >
-                    {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-1">
+              <Select
+                value={model}
+                onValueChange={(value) => setModel(value as ModelId)}
+                disabled={isNavigating}
+              >
+                <SelectTrigger className="w-auto bg-transparent border-none text-muted-foreground hover:text-foreground transition-colors">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-background-elevated border-border">
+                  {MODELS.map((m) => (
+                    <SelectItem
+                      key={m.id}
+                      value={m.id}
+                      className="text-foreground focus:bg-secondary focus:text-foreground"
+                    >
+                      {m.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={aspectRatio}
+                onValueChange={(value) =>
+                  setAspectRatio(value as AspectRatioId)
+                }
+                disabled={isNavigating}
+              >
+                <SelectTrigger className="w-auto bg-transparent border-none text-muted-foreground hover:text-foreground transition-colors">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-background-elevated border-border">
+                  {ASPECT_RATIOS.map((ar) => (
+                    <SelectItem
+                      key={ar.id}
+                      value={ar.id}
+                      className="text-foreground focus:bg-secondary focus:text-foreground"
+                    >
+                      {ar.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             <div className="flex items-center gap-1">
               <Button

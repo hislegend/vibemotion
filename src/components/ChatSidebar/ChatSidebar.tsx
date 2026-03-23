@@ -77,6 +77,10 @@ interface ChatSidebarProps {
   fps?: number;
   durationInFrames?: number;
   currentFrame?: number;
+  // Video dimensions
+  compositionWidth?: number;
+  compositionHeight?: number;
+  aspectRatio?: string;
 }
 
 export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
@@ -107,6 +111,9 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
       fps = 30,
       durationInFrames = 150,
       currentFrame = 0,
+      compositionWidth = 1920,
+      compositionHeight = 1080,
+      aspectRatio = "16:9",
     },
     ref,
   ) {
@@ -140,6 +147,9 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
           hasManualEdits,
           errorCorrection,
           frameImages: options?.attachedImages,
+          compositionWidth,
+          compositionHeight,
+          aspectRatio,
         },
         {
           onCodeGenerated,

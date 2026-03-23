@@ -36,6 +36,8 @@ interface AnimationPlayerProps {
   code: string;
   onRuntimeError?: (error: string) => void;
   onFrameChange?: (frame: number) => void;
+  compositionWidth?: number;
+  compositionHeight?: number;
 }
 
 export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
@@ -51,6 +53,8 @@ export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
   code,
   onRuntimeError,
   onFrameChange,
+  compositionWidth = 1920,
+  compositionHeight = 1080,
 }) => {
   const playerRef = useRef<PlayerRef>(null);
 
@@ -134,8 +138,8 @@ export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
             component={Component}
             durationInFrames={durationInFrames}
             fps={fps}
-            compositionHeight={1080}
-            compositionWidth={1920}
+            compositionHeight={compositionHeight}
+            compositionWidth={compositionWidth}
             style={{
               width: "100%",
               height: "100%",

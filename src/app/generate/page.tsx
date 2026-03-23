@@ -18,13 +18,26 @@ import type {
   EditOperation,
   ErrorCorrectionContext,
 } from "../../types/conversation";
-import type { GenerationErrorType, StreamPhase } from "../../types/generation";
+import {
+  ASPECT_RATIOS,
+  DEFAULT_ASPECT_RATIO,
+  type AspectRatioId,
+  type GenerationErrorType,
+  type StreamPhase,
+} from "../../types/generation";
 
 const MAX_CORRECTION_ATTEMPTS = 3;
 
 function GeneratePageContent() {
   const searchParams = useSearchParams();
   const initialPrompt = searchParams.get("prompt") || "";
+  const aspectRatioParam = (searchParams.get("aspectRatio") ||
+    DEFAULT_ASPECT_RATIO) as AspectRatioId;
+  const aspectRatioConfig = ASPECT_RATIOS.find(
+    (ar) => ar.id === aspectRatioParam,
+  ) ?? ASPECT_RATIOS.find((ar) => ar.id === DEFAULT_ASPECT_RATIO)!;
+  const compositionWidth = aspectRatioConfig.width;
+  const compositionHeight = aspectRatioConfig.height;
 
   // If we have an initial prompt from URL, start in streaming state
   // so syntax highlighting is disabled from the beginning
@@ -283,6 +296,10 @@ function GeneratePageContent() {
           fps={fps}
           durationInFrames={durationInFrames}
           currentFrame={currentFrame}
+          // Video dimensions
+          compositionWidth={compositionWidth}
+          compositionHeight={compositionHeight}
+          aspectRatio={aspectRatioParam}
         />
 
         {/* Main content area */}
@@ -310,6 +327,8 @@ function GeneratePageContent() {
                 code={code}
                 onRuntimeError={handleRuntimeError}
                 onFrameChange={setCurrentFrame}
+                compositionWidth={compositionWidth}
+                compositionHeight={compositionHeight}
               />
             }
           />

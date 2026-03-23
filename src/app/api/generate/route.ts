@@ -282,6 +282,10 @@ interface GenerateRequest {
   previouslyUsedSkills?: string[];
   /** Base64 image data URLs for visual context */
   frameImages?: string[];
+  /** Video dimensions */
+  compositionWidth?: number;
+  compositionHeight?: number;
+  aspectRatio?: string;
 }
 
 interface GenerateResponse {
@@ -306,6 +310,9 @@ export async function POST(req: Request) {
     errorCorrection,
     previouslyUsedSkills = [],
     frameImages,
+    compositionWidth = 1920,
+    compositionHeight = 1080,
+    aspectRatio = "16:9",
   }: GenerateRequest = await req.json();
 
   const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
@@ -400,11 +407,14 @@ export async function POST(req: Request) {
     );
   }
 
+  // Add video dimensions to the system prompt
+  const dimensionsPrompt = `\n\n## VIDEO DIMENSIONS\nThe video dimensions are ${compositionWidth}x${compositionHeight} (${aspectRatio}). Design your layout accordingly.\n`;
+
   // Load skill-specific content only for NEW skills (previously used skills are already in context)
   const skillContent = getCombinedSkillContent(newSkills as SkillName[]);
   const enhancedSystemPrompt = skillContent
-    ? `${SYSTEM_PROMPT}\n\n## SKILL-SPECIFIC GUIDANCE\n${skillContent}`
-    : SYSTEM_PROMPT;
+    ? `${SYSTEM_PROMPT}${dimensionsPrompt}\n## SKILL-SPECIFIC GUIDANCE\n${skillContent}`
+    : `${SYSTEM_PROMPT}${dimensionsPrompt}`;
 
   // FOLLOW-UP MODE: Use non-streaming generateObject for faster edits
   if (isFollowUp && currentCode) {
@@ -527,7 +537,7 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
 
       const editResult = await generateObject({
         model: aiModel(resolvedModel),
-        system: FOLLOW_UP_SYSTEM_PROMPT,
+        system: `${FOLLOW_UP_SYSTEM_PROMPT}${dimensionsPrompt}`,
         messages: editMessages,
         schema: FollowUpResponseSchema,
       });

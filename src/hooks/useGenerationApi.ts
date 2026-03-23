@@ -53,6 +53,9 @@ interface GenerationContext {
   hasManualEdits: boolean;
   errorCorrection?: ErrorCorrectionContext;
   frameImages?: string[];
+  compositionWidth?: number;
+  compositionHeight?: number;
+  aspectRatio?: string;
 }
 
 interface UseGenerationApiReturn {
@@ -87,6 +90,9 @@ export function useGenerationApi(): UseGenerationApiReturn {
         hasManualEdits,
         errorCorrection,
         frameImages,
+        compositionWidth,
+        compositionHeight,
+        aspectRatio,
       } = context;
 
       const {
@@ -124,6 +130,9 @@ export function useGenerationApi(): UseGenerationApiReturn {
             hasManualEdits,
             errorCorrection,
             frameImages,
+            compositionWidth,
+            compositionHeight,
+            aspectRatio,
           }),
         });
 

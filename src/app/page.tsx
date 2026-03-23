@@ -2,7 +2,7 @@
 
 import { LandingPageInput } from "@/components/LandingPageInput";
 import { PageLayout } from "@/components/PageLayout";
-import type { ModelId } from "@/types/generation";
+import type { AspectRatioId, ModelId } from "@/types/generation";
 import type { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,6 +14,7 @@ const Home: NextPage = () => {
   const handleNavigate = (
     prompt: string,
     model: ModelId,
+    aspectRatio: AspectRatioId,
     attachedImages?: string[],
   ) => {
     setIsNavigating(true);
@@ -26,7 +27,7 @@ const Home: NextPage = () => {
     } else {
       sessionStorage.removeItem("initialAttachedImages");
     }
-    const params = new URLSearchParams({ prompt, model });
+    const params = new URLSearchParams({ prompt, model, aspectRatio });
     router.push(`/generate?${params.toString()}`);
   };
 
