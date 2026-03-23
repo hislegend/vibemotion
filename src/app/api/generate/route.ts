@@ -638,10 +638,15 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
       },
     ];
 
+    // Timeout safety: abort after 250s (Vercel Pro max is 300s)
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), 250_000);
+
     const result = streamText({
       model: aiModel(resolvedModel),
       system: enhancedSystemPrompt,
       messages: initialMessages,
+      abortSignal: abortController.signal,
       ...(reasoningEffort &&
         !isClaudeModel(resolvedModel) && {
           providerOptions: {
@@ -689,10 +694,14 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
         controller.enqueue(encoder.encode(metadataEvent));
 
         // Then pipe through the original stream
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          controller.enqueue(value);
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            controller.enqueue(value);
+          }
+        } finally {
+          clearTimeout(timeoutId);
         }
         controller.close();
       },
