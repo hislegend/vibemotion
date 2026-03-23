@@ -1,9 +1,9 @@
 "use client";
 
-import { generateNarrationScript } from "@/lib/generate-script";
+import { stripSceneMarkers } from "@/lib/strip-scene-markers";
 import { generateRemotionPrompt } from "@/lib/generate-prompt";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /* ─── types ─── */
 
@@ -71,6 +71,26 @@ export default function SmartResultPage() {
   const [narrationScript, setNarrationScript] = useState("");
   const [selectedVoiceId, setSelectedVoiceId] = useState(VOICE_OPTIONS[0].voiceId);
   const [generatingVoice, setGeneratingVoice] = useState(false);
+  const [generatingScript, setGeneratingScript] = useState(false);
+
+  const fetchScript = useCallback(async (data: ContentAnalysis) => {
+    setGeneratingScript(true);
+    try {
+      const res = await fetch("/api/generate-script", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ analysis: data }),
+      });
+      if (res.ok) {
+        const text = await res.text();
+        setNarrationScript(text);
+      }
+    } catch {
+      // 실패 시 빈 스크립트 유지
+    } finally {
+      setGeneratingScript(false);
+    }
+  }, []);
 
   // Load data from sessionStorage on mount
   useEffect(() => {
@@ -90,7 +110,6 @@ export default function SmartResultPage() {
         setStyles(parsed);
         const first = parsed[0]?.style || "cinematic";
         setSelectedStyle(first);
-        setNarrationScript(generateNarrationScript(data, first, data.suggestedDuration));
       }
     } catch {
       router.replace("/");
@@ -99,15 +118,15 @@ export default function SmartResultPage() {
 
   const handleStyleSelect = (style: string) => {
     setSelectedStyle(style);
-    if (analysis) {
-      setNarrationScript(generateNarrationScript(analysis, style, duration));
+    if (analysis && voiceEnabled) {
+      fetchScript(analysis);
     }
   };
 
   const handleDurationChange = (d: number) => {
     setDuration(d);
-    if (analysis && selectedStyle) {
-      setNarrationScript(generateNarrationScript(analysis, selectedStyle, d));
+    if (analysis && voiceEnabled) {
+      fetchScript(analysis);
     }
   };
 
@@ -120,11 +139,12 @@ export default function SmartResultPage() {
     if (voiceEnabled && narrationScript.trim()) {
       setGeneratingVoice(true);
       try {
+        const ttsText = stripSceneMarkers(narrationScript);
         const ttsRes = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            text: narrationScript.trim(),
+            text: ttsText,
             voiceId: selectedVoiceId,
           }),
         });
@@ -287,7 +307,13 @@ export default function SmartResultPage() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setVoiceEnabled((v) => !v)}
+              onClick={() => {
+                const next = !voiceEnabled;
+                setVoiceEnabled(next);
+                if (next && analysis && !narrationScript) {
+                  fetchScript(analysis);
+                }
+              }}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 voiceEnabled ? "bg-primary" : "bg-secondary"
               }`}
@@ -324,12 +350,18 @@ export default function SmartResultPage() {
                 <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">
                   내레이션 스크립트 (수정 가능)
                 </label>
-                <textarea
-                  value={narrationScript}
-                  onChange={(e) => setNarrationScript(e.target.value)}
-                  rows={6}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:border-primary/60 focus:outline-none"
-                />
+                {generatingScript ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-4 text-sm text-muted-foreground">
+                    <Spinner /> 대본 생성 중...
+                  </div>
+                ) : (
+                  <textarea
+                    value={narrationScript}
+                    onChange={(e) => setNarrationScript(e.target.value)}
+                    rows={6}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:border-primary/60 focus:outline-none"
+                  />
+                )}
               </div>
             </div>
           )}
@@ -339,7 +371,7 @@ export default function SmartResultPage() {
         <button
           type="button"
           onClick={handleGenerate}
-          disabled={!selectedStyle || generatingVoice}
+          disabled={!selectedStyle || generatingVoice || generatingScript}
           className="w-full rounded-xl bg-primary py-4 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
         >
           {generatingVoice ? (
