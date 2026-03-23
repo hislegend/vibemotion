@@ -31,7 +31,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const iconMap: Record<string, LucideIcon> = {
   Type,
@@ -50,14 +50,19 @@ interface LandingPageInputProps {
   ) => void;
   isNavigating?: boolean;
   showCodeExamplesLink?: boolean;
+  prefillPrompt?: string;
+  onPrefillConsumed?: () => void;
 }
 
 export function LandingPageInput({
   onNavigate,
   isNavigating = false,
   showCodeExamplesLink = false,
+  prefillPrompt,
+  onPrefillConsumed,
 }: LandingPageInputProps) {
   const [prompt, setPrompt] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [model, setModel] = useState<ModelId>("claude-sonnet-4-6");
   const [aspectRatio, setAspectRatio] =
     useState<AspectRatioId>(DEFAULT_ASPECT_RATIO);
@@ -75,6 +80,22 @@ export function LandingPageInput({
     error,
     clearError,
   } = useImageAttachments();
+
+  // 템플릿 선택 시 프롬프트 자동 채우기
+  useEffect(() => {
+    if (prefillPrompt) {
+      setPrompt(prefillPrompt);
+      onPrefillConsumed?.();
+      // textarea에 포커스 + 커서를 끝으로
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          textareaRef.current.selectionStart = prefillPrompt.length;
+          textareaRef.current.selectionEnd = prefillPrompt.length;
+        }
+      }, 100);
+    }
+  }, [prefillPrompt, onPrefillConsumed]);
 
   // Auto-clear error after 5 seconds
   useEffect(() => {
@@ -153,6 +174,7 @@ export function LandingPageInput({
           )}
 
           <textarea
+            ref={textareaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}

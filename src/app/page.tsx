@@ -161,6 +161,8 @@ function TemplateGallery({
 const Home: NextPage = () => {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [prefillPrompt, setPrefillPrompt] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState<RemotionExample | null>(null);
 
   const handleNavigate = (
     prompt: string,
@@ -177,19 +179,19 @@ const Home: NextPage = () => {
     } else {
       sessionStorage.removeItem("initialAttachedImages");
     }
+    // 선택된 템플릿이 있으면 코드를 sessionStorage에 저장
+    if (selectedTemplate) {
+      sessionStorage.setItem("templateCode", selectedTemplate.code);
+    }
     const params = new URLSearchParams({ prompt, model, aspectRatio });
     router.push(`/generate?${params.toString()}`);
   };
 
   const handleTemplateSelect = (example: RemotionExample) => {
-    setIsNavigating(true);
-    sessionStorage.setItem("templateCode", example.code);
-    const params = new URLSearchParams({
-      prompt: "Customize this template",
-      model: "claude-sonnet-4-6",
-      aspectRatio: "9:16",
-    });
-    router.push(`/generate?${params.toString()}`);
+    setSelectedTemplate(example);
+    setPrefillPrompt(`"${example.name}" 템플릿 기반으로: `);
+    // 프롬프트 입력창으로 스크롤
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -198,6 +200,8 @@ const Home: NextPage = () => {
         onNavigate={handleNavigate}
         isNavigating={isNavigating}
         showCodeExamplesLink
+        prefillPrompt={prefillPrompt}
+        onPrefillConsumed={() => setPrefillPrompt("")}
       />
       <TemplateGallery onSelect={handleTemplateSelect} />
     </PageLayout>
