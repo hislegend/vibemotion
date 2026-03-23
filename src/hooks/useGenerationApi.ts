@@ -215,13 +215,29 @@ export function useGenerationApi(): UseGenerationApiReturn {
                 // Detect code vs conversation once we have enough text
                 if (isCodeResponse === null && accumulatedText.trimStart().length > 10) {
                   const trimmed = accumulatedText.trimStart();
-                  isCodeResponse = trimmed.startsWith("import ") || trimmed.startsWith("import{");
+                  // Check for direct code or code inside markdown fences
+                  isCodeResponse = trimmed.startsWith("import ") || 
+                    trimmed.startsWith("import{") ||
+                    /```(?:tsx?|jsx?|javascript|typescript)?\s*\n\s*import\s/.test(trimmed) ||
+                    trimmed.includes("\nimport ") ||
+                    trimmed.includes("\nimport{");
                 }
 
-                // Only feed to code editor if we've confirmed it's code
+                // Re-check on every delta if still undetermined
+                if (isCodeResponse === null || isCodeResponse === false) {
+                  const t = accumulatedText.trimStart();
+                  if (t.startsWith("import ") || t.startsWith("import{") || 
+                      /```(?:tsx?|jsx?|javascript|typescript)?\s*\n\s*import\s/.test(t) ||
+                      t.includes("\nimport ")) {
+                    isCodeResponse = true;
+                  }
+                }
+
+                // Feed to code editor if confirmed code
                 if (isCodeResponse === true) {
                   const codeToShow = stripMarkdownFences(accumulatedText);
-                  onCodeGenerated?.(codeToShow);
+                  const extracted = extractComponentCode(codeToShow);
+                  onCodeGenerated?.(extracted || codeToShow);
                 }
                 // If still unknown or conversation, buffer silently
               } else if (event.type === "error") {
@@ -241,7 +257,11 @@ export function useGenerationApi(): UseGenerationApiReturn {
         // Final determination if not yet decided
         if (isCodeResponse === null) {
           const trimmed = accumulatedText.trimStart();
-          isCodeResponse = trimmed.startsWith("import ") || trimmed.startsWith("import{");
+          isCodeResponse = trimmed.startsWith("import ") || 
+            trimmed.startsWith("import{") ||
+            /```(?:tsx?|jsx?|javascript|typescript)?\s*\n\s*import\s/.test(trimmed) ||
+            trimmed.includes("\nimport ") ||
+            trimmed.includes("\nimport{");
         }
 
         onClearPendingMessage?.();
