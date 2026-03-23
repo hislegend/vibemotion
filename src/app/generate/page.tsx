@@ -82,6 +82,7 @@ function GeneratePageContent() {
     setPendingMessage,
     clearPendingMessage,
     isFirstGeneration,
+    hasGeneratedCode,
   } = useConversationState();
 
   // Sidebar collapse state
@@ -107,6 +108,8 @@ function GeneratePageContent() {
   const isStreamingRef = useRef(isStreaming);
   const codeRef = useRef(code);
   const chatSidebarRef = useRef<ChatSidebarRef>(null);
+  // Track if last response was conversation (to skip compile on stream end)
+  const lastResponseWasConversationRef = useRef(false);
 
   // Auto-correction hook - use combined code error (compilation + runtime)
   const { markAsAiGenerated, markAsUserEdited } = useAutoCorrection({
@@ -149,10 +152,14 @@ function GeneratePageContent() {
     const wasStreaming = isStreamingRef.current;
     isStreamingRef.current = isStreaming;
 
-    // Compile when streaming ends - mark as AI change
-    if (wasStreaming && !isStreaming) {
+    // Compile when streaming ends - but only if it was a code response
+    if (wasStreaming && !isStreaming && !lastResponseWasConversationRef.current) {
       markAsAiGenerated();
       compileCode(codeRef.current);
+    }
+    // Reset conversation flag when streaming starts
+    if (isStreaming) {
+      lastResponseWasConversationRef.current = false;
     }
   }, [isStreaming, compileCode, markAsAiGenerated]);
 
@@ -202,6 +209,15 @@ function GeneratePageContent() {
       markAsAiGenerated();
     },
     [addAssistantMessage, markAsAiGenerated],
+  );
+
+  // Handle conversation response (AI replied with text, not code)
+  const handleConversationResponse = useCallback(
+    (text: string, metadata?: AssistantMetadata) => {
+      lastResponseWasConversationRef.current = true;
+      addAssistantMessage(text, "", metadata);
+    },
+    [addAssistantMessage],
   );
 
   // Cleanup debounce on unmount
@@ -286,9 +302,10 @@ function GeneratePageContent() {
           currentCode={code}
           conversationHistory={getFullContext()}
           previouslyUsedSkills={getPreviouslyUsedSkills()}
-          isFollowUp={!isFirstGeneration}
+          isFollowUp={hasGeneratedCode && !isFirstGeneration}
           onMessageSent={handleMessageSent}
           onGenerationComplete={handleGenerationComplete}
+          onConversationResponse={handleConversationResponse}
           onErrorMessage={addErrorMessage}
           errorCorrection={errorCorrection ?? undefined}
           onPendingMessage={setPendingMessage}

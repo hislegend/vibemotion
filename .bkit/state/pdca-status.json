@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-23T05:12:58.036Z",
+  "lastUpdated": "2026-03-23T05:29:13.362Z",
   "activeFeatures": [
     "skills",
     "generate",
@@ -42,9 +42,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T16:24:58.869Z",
-        "lastUpdated": "2026-03-23T04:45:06.467Z"
+        "lastUpdated": "2026-03-23T05:29:13.362Z"
       },
-      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/generate/page.tsx"
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/generate/route.ts"
     },
     "vibemotion": {
       "phase": "do",
@@ -55,9 +55,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T16:37:47.585Z",
-        "lastUpdated": "2026-03-23T05:12:58.036Z"
+        "lastUpdated": "2026-03-23T05:28:20.741Z"
       },
-      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/page.tsx"
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/hooks/useGenerationApi.ts"
     },
     "local-render": {
       "phase": "do",
@@ -133,9 +133,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T18:09:48.711Z",
-        "lastUpdated": "2026-03-23T03:18:51.244Z"
+        "lastUpdated": "2026-03-23T05:28:44.236Z"
       },
-      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/ChatSidebar/ChatInput.tsx"
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/ChatSidebar/ChatHistory.tsx"
     },
     "code": {
       "phase": "do",
@@ -224,7 +224,7 @@
   "session": {
     "startedAt": "2026-03-22T16:22:35.833Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-23T05:12:58.036Z"
+    "lastActivity": "2026-03-23T05:29:13.362Z"
   },
   "history": [
     {
@@ -1046,6 +1046,138 @@
     {
       "timestamp": "2026-03-23T05:12:58.036Z",
       "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:25:07.466Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:25:24.162Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:25:57.718Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:04.394Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:18.854Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:29.713Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:34.138Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:55.102Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:07.062Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:15.712Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:21.828Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:28.395Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:33.794Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:41.382Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:48.974Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:56.226Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:05.046Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:13.041Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:20.741Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:39.625Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:44.236Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:29:13.362Z",
+      "feature": "generate",
       "phase": "do",
       "action": "updated"
     }

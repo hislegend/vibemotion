@@ -14,6 +14,8 @@ export interface AssistantMetadata {
   edits?: EditOperation[];
   /** Model used for generation */
   model?: string;
+  /** Whether this is a conversation message (not code) */
+  isConversation?: boolean;
 }
 
 export interface ConversationMessage {

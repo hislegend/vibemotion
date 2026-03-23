@@ -65,6 +65,8 @@ interface ChatSidebarProps {
     summary?: string,
     metadata?: AssistantMetadata,
   ) => void;
+  /** Called when AI responds with conversation text instead of code */
+  onConversationResponse?: (text: string, metadata?: AssistantMetadata) => void;
   onErrorMessage?: (
     message: string,
     errorType: "edit_failed" | "api" | "validation",
@@ -104,6 +106,7 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
       isFollowUp = false,
       onMessageSent,
       onGenerationComplete,
+      onConversationResponse,
       onErrorMessage,
       errorCorrection,
       onPendingMessage,
@@ -160,6 +163,7 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
           onError,
           onMessageSent,
           onGenerationComplete,
+          onConversationResponse,
           onErrorMessage,
           onPendingMessage,
           onClearPendingMessage,

@@ -9,70 +9,90 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { generateObject, streamText } from "ai";
 import { z } from "zod";
 
-const VALIDATION_PROMPT = `You are a prompt classifier for a motion graphics generation tool.
+const VALIDATION_PROMPT = `You are a prompt classifier for a video production assistant.
 
-Determine if the user's prompt is asking for motion graphics/animation content that can be created as a React/Remotion component.
+Determine if the user's prompt could eventually lead to creating motion graphics or video content.
 
-VALID prompts include requests for:
-- Animated text, titles, or typography
-- Data visualizations (charts, graphs, progress bars)
-- UI animations (buttons, cards, transitions)
-- Logo animations or brand intros
-- Social media content (stories, reels, posts)
-- Explainer animations
-- Kinetic typography
-- Abstract motion graphics
-- Animated illustrations
-- Product showcases
-- Countdown timers
-- Loading animations
-- Any visual/animated content
+VALID prompts include:
+- Direct requests for animations, motion graphics, video content
+- Descriptions of content that could become a video (product info, text, topics)
+- URLs or content that could be turned into video
+- Vague or short requests about making something visual ("만들어줘", "make something cool")
+- Greetings or introductions that imply they want to create video
+- Requests about video style, tone, duration, audience
+- Any input that a video production assistant could work with
 
 INVALID prompts include:
-- Questions (e.g., "What is 2+2?", "How do I...")
-- Requests for text/written content (poems, essays, stories, code explanations)
-- Conversations or chat
-- Non-visual tasks (calculations, translations, summaries)
-- Requests completely unrelated to visual content
+- Completely unrelated queries (math, recipes, homework, general knowledge)
+- Requests explicitly NOT about visual/video content
 
-Return true if the prompt is valid for motion graphics generation, false otherwise.`;
+Be PERMISSIVE — when in doubt, return true. The assistant can ask clarifying questions.
 
-const SYSTEM_PROMPT = `You are a motion graphics artist who thinks in React + Remotion.
+Return true if the prompt could relate to video/motion graphics creation, false otherwise.`;
 
-## 5 PRINCIPLES
+const SYSTEM_PROMPT = `You are a friendly video production assistant for VibeMotion.
+You create motion graphics through conversation, not instantly.
+Respond in the same language as the user (Korean default).
 
-### 1. GRAMMAR (strict — breaks if violated)
+## YOUR CONVERSATION STATES
+
+### STATE: GATHERING (default for new conversations)
+You are collecting information. DO NOT generate code.
+Ask naturally about:
+- 용도 (광고, 프레젠테이션, SNS, 교육 등)
+- 타겟 (누구를 위한 영상인지)
+- 톤 (전문적, 재미있는, 드라마틱, 미니멀)
+- 길이 (10초, 30초, 60초)
+- 음성 내레이션 필요 여부
+
+Ask 1-2 questions at a time, not all at once.
+If user provides rich detailed input, skip to PROPOSING.
+If user says '바로 만들어' or 'just make it', go to PROPOSING with best guess.
+
+### STATE: PROPOSING
+Present your plan clearly:
+📋 콘텐츠 요약
+🎨 추천 스타일 + 이유
+⏱ 추천 길이
+🎬 씬 구성 (간단히)
+
+Ask: '이대로 진행할까요? 수정할 부분 있으면 말씀해주세요.'
+DO NOT generate code yet.
+
+### STATE: GENERATING
+User approved ('좋아', '진행해', '만들어줘', 'OK', etc.)
+NOW output Remotion React code.
+ONLY output code — starts with import, ends with };
+No explanations around the code.
+
+### STATE: REFINING
+Code exists and user gives feedback.
+'더 화려하게', '색상 바꿔', '텍스트 수정해줘' → apply changes.
+
+## HOW TO DETERMINE STATE
+- New conversation + simple/vague input → GATHERING
+- New conversation + rich detailed input (URL content, long text, clear spec) → PROPOSING
+- User approved proposal → GENERATING
+- Code already generated + user feedback → REFINING (generate edited code)
+- User explicitly says '바로 만들어' → PROPOSING (skip gathering)
+
+## DURATION RULES (CRITICAL for GENERATING state)
+When generating code:
+- 10초 → durationInFrames: 300 (30fps)
+- 30초 → durationInFrames: 900
+- 60초 → durationInFrames: 1800
+- useVideoConfig() for fps/width/height, but plan scene timing to fill the full duration
+- If 30초 requested with 3 scenes: each scene ~300 frames, NOT 80 frames
+
+## CODE RULES (only applies in GENERATING/REFINING state)
 - Export: \`export const MyAnimation = () => { ... };\`
 - Hooks first, then constants (UPPER_SNAKE_CASE), then calculations, then JSX
 - All constants INSIDE component body, AFTER hooks
 - Available: useCurrentFrame, useVideoConfig, AbsoluteFill, interpolate, spring, Sequence, TransitionSeries, @remotion/shapes, @remotion/three
 - NEVER shadow import names as variables
-
-### 2. MOTION PHILOSOPHY (guide, not rule)
-- spring() for entrances, bounces, organic motion
-- interpolate() only for linear progress (bars, fades)
+- spring() for organic motion, interpolate() for linear progress
 - Always clamp: { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-- No hard cuts — transition between states
-- Stagger elements for rhythm
-
-### 3. VISUAL IDENTITY (defaults, override freely)
-- fontFamily: 'Inter, sans-serif'
-- Set backgroundColor on AbsoluteFill from frame 0
-- 2-4 colors max per composition
 - Responsive sizing: Math.max(minValue, Math.round(width * percentage))
-
-### 4. OUTPUT FORMAT (strict)
-- Code only. No explanations, no questions.
-- Starts with \`import\`, ends with \`};\`
-- Ambiguous prompt? Make a creative choice.
-
-### 5. CREATIVE FREEDOM (yours entirely)
-- Scene composition, layout, color choices
-- Animation timing, easing curves, choreography
-- Decorative elements, visual metaphors
-- How to interpret the user's intent into motion
-
-Everything not in Principles 1-4 is YOUR creative decision. Be bold.
 `;
 
 const FOLLOW_UP_SYSTEM_PROMPT = `
@@ -319,7 +339,7 @@ export async function POST(req: Request) {
     }
   };
 
-  // Validate the prompt first (skip for follow-ups with existing code)
+  // Validate the prompt first (skip for follow-ups — they're already in conversation)
   if (!isFollowUp) {
     try {
       const validationResult = await generateObject({
@@ -584,34 +604,42 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
     }
   }
 
-  // INITIAL GENERATION: Use streaming for new animations
+  // STREAMING GENERATION: Used for new animations AND conversation flow
   try {
-    // Build messages for initial generation (supports image references)
+    // Build conversation messages (include history for multi-turn conversation)
     const hasImages = frameImages && frameImages.length > 0;
     const initialPromptText = hasImages
       ? `${prompt}\n\n(See the attached ${frameImages.length === 1 ? "image" : "images"} for visual reference)`
       : prompt;
 
-    const initialMessageContent: Array<
-      { type: "text"; text: string } | { type: "image"; image: string }
-    > = [{ type: "text" as const, text: initialPromptText }];
+    type MessageContent = Array<{ type: "text"; text: string } | { type: "image"; image: string }>;
+    type ChatMessage = { role: "user"; content: MessageContent } | { role: "assistant"; content: string };
+
+    // Build message history for multi-turn conversation
+    const initialMessages: ChatMessage[] = [];
+
+    // Include conversation history for context (conversation flow)
+    if (conversationHistory.length > 0) {
+      for (const msg of conversationHistory.slice(-10)) {
+        if (msg.role === "assistant") {
+          initialMessages.push({ role: "assistant", content: msg.content });
+        } else {
+          initialMessages.push({ role: "user", content: [{ type: "text" as const, text: msg.content }] });
+        }
+      }
+    }
+
+    // Add current user message with images
+    const initialMessageContent: MessageContent = [{ type: "text" as const, text: initialPromptText }];
     if (hasImages) {
       for (const img of frameImages) {
         initialMessageContent.push({ type: "image" as const, image: img });
       }
     }
-
-    const initialMessages: Array<{
-      role: "user";
-      content: Array<
-        { type: "text"; text: string } | { type: "image"; image: string }
-      >;
-    }> = [
-      {
-        role: "user" as const,
-        content: initialMessageContent,
-      },
-    ];
+    initialMessages.push({
+      role: "user" as const,
+      content: initialMessageContent,
+    });
 
     // Timeout safety: abort after 250s (Vercel Pro max is 300s)
     const abortController = new AbortController();
