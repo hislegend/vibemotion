@@ -6,8 +6,6 @@ import {
   examples,
   type RemotionExample,
 } from "@/examples/code";
-import { generateRemotionPrompt } from "@/lib/generate-prompt";
-import { generateNarrationScript } from "@/lib/generate-script";
 import {
   deleteProject,
   getProjects,
@@ -19,49 +17,6 @@ import { X } from "lucide-react";
 import type { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-/* ─── types ─── */
-
-interface ContentAnalysis {
-  title: string;
-  summary: string;
-  dataPoints: { label: string; value: string; unit?: string }[];
-  entities: { name: string; type: string }[];
-  tone: string;
-  suggestedDuration: number;
-  category: string;
-  keywords: string[];
-}
-
-interface StyleResult {
-  style: string;
-  score: number;
-  reason: string;
-}
-
-/* ─── constants ─── */
-
-const STYLE_LABELS: Record<string, string> = {
-  infographic: "📊 데이터 모션",
-  presenter: "🎤 프레젠터",
-  cinematic: "🎬 시네마틱",
-  showcase: "📱 제품 쇼케이스",
-  social: "⚡ SNS 숏폼",
-};
-
-const DURATION_OPTIONS = [
-  { label: "8초", value: 8 },
-  { label: "15초", value: 15 },
-  { label: "30초", value: 30 },
-  { label: "60초", value: 60 },
-];
-
-const VOICE_OPTIONS = [
-  { label: "Adam (남성, 깊은)", voiceId: "pNInz6obpgDQGcFmaJgB" },
-  { label: "Rachel (여성, 따뜻한)", voiceId: "21m00Tcm4TlvDq8ikWAM" },
-  { label: "Antoni (남성, 부드러운)", voiceId: "ErXwobaYiN019PkySvjV" },
-  { label: "Bella (여성, 밝은)", voiceId: "EXAVITQu4vr4xnSDxMaL" },
-];
 
 /* ─── tier config ─── */
 
@@ -128,44 +83,6 @@ function Spinner({ className = "h-4 w-4" }: { className?: string }) {
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
     </svg>
-  );
-}
-
-function AnalysisCard({ analysis }: { analysis: ContentAnalysis }) {
-  return (
-    <div className="rounded-xl border border-border bg-secondary/50 p-5 space-y-3">
-      <h2 className="text-lg font-bold text-foreground">{analysis.title}</h2>
-      <p className="text-sm text-muted-foreground">{analysis.summary}</p>
-      {analysis.dataPoints.length > 0 && (
-        <div>
-          <h4 className="text-xs font-semibold text-muted-foreground mb-2">데이터 포인트</h4>
-          <div className="flex flex-wrap gap-2">
-            {analysis.dataPoints.map((dp, i) => (
-              <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                {dp.label}: {dp.value}{dp.unit ? ` ${dp.unit}` : ""}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-      {analysis.entities.length > 0 && (
-        <div>
-          <h4 className="text-xs font-semibold text-muted-foreground mb-2">주요 엔티티</h4>
-          <div className="flex flex-wrap gap-2">
-            {analysis.entities.map((e, i) => (
-              <span key={i} className="rounded-full bg-accent px-3 py-1 text-xs text-foreground">
-                {e.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-      <div className="flex flex-wrap gap-2 pt-1">
-        {analysis.keywords.map((kw) => (
-          <span key={kw} className="text-xs text-muted-foreground">#{kw}</span>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -288,215 +205,6 @@ function TemplateGallery({
         ))}
       </div>
     </section>
-  );
-}
-
-/* ─── Smart Inline Results ─── */
-
-type SmartStep = "analyzing" | "result";
-
-function SmartInlineResults({
-  step,
-  analysis,
-  styles,
-  selectedStyle,
-  duration,
-  error,
-  voiceEnabled,
-  narrationScript,
-  selectedVoiceId,
-  generatingVoice,
-  onStyleSelect,
-  onDurationChange,
-  onVoiceToggle,
-  onVoiceIdChange,
-  onNarrationChange,
-  onGenerate,
-  onReanalyze,
-  onBack,
-}: {
-  step: SmartStep;
-  analysis: ContentAnalysis | null;
-  styles: StyleResult[];
-  selectedStyle: string | null;
-  duration: number;
-  error: string;
-  voiceEnabled: boolean;
-  narrationScript: string;
-  selectedVoiceId: string;
-  generatingVoice: boolean;
-  onStyleSelect: (style: string) => void;
-  onDurationChange: (d: number) => void;
-  onVoiceToggle: () => void;
-  onVoiceIdChange: (id: string) => void;
-  onNarrationChange: (s: string) => void;
-  onGenerate: () => void;
-  onReanalyze: () => void;
-  onBack: () => void;
-}) {
-  return (
-    <div className="mx-auto w-full max-w-2xl px-4 pb-16 space-y-6">
-      {/* Back button */}
-      <button
-        type="button"
-        onClick={onBack}
-        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        ← 돌아가기
-      </button>
-
-      {/* Step 1: Analyzing spinner */}
-      {step === "analyzing" && (
-        <div className="flex flex-col items-center gap-3 py-12">
-          <Spinner className="h-8 w-8 text-primary" />
-          <p className="text-sm text-muted-foreground">분석 중...</p>
-        </div>
-      )}
-
-      {error && (
-        <p className="text-sm text-destructive text-center">{error}</p>
-      )}
-
-      {/* Steps 2-5: Results + Style + Duration + Voice + Generate */}
-      {step === "result" && analysis && (
-        <div className="space-y-6">
-          <AnalysisCard analysis={analysis} />
-
-          {/* Style picker */}
-          {styles.length > 0 && (
-            <div>
-              <h3 className="mb-3 text-sm font-semibold text-foreground">추천 스타일</h3>
-              <div className="grid gap-3">
-                {styles.map((s) => (
-                  <button
-                    key={s.style}
-                    type="button"
-                    onClick={() => onStyleSelect(s.style)}
-                    className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
-                      selectedStyle === s.style
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-secondary/50 hover:border-primary/40"
-                    }`}
-                  >
-                    <span className="text-2xl">{STYLE_LABELS[s.style]?.split(" ")[0]}</span>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-foreground">
-                          {STYLE_LABELS[s.style] || s.style}
-                        </span>
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                          {s.score}점
-                        </span>
-                      </div>
-                      <p className="mt-1 text-xs text-muted-foreground">{s.reason}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Duration selector */}
-          <div>
-            <h3 className="mb-3 text-sm font-semibold text-foreground">영상 길이</h3>
-            <div className="flex gap-2">
-              {DURATION_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => onDurationChange(opt.value)}
-                  className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                    duration === opt.value
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Voice / TTS */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={onVoiceToggle}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  voiceEnabled ? "bg-primary" : "bg-secondary"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
-                    voiceEnabled ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-              </button>
-              <span className="text-sm font-semibold text-foreground">🔊 음성 추가</span>
-            </div>
-
-            {voiceEnabled && (
-              <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-4">
-                <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">
-                    음성 선택
-                  </label>
-                  <select
-                    value={selectedVoiceId}
-                    onChange={(e) => onVoiceIdChange(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
-                  >
-                    {VOICE_OPTIONS.map((v) => (
-                      <option key={v.voiceId} value={v.voiceId}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">
-                    내레이션 스크립트 (수정 가능)
-                  </label>
-                  <textarea
-                    value={narrationScript}
-                    onChange={(e) => onNarrationChange(e.target.value)}
-                    rows={6}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:border-primary/60 focus:outline-none"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={onReanalyze}
-              className="rounded-xl border border-border bg-secondary/50 px-4 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              다시 분석
-            </button>
-            <button
-              type="button"
-              onClick={onGenerate}
-              disabled={!selectedStyle || generatingVoice}
-              className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
-            >
-              {generatingVoice ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Spinner /> 음성 생성 중...
-                </span>
-              ) : (
-                "🎬 영상 만들기"
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -684,26 +392,17 @@ const Home: NextPage = () => {
   const [prefillPrompt, setPrefillPrompt] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<RemotionExample | null>(null);
   const [isSmartSelected, setIsSmartSelected] = useState(false);
-
-  // Smart analysis state (lifted from old SmartInlineFlow)
-  const [smartStep, setSmartStep] = useState<SmartStep | null>(null);
-  const [analysis, setAnalysis] = useState<ContentAnalysis | null>(null);
-  const [styles, setStyles] = useState<StyleResult[]>([]);
-  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-  const [duration, setDuration] = useState(30);
+  const [smartAnalyzing, setSmartAnalyzing] = useState(false);
   const [smartError, setSmartError] = useState("");
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [narrationScript, setNarrationScript] = useState("");
-  const [selectedVoiceId, setSelectedVoiceId] = useState(VOICE_OPTIONS[0].voiceId);
-  const [generatingVoice, setGeneratingVoice] = useState(false);
 
   const runSmartAnalysis = useCallback(async (input: string) => {
     setSmartError("");
-    setSmartStep("analyzing");
+    setSmartAnalyzing(true);
 
     const isUrl = input.startsWith("http://") || input.startsWith("https://");
 
     try {
+      // Step 1: Analyze content
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -718,35 +417,30 @@ const Home: NextPage = () => {
         throw new Error(err.error || "분석 실패");
       }
 
-      const data: ContentAnalysis = await res.json();
-      setAnalysis(data);
-      setDuration(data.suggestedDuration);
+      const data = await res.json();
 
-      // Auto-fetch styles
+      // Step 2: Fetch recommended styles
       const styleRes = await fetch("/api/route-style", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
-      let firstStyle = "cinematic";
+      let stylesData: unknown[] = [];
       if (styleRes.ok) {
-        const styleData = await styleRes.json();
-        setStyles(styleData.styles);
-        setSelectedStyle(styleData.styles[0]?.style || null);
-        firstStyle = styleData.styles[0]?.style || "cinematic";
+        const parsed = await styleRes.json();
+        stylesData = parsed.styles;
       }
 
-      // Generate narration script
-      const script = generateNarrationScript(data, firstStyle, data.suggestedDuration);
-      setNarrationScript(script);
-
-      setSmartStep("result");
+      // Step 3: Store in sessionStorage and navigate
+      sessionStorage.setItem("smartAnalysis", JSON.stringify(data));
+      sessionStorage.setItem("smartStyles", JSON.stringify(stylesData));
+      router.push("/smart-result");
     } catch (e) {
       setSmartError(e instanceof Error ? e.message : "오류가 발생했습니다.");
-      setSmartStep(null);
+      setSmartAnalyzing(false);
     }
-  }, []);
+  }, [router]);
 
   const handleNavigate = useCallback(
     (
@@ -755,7 +449,7 @@ const Home: NextPage = () => {
       aspectRatio: AspectRatioId,
       attachedImages?: string[],
     ) => {
-      // Smart mode: intercept and run analysis instead of navigating
+      // Smart mode: run analysis then navigate to /smart-result
       if (isSmartSelected) {
         if (!prompt.trim()) return;
         runSmartAnalysis(prompt.trim());
@@ -780,21 +474,14 @@ const Home: NextPage = () => {
 
   const handleTemplateSelect = (example: RemotionExample) => {
     setSelectedTemplate(example);
-    setIsSmartSelected(false); // 일반 템플릿 선택 시 스마트 해제
-    setSmartStep(null);
-    setAnalysis(null);
+    setIsSmartSelected(false);
     setPrefillPrompt(`"${example.name}" 템플릿 기반으로: `);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSmartClick = () => {
     if (isSmartSelected) {
-      // 이미 선택됨 → 해제 (토글)
       setIsSmartSelected(false);
-      setSmartStep(null);
-      setAnalysis(null);
-      setStyles([]);
-      setSelectedStyle(null);
       setSmartError("");
     } else {
       setIsSmartSelected(true);
@@ -803,133 +490,28 @@ const Home: NextPage = () => {
     }
   };
 
-  const handleBackToNormal = () => {
-    setIsSmartSelected(false);
-    setSmartStep(null);
-    setAnalysis(null);
-    setStyles([]);
-    setSelectedStyle(null);
-    setSmartError("");
-  };
-
-  const handleSmartStyleSelect = (style: string) => {
-    setSelectedStyle(style);
-    if (analysis) {
-      setNarrationScript(generateNarrationScript(analysis, style, duration));
-    }
-  };
-
-  const handleSmartDurationChange = (d: number) => {
-    setDuration(d);
-    if (analysis && selectedStyle) {
-      setNarrationScript(generateNarrationScript(analysis, selectedStyle, d));
-    }
-  };
-
-  const handleSmartReanalyze = () => {
-    setSmartStep(null);
-    setAnalysis(null);
-    setStyles([]);
-    setSelectedStyle(null);
-    setSmartError("");
-  };
-
-  const handleSmartGenerate = async () => {
-    if (!analysis || !selectedStyle) return;
-
-    let voicePromptAddition = "";
-    let finalDuration = duration;
-
-    if (voiceEnabled && narrationScript.trim()) {
-      setGeneratingVoice(true);
-      try {
-        const ttsRes = await fetch("/api/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: narrationScript.trim(),
-            voiceId: selectedVoiceId,
-          }),
-        });
-        if (ttsRes.ok) {
-          const audioBlob = await ttsRes.blob();
-          const audioBlobUrl = URL.createObjectURL(audioBlob);
-          const audioDuration = await new Promise<number>((resolve) => {
-            const audio = new Audio(audioBlobUrl);
-            audio.addEventListener("loadedmetadata", () => {
-              resolve(Math.ceil(audio.duration));
-              URL.revokeObjectURL(audioBlobUrl);
-            });
-            audio.addEventListener("error", () => {
-              resolve(duration);
-              URL.revokeObjectURL(audioBlobUrl);
-            });
-          });
-          const voiceDuration = audioDuration + 2;
-          setDuration(voiceDuration);
-          const reader = new FileReader();
-          const audioDataUrl = await new Promise<string>((resolve) => {
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(audioBlob);
-          });
-          sessionStorage.setItem("voiceAudio", audioDataUrl);
-          voicePromptAddition = `\n\nThis video has ${voiceDuration}초 narration audio. The video duration MUST be exactly ${voiceDuration} seconds (${voiceDuration * 30} frames at 30fps). Distribute scenes evenly across the narration. Sync scene transitions with the narration timing.\n\nNarration script:\n${narrationScript.trim()}`;
-          finalDuration = voiceDuration;
-        }
-      } catch {
-        // TTS 실패 시 음성 없이 진행
-      } finally {
-        setGeneratingVoice(false);
-      }
-    }
-
-    const prompt = generateRemotionPrompt(analysis, selectedStyle, finalDuration) + voicePromptAddition;
-    const params = new URLSearchParams({
-      prompt,
-      model: "claude-sonnet-4-6",
-      aspectRatio: "9:16",
-      duration: String(finalDuration),
-      ...(voiceEnabled ? { voice: "true" } : {}),
-    });
-    setIsNavigating(true);
-    router.push(`/generate?${params.toString()}`);
-  };
-
   return (
     <PageLayout>
       <LandingPageInput
         onNavigate={handleNavigate}
-        isNavigating={isNavigating}
+        isNavigating={isNavigating || smartAnalyzing}
         showCodeExamplesLink
         prefillPrompt={prefillPrompt}
         onPrefillConsumed={() => setPrefillPrompt("")}
       />
 
-      {/* Smart analysis results (shown inline, gallery stays visible) */}
-      {smartStep && (
-        <SmartInlineResults
-          step={smartStep}
-          analysis={analysis}
-          styles={styles}
-          selectedStyle={selectedStyle}
-          duration={duration}
-          error={smartError}
-          voiceEnabled={voiceEnabled}
-          narrationScript={narrationScript}
-          selectedVoiceId={selectedVoiceId}
-          generatingVoice={generatingVoice}
-          onStyleSelect={handleSmartStyleSelect}
-          onDurationChange={handleSmartDurationChange}
-          onVoiceToggle={() => setVoiceEnabled((v) => !v)}
-          onVoiceIdChange={setSelectedVoiceId}
-          onNarrationChange={setNarrationScript}
-          onGenerate={handleSmartGenerate}
-          onReanalyze={handleSmartReanalyze}
-          onBack={handleBackToNormal}
-        />
+      {/* Smart analyzing overlay */}
+      {smartAnalyzing && (
+        <div className="mx-auto w-full max-w-2xl px-4 pb-6">
+          <div className="flex flex-col items-center gap-3 py-8">
+            <Spinner className="h-8 w-8 text-primary" />
+            <p className="text-sm text-muted-foreground">AI가 콘텐츠를 분석하고 있습니다...</p>
+          </div>
+        </div>
       )}
 
-            {smartError && (
+      {/* Smart error */}
+      {smartError && (
         <div className="mx-auto w-full max-w-2xl px-4 pb-4">
           <p className="text-sm text-destructive text-center">{smartError}</p>
         </div>
