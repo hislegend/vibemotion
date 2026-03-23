@@ -51,9 +51,11 @@ ${entitySection}
 톤: ${analysis.tone}
 키워드: ${analysis.keywords.join(", ")}
 
-영상 길이: ${duration}초 (${totalFrames}프레임, ${fps}fps)
+CRITICAL — 영상 길이: 정확히 ${duration}초 (${totalFrames}프레임, ${fps}fps)
 비율: 9:16 (세로형)
 
 위 내용을 기반으로 ${style} 스타일의 모션 그래픽을 만들어주세요.
-데이터 포인트는 숫자 애니메이션으로, 키워드는 타이포그래피로 강조해주세요.`.trim();
+데이터 포인트는 숫자 애니메이션으로, 키워드는 타이포그래피로 강조해주세요.
+
+IMPORTANT: The Remotion Player will use exactly ${totalFrames} durationInFrames. Your animation MUST use the full ${totalFrames} frames. Plan ${Math.max(3, Math.floor(duration / 8))} scenes, each scene lasting ~${Math.round(totalFrames / Math.max(3, Math.floor(duration / 8)))} frames. Do NOT use durationInFrames less than ${totalFrames} in your code.`.trim();
 }

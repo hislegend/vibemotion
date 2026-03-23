@@ -210,7 +210,8 @@ function GeneratePageContent() {
       setHasGeneratedOnce(true);
 
       // Parse durationInFrames from AI-generated code
-      if (isStreamingRef.current) {
+      // BUT only if no explicit duration was passed via URL (user/smart analysis choice takes priority)
+      if (isStreamingRef.current && !durationParam) {
         const durationMatch = newCode.match(/durationInFrames\s*[=:]\s*(\d+)/);
         if (durationMatch) {
           const parsedDuration = parseInt(durationMatch[1], 10);
