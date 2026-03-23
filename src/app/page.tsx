@@ -388,8 +388,13 @@ function SmartInlineFlow({
         });
         if (ttsRes.ok) {
           const audioBlob = await ttsRes.blob();
-          const audioUrl = URL.createObjectURL(audioBlob);
-          sessionStorage.setItem("voiceAudio", audioUrl);
+          // Convert blob to base64 data URL (persists across page navigation)
+          const reader = new FileReader();
+          const audioDataUrl = await new Promise<string>((resolve) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(audioBlob);
+          });
+          sessionStorage.setItem("voiceAudio", audioDataUrl);
           voicePromptAddition = "\n\nThis video has narration audio. Sync scene transitions with the narration timing.";
         }
       } catch {

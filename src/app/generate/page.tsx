@@ -33,6 +33,7 @@ function GeneratePageContent() {
   const initialPrompt = searchParams.get("prompt") || "";
   const initialModel = searchParams.get("model") || undefined;
   const durationParam = searchParams.get("duration");
+  const hasVoice = searchParams.get("voice") === "true";
   const aspectRatioParam = (searchParams.get("aspectRatio") ||
     DEFAULT_ASPECT_RATIO) as AspectRatioId;
   const aspectRatioConfig = ASPECT_RATIOS.find(
@@ -56,6 +57,18 @@ function GeneratePageContent() {
   );
   const [prompt, setPrompt] = useState(initialPrompt);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
+  const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Load voice audio from sessionStorage if available
+  useEffect(() => {
+    if (hasVoice) {
+      const storedAudio = sessionStorage.getItem("voiceAudio");
+      if (storedAudio) {
+        setVoiceAudioUrl(storedAudio);
+      }
+    }
+  }, [hasVoice]);
   const [hasGeneratedOnce, setHasGeneratedOnce] = useState(false);
   const [generationError, setGenerationError] = useState<{
     message: string;
@@ -354,6 +367,14 @@ function GeneratePageContent() {
           />
         </div>
       </div>
+
+      {/* Voice audio player */}
+      {voiceAudioUrl && (
+        <div className="fixed bottom-4 right-4 z-50 bg-secondary border border-border rounded-xl p-3 shadow-lg flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">🔊 내레이션</span>
+          <audio ref={audioRef} src={voiceAudioUrl} controls className="h-8" />
+        </div>
+      )}
     </PageLayout>
   );
 }
