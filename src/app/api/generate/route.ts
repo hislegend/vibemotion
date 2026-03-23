@@ -92,6 +92,9 @@ When generating code:
 - All constants INSIDE component body, AFTER hooks
 - Available: useCurrentFrame, useVideoConfig, AbsoluteFill, interpolate, spring, Sequence, TransitionSeries, @remotion/shapes, @remotion/three
 - NEVER shadow import names as variables
+- NEVER use undefined variables — define ALL variables before using them
+- ONLY use colors as hex strings ('#ffffff'), never as sRGB/Color objects
+- ONLY import from: 'remotion', '@remotion/*' packages. No other npm packages.
 - spring() for organic motion, interpolate() for linear progress
 - Always clamp: { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
 - Responsive sizing: Math.max(minValue, Math.round(width * percentage))
