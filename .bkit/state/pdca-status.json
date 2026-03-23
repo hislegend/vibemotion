@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-23T03:39:36.551Z",
+  "lastUpdated": "2026-03-23T04:26:16.822Z",
   "activeFeatures": [
     "skills",
     "generate",
@@ -13,7 +13,10 @@
     "ChatSidebar",
     "code",
     "code-examples",
-    "tts"
+    "tts",
+    "analyze",
+    "route-style",
+    "smart"
   ],
   "primaryFeature": "skills",
   "features": {
@@ -52,9 +55,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T16:37:47.585Z",
-        "lastUpdated": "2026-03-23T03:18:58.576Z"
+        "lastUpdated": "2026-03-23T04:25:53.753Z"
       },
-      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/Header.tsx"
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/page.tsx"
     },
     "local-render": {
       "phase": "do",
@@ -172,6 +175,45 @@
         "lastUpdated": "2026-03-23T03:19:33.440Z"
       },
       "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/tts/route.ts"
+    },
+    "analyze": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T04:24:15.641Z",
+        "lastUpdated": "2026-03-23T04:24:15.641Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/analyze/route.ts"
+    },
+    "route-style": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T04:24:25.927Z",
+        "lastUpdated": "2026-03-23T04:24:25.927Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/route-style/route.ts"
+    },
+    "smart": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T04:25:26.779Z",
+        "lastUpdated": "2026-03-23T04:26:16.822Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/smart/page.tsx"
     }
   },
   "pipeline": {
@@ -182,7 +224,7 @@
   "session": {
     "startedAt": "2026-03-22T16:22:35.833Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-23T03:39:36.551Z"
+    "lastActivity": "2026-03-23T04:26:16.822Z"
   },
   "history": [
     {
@@ -884,6 +926,54 @@
     {
       "timestamp": "2026-03-23T03:39:36.551Z",
       "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:24:15.641Z",
+      "feature": "analyze",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:24:25.927Z",
+      "feature": "route-style",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:24:37.213Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:25:26.779Z",
+      "feature": "smart",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:25:41.121Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:25:48.162Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:25:53.753Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:26:16.822Z",
+      "feature": "smart",
       "phase": "do",
       "action": "updated"
     }

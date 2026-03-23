@@ -8,6 +8,7 @@ import {
 } from "@/examples/code";
 import type { AspectRatioId, ModelId } from "@/types/generation";
 import type { NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -203,6 +204,24 @@ const Home: NextPage = () => {
         prefillPrompt={prefillPrompt}
         onPrefillConsumed={() => setPrefillPrompt("")}
       />
+      {/* 스마트 생성 CTA */}
+      <section className="mx-auto w-full max-w-4xl px-4 pb-6">
+        <Link
+          href="/smart"
+          className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 p-4 transition-all hover:border-primary/60 hover:bg-primary/10"
+        >
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">
+              🧠 스마트 생성
+            </h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              텍스트나 URL을 넣으면 AI가 분석하고 최적의 영상을 만들어줍니다
+            </p>
+          </div>
+          <span className="text-primary text-sm">→</span>
+        </Link>
+      </section>
+
       <TemplateGallery onSelect={handleTemplateSelect} />
     </PageLayout>
   );
