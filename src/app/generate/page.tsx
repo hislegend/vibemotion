@@ -209,6 +209,17 @@ function GeneratePageContent() {
       setCode(newCode);
       setHasGeneratedOnce(true);
 
+      // Parse durationInFrames from AI-generated code
+      if (isStreamingRef.current) {
+        const durationMatch = newCode.match(/durationInFrames\s*[=:]\s*(\d+)/);
+        if (durationMatch) {
+          const parsedDuration = parseInt(durationMatch[1], 10);
+          if (parsedDuration > 0 && parsedDuration !== durationInFrames) {
+            setDurationInFrames(parsedDuration);
+          }
+        }
+      }
+
       // Mark as manual edit if not streaming (user typing)
       if (!isStreamingRef.current) {
         markManualEdit(newCode);

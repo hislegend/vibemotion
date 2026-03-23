@@ -227,9 +227,18 @@ export function useGenerationApi(): UseGenerationApiReturn {
                 if (isCodeResponse === null || isCodeResponse === false) {
                   const t = accumulatedText.trimStart();
                   if (t.startsWith("import ") || t.startsWith("import{") || 
-                      /```(?:tsx?|jsx?|javascript|typescript)?\s*\n\s*import\s/.test(t) ||
-                      t.includes("\nimport ")) {
+                      /```(?:tsx?|jsx?|javascript|typescript)?\s*\n\s*import\s/.test(t)) {
                     isCodeResponse = true;
+                  }
+                  // Text + code mixed: "네, 만들어드릴게요!\nimport ..."
+                  else if (/\nimport\s/.test(t) && t.includes("export const")) {
+                    isCodeResponse = true;
+                    // Split: text before import → chat, code → editor
+                    const codeStart = t.indexOf("\nimport ");
+                    if (codeStart > 0) {
+                      const chatPart = t.substring(0, codeStart).trim();
+                      if (chatPart) onConversationResponse?.(chatPart, streamMetadata);
+                    }
                   }
                 }
 

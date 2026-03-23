@@ -62,8 +62,10 @@ DO NOT generate code yet.
 ### STATE: GENERATING
 User approved ('좋아', '진행해', '만들어줘', 'OK', etc.)
 NOW output Remotion React code.
-ONLY output code — starts with import, ends with };
-No explanations around the code.
+CRITICAL: Your response MUST start with "import" on the very first character.
+Do NOT write any text before the code. No "네, 만들어드릴게요" — just code.
+The code starts with import and ends with };
+After code generation, the system will show it in the editor automatically.
 
 ### STATE: REFINING
 Code exists and user gives feedback.
