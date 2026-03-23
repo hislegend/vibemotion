@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-23T02:49:21.266Z",
+  "lastUpdated": "2026-03-23T03:01:53.031Z",
   "activeFeatures": [
     "skills",
     "generate",
@@ -10,7 +10,8 @@
     "RenderControls",
     "AnimationPlayer",
     "remotion",
-    "ChatSidebar"
+    "ChatSidebar",
+    "code"
   ],
   "primaryFeature": "skills",
   "features": {
@@ -23,7 +24,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T16:24:51.208Z",
-        "lastUpdated": "2026-03-22T16:24:57.529Z"
+        "lastUpdated": "2026-03-23T03:01:53.031Z"
       },
       "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/skills/index.ts"
     },
@@ -36,7 +37,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T16:24:58.869Z",
-        "lastUpdated": "2026-03-22T18:10:24.370Z"
+        "lastUpdated": "2026-03-23T02:59:40.376Z"
       },
       "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/generate/route.ts"
     },
@@ -130,6 +131,19 @@
         "lastUpdated": "2026-03-22T18:10:01.624Z"
       },
       "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/ChatSidebar/ChatSidebar.tsx"
+    },
+    "code": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T03:00:41.338Z",
+        "lastUpdated": "2026-03-23T03:01:40.039Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/examples/code/index.ts"
     }
   },
   "pipeline": {
@@ -140,7 +154,7 @@
   "session": {
     "startedAt": "2026-03-22T16:22:35.833Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-23T02:49:21.266Z"
+    "lastActivity": "2026-03-23T03:01:53.031Z"
   },
   "history": [
     {
@@ -434,6 +448,66 @@
     {
       "timestamp": "2026-03-23T02:49:21.266Z",
       "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T02:59:36.819Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T02:59:40.376Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:00:41.338Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:01.151Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:33.712Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:38.854Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:40.039Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:46.722Z",
+      "feature": "skills",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:47.892Z",
+      "feature": "skills",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:53.031Z",
+      "feature": "skills",
       "phase": "do",
       "action": "updated"
     }

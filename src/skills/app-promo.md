@@ -1,119 +1,31 @@
-# App Promo Video Style
+# App Promo — Direction Guide
 
 ## Impact: ★★★★★
+## Tags: app-promo, device-mockup, promotional
 
-## Tags: app-promo, device-mockup, promotional, product-showcase, mobile
+## What This Is
+앱을 홍보하는 영상. 디바이스 목업 안에 앱 화면을 넣고 모션으로 매력을 전달한다.
 
-## Purpose
+## Visual Direction (방향성 — 구체적 구현은 AI가)
+- **배경:** 소프트 그라디언트. 앱의 브랜드 컬러에서 파생.
+- **디바이스:** 폰 베젤 + 살짝 3D 틸트 → 프리미엄 느낌
+- **텍스트:** 최소한. 씬당 헤드라인 1개 + 서브 1개 이하.
+- **장식:** 뒤에 은은한 보케나 플로팅 셰이프. 주인공은 앱 화면.
 
-Generate app promotional videos featuring device mockups with app screenshots.
-Inspired by Walletvy-style app promos (gwon_vibe on Threads).
+## Motion Direction
+- 디바이스는 spring으로 등장 (아래→위 or 스케일)
+- 텍스트는 디바이스보다 약간 늦게 (스태거)
+- 씬 전환은 fade 또는 slide
 
-## Visual Style
-
-- **Backgrounds:** Soft pastel gradients
-  - Pink/Coral: `linear-gradient(135deg, #fecaca, #fda4af, #fb7185)`
-  - Blue/Purple: `linear-gradient(135deg, #c7d2fe, #a5b4fc, #818cf8)`
-  - Mint/Teal: `linear-gradient(135deg, #a7f3d0, #6ee7b7, #34d399)`
-  - Peach/Orange: `linear-gradient(135deg, #fed7aa, #fdba74, #fb923c)`
-- **Device Frame:** Dark (#1e293b) or white (#ffffff) phone bezel with rounded corners
-- **Screen Content:** App screenshots or UI mockups inserted inside device
-- **Decorative Elements:** Subtle floating shapes, soft bokeh circles, light particles
-
-## Device Mockup Pattern
-
-```tsx
-// 3D tilted phone mockup
-const PHONE_WIDTH = Math.round(width * 0.35);
-const PHONE_HEIGHT = Math.round(PHONE_WIDTH * 2.05);
-const BEZEL_RADIUS = Math.round(PHONE_WIDTH * 0.12);
-const SCREEN_PADDING = Math.round(PHONE_WIDTH * 0.04);
-
-// 3D perspective tilt
-const phoneStyle = {
-  width: PHONE_WIDTH,
-  height: PHONE_HEIGHT,
-  borderRadius: BEZEL_RADIUS,
-  backgroundColor: "#1e293b",
-  padding: SCREEN_PADDING,
-  transform: `perspective(1200px) rotateY(-8deg) rotateX(5deg)`,
-  boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
-};
-
-// Inner screen
-const screenStyle = {
-  width: "100%",
-  height: "100%",
-  borderRadius: BEZEL_RADIUS - SCREEN_PADDING,
-  backgroundColor: "#ffffff",
-  overflow: "hidden",
-};
-```
-
-## Typography
-
-- **Minimal sans-serif** — fontFamily: 'Inter, sans-serif'
-- **Information-light** — max 2-3 short text elements per scene
-- **Large, bold headlines** — fontSize: width * 0.06 for impact
-- **Subtle captions** — fontSize: width * 0.025, lighter weight
-
-## Transitions
-
-- **Smooth fade** between scenes using `interpolate(frame, [start, start+15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })`
-- **Slide** — device slides in from bottom or side with spring animation
-- **Scale entrance** — device scales from 0.8 to 1.0 with spring
-- **No harsh cuts** — always animate between states
+## Scene Thinking (길이별)
+- **5-10초 (스낵):** 히어로 1씬 — 디바이스 등장 + 한줄 카피 + CTA
+- **15-30초 (릴스):** 3씬 — 히어로 → 기능 하이라이트 → CTA
+- **30-50초 (숏폼):** 5씬 — 문제 제기 → 해결 → 기능 3개 → CTA
 
 ## Tone
+Clean + Warm + Premium. 신뢰감과 심플함.
 
-- Clean + Warm + Premium
-- Evokes trust, simplicity, and delight
-- Minimal text, let the visuals speak
-
-## Scene Structure
-
-A typical app promo has 3-4 scenes:
-1. **Hero Scene** (0-60 frames): Device enters with gradient background + tagline
-2. **Feature Showcase** (60-120 frames): Highlight 1-2 key app screens
-3. **Social Proof** (120-160 frames): Stats, ratings, or testimonials
-4. **CTA Scene** (160-200 frames): Download prompt + app icon + store badges
-
-## Correct Usage
-
-```tsx
-// Soft pastel gradient background
-const BG_GRADIENT = "linear-gradient(135deg, #c7d2fe, #a5b4fc, #818cf8)";
-
-// Device entrance with spring
-const deviceEntrance = spring({
-  fps,
-  frame: frame - 10,
-  config: { damping: 14, stiffness: 100 },
-});
-
-const deviceTranslateY = interpolate(deviceEntrance, [0, 1], [200, 0]);
-const deviceScale = interpolate(deviceEntrance, [0, 1], [0.85, 1]);
-
-// Staggered text entrance
-const titleEntrance = spring({
-  fps,
-  frame: frame - 20,
-  config: { damping: 15, stiffness: 120 },
-});
-```
-
-## Incorrect Usage
-
-```tsx
-// ❌ Don't use harsh, saturated backgrounds
-const BG = "#ff0000"; // Too aggressive for app promo
-
-// ❌ Don't overcrowd with text
-// Keep it minimal — 1 headline + 1 subtitle max per scene
-
-// ❌ Don't skip device mockup perspective
-// Always add subtle 3D tilt for premium feel
-
-// ❌ Don't use instant transitions
-opacity: frame > 30 ? 1 : 0; // Use interpolate or spring instead
-```
+## Avoid
+- 디바이스 없이 텍스트만 나열
+- 정보 과부하 (씬당 2개 이상 메시지)
+- 검은 배경 + 흰 글자만 (무기력)

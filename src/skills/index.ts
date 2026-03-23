@@ -44,6 +44,9 @@ const EXAMPLE_SKILLS = [
   "example-testimonial-card",
   "example-data-showcase",
   "example-brand-intro",
+  "example-logo-stinger",
+  "example-number-impact",
+  "example-product-teaser",
 ] as const;
 
 export const SKILL_NAMES = [...GUIDANCE_SKILLS, ...EXAMPLE_SKILLS] as const;
@@ -82,6 +85,9 @@ const exampleIdMap: Record<(typeof EXAMPLE_SKILLS)[number], string> = {
   "example-testimonial-card": "testimonial-card",
   "example-data-showcase": "data-showcase",
   "example-brand-intro": "brand-intro",
+  "example-logo-stinger": "logo-stinger",
+  "example-number-impact": "number-impact",
+  "example-product-teaser": "product-teaser",
 };
 
 export function getSkillContent(skillName: SkillName): string {
@@ -146,5 +152,8 @@ Code examples (complete working references):
 - example-testimonial-card: customer testimonial card on warm beige, typing review text, staggered star ratings, quote icon spring, minimal premium aesthetic
 - example-data-showcase: impact number showcase on indigo-violet gradient, count-up numbers (Users/Revenue/Growth), highlight underlines, glass cards
 - example-brand-intro: brand intro/outro on dark background, spring-scaled logo, letter-by-letter stagger name, slogan fade, glow/shadow premium effects
+- example-logo-stinger: logo stinger / brand bumper, logo entrance with spring scale and rotation, glow pulse, tagline fade-in, dark gradient background
+- example-number-impact: single impact number with eased count-up, landing pulse, underline reveal, label stagger, dark background
+- example-product-teaser: product/app teaser with 3D-tilted phone device mockup, headline, CTA, bokeh background, spring entrances
 
 Return an array of matching category names. Return an empty array if none apply.`;
