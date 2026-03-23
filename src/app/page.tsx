@@ -88,22 +88,56 @@ function Spinner({ className = "h-4 w-4" }: { className?: string }) {
 
 /* ─── Template components ─── */
 
-function SmartCard({ onClick, active }: { onClick: () => void; active: boolean }) {
+function SmartCard({
+  onClick,
+  active,
+  voiceEnabled,
+  onVoiceToggle,
+}: {
+  onClick: () => void;
+  active: boolean;
+  voiceEnabled: boolean;
+  onVoiceToggle: () => void;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`group flex flex-col gap-3 rounded-xl border p-4 text-left transition-all ${
+      className={`group relative flex flex-col gap-3 rounded-xl border p-4 text-left transition-all ${
         active
           ? "border-primary bg-primary/15 ring-2 ring-primary/40"
           : "border-primary/30 bg-primary/5 hover:border-primary/60 hover:bg-primary/10"
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="text-lg">🧠</span>
-        <span className="shrink-0 rounded-full bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-          AI 분석
-        </span>
+        <span className="text-lg">{voiceEnabled ? "🧠+🔊" : "🧠"}</span>
+        <div className="flex items-center gap-1.5">
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              e.stopPropagation();
+              onVoiceToggle();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.stopPropagation();
+                onVoiceToggle();
+              }
+            }}
+            className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium transition-colors cursor-pointer ${
+              voiceEnabled
+                ? "bg-primary/20 text-primary"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+            title={voiceEnabled ? "음성 끄기" : "음성 켜기"}
+          >
+            🔊 {voiceEnabled ? "ON" : "OFF"}
+          </span>
+          <span className="shrink-0 rounded-full bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+            AI 분석
+          </span>
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -152,10 +186,14 @@ function TemplateGallery({
   onSelect,
   onSmartClick,
   isSmartActive,
+  voiceEnabled,
+  onVoiceToggle,
 }: {
   onSelect: (example: RemotionExample) => void;
   onSmartClick: () => void;
   isSmartActive: boolean;
+  voiceEnabled: boolean;
+  onVoiceToggle: () => void;
 }) {
   const [activeTier, setActiveTier] = useState(0);
   const exampleMap = new Map(examples.map((e) => [e.id, e]));
@@ -194,7 +232,7 @@ function TemplateGallery({
       {/* Cards grid */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {activeTier === 0 && (
-          <SmartCard onClick={onSmartClick} active={isSmartActive} />
+          <SmartCard onClick={onSmartClick} active={isSmartActive} voiceEnabled={voiceEnabled} onVoiceToggle={onVoiceToggle} />
         )}
         {tieredExamples[activeTier].examples.map((example) => (
           <TemplateCard
@@ -394,6 +432,7 @@ const Home: NextPage = () => {
   const [isSmartSelected, setIsSmartSelected] = useState(false);
   const [smartAnalyzing, setSmartAnalyzing] = useState(false);
   const [smartError, setSmartError] = useState("");
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
 
   const runSmartAnalysis = useCallback(async (input: string) => {
     setSmartError("");
@@ -435,12 +474,13 @@ const Home: NextPage = () => {
       // Step 3: Store in sessionStorage and navigate
       sessionStorage.setItem("smartAnalysis", JSON.stringify(data));
       sessionStorage.setItem("smartStyles", JSON.stringify(stylesData));
+      sessionStorage.setItem("smartVoiceEnabled", JSON.stringify(voiceEnabled));
       router.push("/smart-result");
     } catch (e) {
       setSmartError(e instanceof Error ? e.message : "오류가 발생했습니다.");
       setSmartAnalyzing(false);
     }
-  }, [router]);
+  }, [router, voiceEnabled]);
 
   const handleNavigate = useCallback(
     (
@@ -521,6 +561,8 @@ const Home: NextPage = () => {
         onSelect={handleTemplateSelect}
         onSmartClick={handleSmartClick}
         isSmartActive={isSmartSelected}
+        voiceEnabled={voiceEnabled}
+        onVoiceToggle={() => setVoiceEnabled((v) => !v)}
       />
 
       <ProjectHistory />

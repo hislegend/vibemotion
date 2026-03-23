@@ -24,6 +24,11 @@ interface StyleResult {
   reason: string;
 }
 
+interface ScriptVersion {
+  label: string;
+  script: string;
+}
+
 /* ─── constants ─── */
 
 const STYLE_LABELS: Record<string, string> = {
@@ -59,6 +64,11 @@ function Spinner({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+function getPreviewLines(script: string, count = 3): string {
+  const lines = script.split("\n").filter((l) => l.trim() && !l.trim().startsWith("["));
+  return lines.slice(0, count).join("\n");
+}
+
 /* ─── page ─── */
 
 export default function SmartResultPage() {
@@ -68,13 +78,17 @@ export default function SmartResultPage() {
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [duration, setDuration] = useState(30);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [narrationScript, setNarrationScript] = useState("");
+  const [scriptVersions, setScriptVersions] = useState<ScriptVersion[]>([]);
+  const [selectedVersionIdx, setSelectedVersionIdx] = useState<number | null>(null);
+  const [editedScript, setEditedScript] = useState("");
   const [selectedVoiceId, setSelectedVoiceId] = useState(VOICE_OPTIONS[0].voiceId);
   const [generatingVoice, setGeneratingVoice] = useState(false);
   const [generatingScript, setGeneratingScript] = useState(false);
+  const [scriptFetched, setScriptFetched] = useState(false);
 
   const fetchScript = useCallback(async (data: ContentAnalysis) => {
     setGeneratingScript(true);
+    setScriptFetched(false);
     try {
       const res = await fetch("/api/generate-script", {
         method: "POST",
@@ -82,8 +96,14 @@ export default function SmartResultPage() {
         body: JSON.stringify({ analysis: data }),
       });
       if (res.ok) {
-        const text = await res.text();
-        setNarrationScript(text);
+        const json = await res.json();
+        const versions: ScriptVersion[] = json.versions || [];
+        setScriptVersions(versions);
+        if (versions.length > 0) {
+          setSelectedVersionIdx(0);
+          setEditedScript(versions[0].script);
+        }
+        setScriptFetched(true);
       }
     } catch {
       // 실패 시 빈 스크립트 유지
@@ -97,6 +117,7 @@ export default function SmartResultPage() {
     try {
       const raw = sessionStorage.getItem("smartAnalysis");
       const rawStyles = sessionStorage.getItem("smartStyles");
+      const rawVoice = sessionStorage.getItem("smartVoiceEnabled");
       if (!raw) {
         router.replace("/");
         return;
@@ -105,29 +126,32 @@ export default function SmartResultPage() {
       setAnalysis(data);
       setDuration(data.suggestedDuration);
 
+      const isVoice = rawVoice ? JSON.parse(rawVoice) === true : false;
+      setVoiceEnabled(isVoice);
+
       if (rawStyles) {
         const parsed: StyleResult[] = JSON.parse(rawStyles);
         setStyles(parsed);
         const first = parsed[0]?.style || "cinematic";
         setSelectedStyle(first);
+
+        // Voice ON: auto-fetch scripts after loading
+        if (isVoice) {
+          fetchScript(data);
+        }
       }
     } catch {
       router.replace("/");
     }
-  }, [router]);
+  }, [router, fetchScript]);
 
   const handleStyleSelect = (style: string) => {
     setSelectedStyle(style);
-    if (analysis && voiceEnabled) {
-      fetchScript(analysis);
-    }
   };
 
-  const handleDurationChange = (d: number) => {
-    setDuration(d);
-    if (analysis && voiceEnabled) {
-      fetchScript(analysis);
-    }
+  const handleVersionSelect = (idx: number) => {
+    setSelectedVersionIdx(idx);
+    setEditedScript(scriptVersions[idx].script);
   };
 
   const handleGenerate = async () => {
@@ -136,10 +160,10 @@ export default function SmartResultPage() {
     let voicePromptAddition = "";
     let finalDuration = duration;
 
-    if (voiceEnabled && narrationScript.trim()) {
+    if (voiceEnabled && editedScript.trim()) {
       setGeneratingVoice(true);
       try {
-        const ttsText = stripSceneMarkers(narrationScript);
+        const ttsText = stripSceneMarkers(editedScript);
         const ttsRes = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -170,7 +194,7 @@ export default function SmartResultPage() {
             reader.readAsDataURL(audioBlob);
           });
           sessionStorage.setItem("voiceAudio", audioDataUrl);
-          voicePromptAddition = `\n\nThis video has ${voiceDuration}초 narration audio. The video duration MUST be exactly ${voiceDuration} seconds (${voiceDuration * 30} frames at 30fps). Distribute scenes evenly across the narration. Sync scene transitions with the narration timing.\n\nNarration script:\n${narrationScript.trim()}`;
+          voicePromptAddition = `\n\nThis video has ${voiceDuration}초 narration audio. The video duration MUST be exactly ${voiceDuration} seconds (${voiceDuration * 30} frames at 30fps). Distribute scenes evenly across the narration. Sync scene transitions with the narration timing.\n\nNarration script:\n${editedScript.trim()}`;
         }
       } catch {
         // TTS 실패 시 음성 없이 진행
@@ -210,7 +234,12 @@ export default function SmartResultPage() {
           >
             ← 다시 입력
           </button>
-          <h1 className="text-2xl font-bold text-foreground">📋 콘텐츠 분석 결과</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            📋 콘텐츠 분석 결과
+            {voiceEnabled && (
+              <span className="ml-2 text-base font-normal text-primary">🔊 음성 모드</span>
+            )}
+          </h1>
         </div>
 
         {/* Analysis Card */}
@@ -281,62 +310,102 @@ export default function SmartResultPage() {
           </div>
         )}
 
-        {/* Duration Selector */}
-        <div>
-          <h3 className="mb-4 text-base font-semibold text-foreground">⏱ 영상 길이</h3>
-          <div className="flex gap-2">
-            {DURATION_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => handleDurationChange(opt.value)}
-                className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
-                  duration === opt.value
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* ─── FLOW A: Voice OFF ─── */}
+        {!voiceEnabled && (
+          <>
+            <div>
+              <h3 className="mb-4 text-base font-semibold text-foreground">⏱ 영상 길이</h3>
+              <div className="flex gap-2">
+                {DURATION_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setDuration(opt.value)}
+                    className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
+                      duration === opt.value
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        {/* Voice / TTS */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => {
-                const next = !voiceEnabled;
-                setVoiceEnabled(next);
-                if (next && analysis && !narrationScript) {
-                  fetchScript(analysis);
-                }
-              }}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                voiceEnabled ? "bg-primary" : "bg-secondary"
-              }`}
+              onClick={handleGenerate}
+              disabled={!selectedStyle}
+              className="w-full rounded-xl bg-primary py-4 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
             >
-              <span
-                className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
-                  voiceEnabled ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
+              🎬 영상 만들기
             </button>
-            <span className="text-base font-semibold text-foreground">🔊 음성 추가</span>
-          </div>
+          </>
+        )}
 
-          {voiceEnabled && (
-            <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-4">
+        {/* ─── FLOW B: Voice ON ─── */}
+        {voiceEnabled && (
+          <>
+            {/* Script generating spinner */}
+            {generatingScript && (
+              <div className="flex flex-col items-center gap-3 py-8">
+                <Spinner className="h-8 w-8 text-primary" />
+                <p className="text-sm text-muted-foreground">📝 대본을 생성하고 있습니다...</p>
+              </div>
+            )}
+
+            {/* Script version picker */}
+            {!generatingScript && scriptFetched && scriptVersions.length > 0 && (
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">
-                  음성 선택
+                <h3 className="mb-4 text-base font-semibold text-foreground">📝 대본 선택</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {scriptVersions.map((ver, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleVersionSelect(idx)}
+                      className={`flex flex-col gap-2 rounded-xl border p-4 text-left transition-all ${
+                        selectedVersionIdx === idx
+                          ? "border-primary bg-primary/10 ring-2 ring-primary/40"
+                          : "border-border bg-secondary/50 hover:border-primary/40"
+                      }`}
+                    >
+                      <span className="text-sm font-semibold text-foreground">{ver.label}</span>
+                      <p className="text-xs text-muted-foreground leading-snug line-clamp-3 whitespace-pre-line">
+                        {getPreviewLines(ver.script)}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Editable script textarea */}
+            {!generatingScript && scriptFetched && selectedVersionIdx !== null && (
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-foreground">
+                  ✏️ 대본 수정
+                </label>
+                <textarea
+                  value={editedScript}
+                  onChange={(e) => setEditedScript(e.target.value)}
+                  rows={8}
+                  className="w-full rounded-xl border border-border bg-secondary/30 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:border-primary/60 focus:outline-none"
+                />
+              </div>
+            )}
+
+            {/* Voice selector */}
+            {!generatingScript && scriptFetched && (
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-foreground">
+                  🔊 음성 선택
                 </label>
                 <select
                   value={selectedVoiceId}
                   onChange={(e) => setSelectedVoiceId(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  className="w-full rounded-xl border border-border bg-secondary/30 px-4 py-3 text-sm text-foreground"
                 >
                   {VOICE_OPTIONS.map((v) => (
                     <option key={v.voiceId} value={v.voiceId}>
@@ -345,43 +414,27 @@ export default function SmartResultPage() {
                   ))}
                 </select>
               </div>
+            )}
 
-              <div>
-                <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">
-                  내레이션 스크립트 (수정 가능)
-                </label>
-                {generatingScript ? (
-                  <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-4 text-sm text-muted-foreground">
-                    <Spinner /> 대본 생성 중...
-                  </div>
+            {/* Generate button */}
+            {!generatingScript && scriptFetched && (
+              <button
+                type="button"
+                onClick={handleGenerate}
+                disabled={!selectedStyle || generatingVoice || !editedScript.trim()}
+                className="w-full rounded-xl bg-primary py-4 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
+              >
+                {generatingVoice ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Spinner /> 음성 생성 중...
+                  </span>
                 ) : (
-                  <textarea
-                    value={narrationScript}
-                    onChange={(e) => setNarrationScript(e.target.value)}
-                    rows={6}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:border-primary/60 focus:outline-none"
-                  />
+                  "🎬 영상 만들기"
                 )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Generate Button */}
-        <button
-          type="button"
-          onClick={handleGenerate}
-          disabled={!selectedStyle || generatingVoice || generatingScript}
-          className="w-full rounded-xl bg-primary py-4 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
-        >
-          {generatingVoice ? (
-            <span className="flex items-center justify-center gap-2">
-              <Spinner /> 음성 생성 중...
-            </span>
-          ) : (
-            "🎬 영상 만들기"
-          )}
-        </button>
+              </button>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
