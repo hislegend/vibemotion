@@ -484,7 +484,13 @@ The previous code failed to compile with this error:
 ${errorCorrection.error}
 \`\`\`
 
-CRITICAL: Fix this compilation error. Common issues include:
+CRITICAL: Fix this compilation error with TARGETED EDITS ONLY.
+- Return type: "edit"
+- Do NOT return type: "full"
+- Preserve the existing scene structure, layout, and animation plan
+- Change only the smallest possible lines needed to compile
+
+Common issues include:
 - Syntax errors (missing brackets, semicolons)
 - Invalid JSX (unclosed tags, invalid attributes)
 - Undefined variables or imports

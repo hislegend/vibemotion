@@ -247,6 +247,9 @@ function GeneratePageContent() {
   // Handle message sent for history
   const handleMessageSent = useCallback(
     (promptText: string, attachedImages?: string[]) => {
+      // Fresh user prompts should reset previous auto-correction context.
+      // Silent retries do not call this callback, so their attempt count is preserved.
+      setErrorCorrection(null);
       addUserMessage(promptText, attachedImages);
     },
     [addUserMessage],
@@ -316,12 +319,12 @@ function GeneratePageContent() {
 
   const handleStreamingChange = useCallback((streaming: boolean) => {
     setIsStreaming(streaming);
-    // Clear errors when starting a new generation
+    // Clear transient errors when starting a new generation.
+    // Do NOT clear errorCorrection here: silent auto-correction retries need
+    // to keep their accumulated attempt count across generations.
     if (streaming) {
       setGenerationError(null);
       setRuntimeError(null);
-      // Reset error correction state for fresh retry attempts
-      setErrorCorrection(null);
     }
   }, []);
 
