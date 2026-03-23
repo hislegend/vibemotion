@@ -381,6 +381,7 @@ function SmartInlineFlow({
     if (!analysis || !selectedStyle) return;
 
     let voicePromptAddition = "";
+    let finalDuration = duration;
 
     if (voiceEnabled && narrationScript.trim()) {
       setGeneratingVoice(true);
@@ -395,6 +396,22 @@ function SmartInlineFlow({
         });
         if (ttsRes.ok) {
           const audioBlob = await ttsRes.blob();
+          // Get audio duration
+          const audioBlobUrl = URL.createObjectURL(audioBlob);
+          const audioDuration = await new Promise<number>((resolve) => {
+            const audio = new Audio(audioBlobUrl);
+            audio.addEventListener("loadedmetadata", () => {
+              resolve(Math.ceil(audio.duration));
+              URL.revokeObjectURL(audioBlobUrl);
+            });
+            audio.addEventListener("error", () => {
+              resolve(duration); // fallback to selected duration
+              URL.revokeObjectURL(audioBlobUrl);
+            });
+          });
+          // Override duration to match voice length (add 2s buffer for intro/outro)
+          const voiceDuration = audioDuration + 2;
+          setDuration(voiceDuration);
           // Convert blob to base64 data URL (persists across page navigation)
           const reader = new FileReader();
           const audioDataUrl = await new Promise<string>((resolve) => {
@@ -402,7 +419,9 @@ function SmartInlineFlow({
             reader.readAsDataURL(audioBlob);
           });
           sessionStorage.setItem("voiceAudio", audioDataUrl);
-          voicePromptAddition = "\n\nThis video has narration audio. Sync scene transitions with the narration timing.";
+          voicePromptAddition = `\n\nThis video has ${voiceDuration}초 narration audio. The video duration MUST be exactly ${voiceDuration} seconds (${voiceDuration * 30} frames at 30fps). Distribute scenes evenly across the narration. Sync scene transitions with the narration timing.\n\nNarration script:\n${narrationScript.trim()}`;
+          // Use voice duration for the URL params
+          finalDuration = voiceDuration;
         }
       } catch {
         // TTS 실패 시 음성 없이 진행
@@ -411,12 +430,12 @@ function SmartInlineFlow({
       }
     }
 
-    const prompt = generateRemotionPrompt(analysis, selectedStyle, duration) + voicePromptAddition;
+    const prompt = generateRemotionPrompt(analysis, selectedStyle, finalDuration) + voicePromptAddition;
     const params = new URLSearchParams({
       prompt,
       model: "claude-sonnet-4-6",
       aspectRatio: "9:16",
-      duration: String(duration),
+      duration: String(finalDuration),
       ...(voiceEnabled ? { voice: "true" } : {}),
     });
     onNavigating();
