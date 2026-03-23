@@ -83,8 +83,8 @@ export const MyAnimation = () => {
 
 export const progressBarExample: RemotionExample = {
   id: "progress-bar",
-  name: "Progress Bar",
-  description: "Animated progress bar from 0 to 100%",
+  name: "프로그레스 바",
+  description: "0%에서 100%까지 애니메이션 프로그레스 바",
   category: "Other",
   durationInFrames: 180,
   fps: 30,

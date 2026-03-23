@@ -62,6 +62,8 @@ export const useRendering = ({
           fps,
           durationInFrames,
         },
+        videoCodec: "h264",
+        container: "mp4",
         inputProps: {},
         onProgress: ({ progress }) => {
           setState({ status: "rendering", progress });

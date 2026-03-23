@@ -31,7 +31,7 @@ export const DownloadButton: React.FC<{
       <Button variant="secondary" onClick={undo}>
         <UndoIcon></UndoIcon>
       </Button>
-      <a href={state.url} download="vibemotion.webm">
+      <a href={state.url} download="vibemotion.mp4">
         <Button>
           영상 다운로드
           <span className="ml-geist-quarter">

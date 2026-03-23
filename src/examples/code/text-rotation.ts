@@ -74,8 +74,8 @@ export const MyAnimation = () => {
 
 export const textRotationExample: RemotionExample = {
   id: "text-rotation",
-  name: "Text Rotation",
-  description: "Rotating words with dissolve and blur effects",
+  name: "텍스트 로테이션",
+  description: "디졸브와 블러 효과로 회전하는 단어",
   category: "Text",
   durationInFrames: 240,
   fps: 30,

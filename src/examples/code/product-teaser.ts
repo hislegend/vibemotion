@@ -266,9 +266,9 @@ export const MyAnimation = () => {
 
 export const productTeaserExample: RemotionExample = {
   id: "product-teaser",
-  name: "Product Teaser",
+  name: "제품 티저",
   description:
-    "Product/app teaser with 3D-tilted phone device mockup, headline, CTA button, bokeh background, and spring entrance animations.",
+    "디바이스 목업 + 한줄 카피 + CTA. 인스타 스토리, 유튜브 범퍼용 7-10초",
   code: productTeaserCode,
   durationInFrames: 270,
   fps: 30,

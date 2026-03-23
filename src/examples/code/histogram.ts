@@ -94,8 +94,8 @@ export const MyAnimation = () => {
 
 export const histogramExample: RemotionExample = {
   id: "histogram",
-  name: "Histogram",
-  description: "Animated bar chart using @remotion/shapes",
+  name: "히스토그램",
+  description: "@remotion/shapes로 만든 애니메이션 바 차트",
   category: "Charts",
   durationInFrames: 120,
   fps: 30,

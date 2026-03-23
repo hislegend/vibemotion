@@ -107,8 +107,8 @@ export const MyAnimation = () => {
 
 export const fallingSpheresExample: RemotionExample = {
   id: "falling-spheres",
-  name: "Golden Bouncing Spheres",
-  description: "Glowing golden spheres with physics and orbiting camera",
+  name: "떨어지는 구체",
+  description: "물리 시뮬레이션 황금 구체와 궤도 카메라",
   category: "3D",
   durationInFrames: 450,
   fps: 60,

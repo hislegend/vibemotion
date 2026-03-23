@@ -158,9 +158,9 @@ export const MyAnimation = () => {
 
 export const dataShowcaseExample: RemotionExample = {
   id: "data-showcase",
-  name: "Data Showcase",
+  name: "임팩트 숫자",
   description:
-    "Impact number showcase on indigo-violet gradient with three large count-up numbers (Users, Revenue, Growth), spring highlight underlines, and glass-morphism cards. Crabs brand style, 9:16 vertical.",
+    "인디고-바이올렛 그라디언트 위 카운트업 숫자 쇼케이스. 유저/매출/성장률, 하이라이트 언더라인, 글래스 카드",
   code: dataShowcaseCode,
   durationInFrames: 270,
   fps: 30,

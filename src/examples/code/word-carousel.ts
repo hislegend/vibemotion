@@ -121,8 +121,8 @@ export const MyAnimation = () => {
 
 export const wordCarouselExample: RemotionExample = {
   id: "word-carousel",
-  name: "Word Carousel",
-  description: "Rotating words with crossfade and blur transitions",
+  name: "워드 캐러셀",
+  description: "크로스페이드와 블러 전환으로 회전하는 단어",
   category: "Text",
   durationInFrames: 200,
   fps: 30,

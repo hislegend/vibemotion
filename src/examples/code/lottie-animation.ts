@@ -80,8 +80,8 @@ export const MyAnimation = () => {
 
 export const lottieAnimationExample: RemotionExample = {
   id: "lottie-animation",
-  name: "Lottie Fish Loader",
-  description: "Glowing fish loader animation from LottieFiles",
+  name: "Lottie 애니메이션",
+  description: "LottieFiles에서 가져온 물고기 로더 애니메이션",
   category: "Animation",
   durationInFrames: 180,
   fps: 60,

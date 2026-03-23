@@ -198,9 +198,9 @@ export const MyAnimation = () => {
 
 export const testimonialCardExample: RemotionExample = {
   id: "testimonial-card",
-  name: "Testimonial Card",
+  name: "고객 후기 카드",
   description:
-    "Elegant customer testimonial on warm beige with spring-animated quote icon, typing review text, staggered star ratings, and smooth name/title fade-in. Minimal premium aesthetic.",
+    "따뜻한 베이지 위 고객 리뷰 타이핑, 별점 스태거, 인용 아이콘 스프링, 미니멀 프리미엄",
   code: testimonialCardCode,
   durationInFrames: 270,
   fps: 30,

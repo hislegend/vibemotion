@@ -253,9 +253,9 @@ export const MyAnimation = () => {
 
 export const appPromoSocialExample: RemotionExample = {
   id: "app-promo-social",
-  name: "App Promo Social",
+  name: "앱 프로모 - SNS",
   description:
-    "SNS app promotional video with Instagram/TikTok-style feed UI, story rings, 3D tilted phone mockup on lavender gradient, and staggered spring animations across 3 scenes.",
+    "SNS 앱 프로모. 인스타/틱톡 스타일 피드, 스토리 링, 라벤더 그라디언트, 3D 폰 목업, 스태거 스프링",
   code: appPromoSocialCode,
   durationInFrames: 300,
   fps: 30,

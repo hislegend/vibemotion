@@ -128,9 +128,9 @@ export const MyAnimation = () => {
 
 export const logoStingerExample: RemotionExample = {
   id: "logo-stinger",
-  name: "Logo Stinger",
+  name: "로고 스팅어",
   description:
-    "Logo stinger / brand bumper with spring-scaled logo entrance, glow pulse, tagline fade-in, and cinematic dark gradient background.",
+    "브랜드 로고 임팩트 등장 + 태그라인 페이드. 광고/릴스/프레젠테이션용 5-8초",
   code: logoStingerCode,
   durationInFrames: 210,
   fps: 30,

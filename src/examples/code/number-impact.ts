@@ -184,9 +184,9 @@ export const MyAnimation = () => {
 
 export const numberImpactExample: RemotionExample = {
   id: "number-impact",
-  name: "Number Impact",
+  name: "숫자 임팩트",
   description:
-    "Single impact number with eased count-up animation, landing pulse, underline reveal, and label stagger on dark background.",
+    "강렬한 숫자 카운트업 + 레이블. +300% 성장, 10만 유저 같은 임팩트용 5-8초",
   code: numberImpactCode,
   durationInFrames: 210,
   fps: 30,

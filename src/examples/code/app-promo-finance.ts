@@ -668,8 +668,8 @@ export const MyAnimation = () => {
 
 export const appPromoFinanceExample: RemotionExample = {
   id: "app-promo-finance",
-  name: "App Promo - Finance",
-  description: "A polished app promo video for a finance tracking app. Features 3D tilted phone mockup with detailed CSS UI (dashboard, spending cards, transaction list, navigation bar), pastel gradient backgrounds, bokeh particles, staggered spring animations, and 3 scenes with smooth crossfade transitions.",
+  name: "앱 프로모 - 금융",
+  description: "금융 앱 프로모 영상. 3D 폰 목업, 대시보드 UI, 파스텔 그라디언트, 보케 파티클, 스프링 애니메이션, 3씬 크로스페이드",
   code: appPromoFinanceCode,
   durationInFrames: 300,
   fps: 30,

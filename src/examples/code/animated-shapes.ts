@@ -84,8 +84,8 @@ export const MyAnimation = () => {
 
 export const animatedShapesExample: RemotionExample = {
   id: "animated-shapes",
-  name: "Animated Shapes",
-  description: "Bouncing and rotating SVG shapes with spring animations",
+  name: "애니메이션 도형",
+  description: "스프링 애니메이션으로 튀어오르고 회전하는 SVG 도형",
   category: "Other",
   durationInFrames: 180,
   fps: 30,
