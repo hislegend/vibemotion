@@ -8,10 +8,17 @@ import {
 } from "@/examples/code";
 import { generateRemotionPrompt } from "@/lib/generate-prompt";
 import { generateNarrationScript } from "@/lib/generate-script";
+import {
+  deleteProject,
+  getProjects,
+  renameProject,
+  type Project,
+} from "@/lib/project-storage";
 import type { AspectRatioId, ModelId } from "@/types/generation";
+import { X } from "lucide-react";
 import type { NextPage } from "next";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /* ─── types ─── */
 
@@ -618,6 +625,182 @@ function SmartInlineFlow({
   );
 }
 
+/* ─── Relative time ─── */
+
+function relativeTime(ts: number): string {
+  const diff = Date.now() - ts;
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return "방금 전";
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}분 전`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}시간 전`;
+  const day = Math.floor(hr / 24);
+  if (day === 1) return "어제";
+  if (day < 30) return `${day}일 전`;
+  const mon = Math.floor(day / 30);
+  return `${mon}개월 전`;
+}
+
+/* ─── Project History ─── */
+
+function ProjectCard({
+  project,
+  onClick,
+  onDelete,
+  onRename,
+}: {
+  project: Project;
+  onClick: () => void;
+  onDelete: () => void;
+  onRename: (title: string) => void;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(project.title);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing) inputRef.current?.focus();
+  }, [isEditing]);
+
+  const commitRename = () => {
+    const t = editTitle.trim();
+    if (t && t !== project.title) onRename(t);
+    setIsEditing(false);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group relative flex flex-col gap-2 rounded-xl border border-border bg-secondary/50 p-4 text-left transition-all hover:border-primary/40 hover:bg-secondary"
+    >
+      {/* Delete */}
+      <span
+        role="button"
+        tabIndex={0}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (confirm("이 프로젝트를 삭제할까요?")) onDelete();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.stopPropagation();
+            if (confirm("이 프로젝트를 삭제할까요?")) onDelete();
+          }
+        }}
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
+      >
+        <X className="w-3.5 h-3.5" />
+      </span>
+
+      {/* Title */}
+      {isEditing ? (
+        <input
+          ref={inputRef}
+          value={editTitle}
+          onChange={(e) => setEditTitle(e.target.value)}
+          onBlur={commitRename}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commitRename();
+            if (e.key === "Escape") setIsEditing(false);
+          }}
+          onClick={(e) => e.stopPropagation()}
+          className="text-sm font-semibold text-foreground bg-transparent border-b border-primary outline-none w-full"
+        />
+      ) : (
+        <h3
+          className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setEditTitle(project.title);
+            setIsEditing(true);
+          }}
+          title="더블클릭으로 이름 변경"
+        >
+          {project.title}
+        </h3>
+      )}
+
+      {/* Meta */}
+      <p className="text-xs text-muted-foreground line-clamp-1">
+        {project.prompt.slice(0, 60)}
+      </p>
+
+      {/* Badges */}
+      <div className="flex items-center gap-2 mt-auto pt-1">
+        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+          {project.duration}s
+        </span>
+        <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
+          {project.aspectRatio}
+        </span>
+        <span className="ml-auto text-xs text-muted-foreground">
+          {relativeTime(project.updatedAt)}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function ProjectHistory() {
+  const router = useRouter();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    setProjects(getProjects());
+  }, []);
+
+  if (projects.length === 0) return null;
+
+  const visible = showAll ? projects : projects.slice(0, 12);
+
+  return (
+    <section className="mx-auto w-full max-w-4xl px-4 pb-16">
+      <div className="mb-6 text-center">
+        <h2 className="text-xl font-bold text-foreground">📁 내 프로젝트</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          이전에 만든 영상을 이어서 수정할 수 있습니다
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {visible.map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onClick={() => router.push(`/generate?project=${project.id}`)}
+            onDelete={() => {
+              deleteProject(project.id);
+              setProjects((prev) => prev.filter((p) => p.id !== project.id));
+            }}
+            onRename={(title) => {
+              renameProject(project.id, title);
+              setProjects((prev) =>
+                prev.map((p) => (p.id === project.id ? { ...p, title } : p)),
+              );
+            }}
+          />
+        ))}
+      </div>
+
+      {!showAll && projects.length > 12 && (
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="text-sm text-primary hover:underline"
+          >
+            더보기 ({projects.length - 12}개)
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
 /* ─── Main page ─── */
 
 const Home: NextPage = () => {
@@ -681,6 +864,8 @@ const Home: NextPage = () => {
             onSelect={handleTemplateSelect}
             onSmartClick={handleSmartClick}
           />
+
+          <ProjectHistory />
         </>
       )}
 

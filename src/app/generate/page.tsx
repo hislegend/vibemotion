@@ -13,6 +13,12 @@ import { examples } from "../../examples/code";
 import { useAnimationState } from "../../hooks/useAnimationState";
 import { useAutoCorrection } from "../../hooks/useAutoCorrection";
 import { useConversationState } from "../../hooks/useConversationState";
+import {
+  generateTitle,
+  getProject,
+  saveProject,
+  updateProject,
+} from "../../lib/project-storage";
 import type {
   AssistantMetadata,
   EditOperation,
@@ -30,11 +36,19 @@ const MAX_CORRECTION_ATTEMPTS = 3;
 
 function GeneratePageContent() {
   const searchParams = useSearchParams();
-  const initialPrompt = searchParams.get("prompt") || "";
-  const initialModel = searchParams.get("model") || undefined;
-  const durationParam = searchParams.get("duration");
-  const hasVoice = searchParams.get("voice") === "true";
-  const aspectRatioParam = (searchParams.get("aspectRatio") ||
+  const projectParam = searchParams.get("project");
+  const loadedProject = projectParam ? getProject(projectParam) : null;
+
+  const initialPrompt = loadedProject?.prompt || searchParams.get("prompt") || "";
+  const initialModel = loadedProject?.model || searchParams.get("model") || undefined;
+  const durationParam = loadedProject
+    ? String(loadedProject.duration)
+    : searchParams.get("duration");
+  const hasVoice = loadedProject?.voiceAudioUrl
+    ? true
+    : searchParams.get("voice") === "true";
+  const aspectRatioParam = (loadedProject?.aspectRatio ||
+    searchParams.get("aspectRatio") ||
     DEFAULT_ASPECT_RATIO) as AspectRatioId;
   const aspectRatioConfig = ASPECT_RATIOS.find(
     (ar) => ar.id === aspectRatioParam,
@@ -59,16 +73,21 @@ function GeneratePageContent() {
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
   const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(
+    loadedProject?.id ?? null,
+  );
 
-  // Load voice audio from sessionStorage if available
+  // Load voice audio from project or sessionStorage
   useEffect(() => {
-    if (hasVoice) {
+    if (loadedProject?.voiceAudioUrl) {
+      setVoiceAudioUrl(loadedProject.voiceAudioUrl);
+    } else if (hasVoice) {
       const storedAudio = sessionStorage.getItem("voiceAudio");
       if (storedAudio) {
         setVoiceAudioUrl(storedAudio);
       }
     }
-  }, [hasVoice]);
+  }, [hasVoice, loadedProject]);
   const [hasGeneratedOnce, setHasGeneratedOnce] = useState(false);
   const [generationError, setGenerationError] = useState<{
     message: string;
@@ -108,7 +127,16 @@ function GeneratePageContent() {
     isCompiling,
     setCode,
     compileCode,
-  } = useAnimationState(examples[0]?.code || "");
+  } = useAnimationState(loadedProject?.code || examples[0]?.code || "");
+
+  // Compile loaded project code on mount
+  useEffect(() => {
+    if (loadedProject?.code) {
+      compileCode(loadedProject.code);
+      setHasGeneratedOnce(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Runtime errors from the Player (e.g., "cannot access variable before initialization")
   const [runtimeError, setRuntimeError] = useState<string | null>(null);
@@ -213,15 +241,48 @@ function GeneratePageContent() {
     [addUserMessage],
   );
 
-  // Handle generation complete for history
+  // Handle generation complete for history + auto-save project
   const handleGenerationComplete = useCallback(
     (generatedCode: string, summary?: string, metadata?: AssistantMetadata) => {
       const content =
         summary || "애니메이션을 생성했습니다. 추가 수정이 필요하신가요?";
       addAssistantMessage(content, generatedCode, metadata);
       markAsAiGenerated();
+
+      // Auto-save project
+      const durationSec = Math.round(durationInFrames / fps);
+      const currentVoice = voiceAudioUrl ?? undefined;
+      if (currentProjectId) {
+        updateProject(currentProjectId, {
+          code: generatedCode,
+          duration: durationSec,
+          voiceAudioUrl: currentVoice,
+        });
+      } else {
+        const promptText = initialPrompt || "Untitled";
+        const saved = saveProject({
+          title: generateTitle(promptText),
+          prompt: promptText,
+          code: generatedCode,
+          model: initialModel || "claude-sonnet-4-6",
+          aspectRatio: aspectRatioParam,
+          duration: durationSec,
+          voiceAudioUrl: currentVoice,
+        });
+        setCurrentProjectId(saved.id);
+      }
     },
-    [addAssistantMessage, markAsAiGenerated],
+    [
+      addAssistantMessage,
+      markAsAiGenerated,
+      currentProjectId,
+      durationInFrames,
+      fps,
+      voiceAudioUrl,
+      initialPrompt,
+      initialModel,
+      aspectRatioParam,
+    ],
   );
 
   // Handle conversation response (AI replied with text, not code)
