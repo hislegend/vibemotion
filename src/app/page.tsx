@@ -171,12 +171,16 @@ function AnalysisCard({ analysis }: { analysis: ContentAnalysis }) {
 
 /* ─── Template components ─── */
 
-function SmartCard({ onClick }: { onClick: () => void }) {
+function SmartCard({ onClick, active }: { onClick: () => void; active: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group flex flex-col gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-left transition-all hover:border-primary/60 hover:bg-primary/10"
+      className={`group flex flex-col gap-3 rounded-xl border p-4 text-left transition-all ${
+        active
+          ? "border-primary bg-primary/15 ring-2 ring-primary/40"
+          : "border-primary/30 bg-primary/5 hover:border-primary/60 hover:bg-primary/10"
+      }`}
     >
       <div className="flex items-start justify-between gap-2">
         <span className="text-lg">🧠</span>
@@ -230,9 +234,11 @@ function TemplateCard({
 function TemplateGallery({
   onSelect,
   onSmartClick,
+  isSmartActive,
 }: {
   onSelect: (example: RemotionExample) => void;
   onSmartClick: () => void;
+  isSmartActive: boolean;
 }) {
   const [activeTier, setActiveTier] = useState(0);
   const exampleMap = new Map(examples.map((e) => [e.id, e]));
@@ -271,7 +277,7 @@ function TemplateGallery({
       {/* Cards grid */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {activeTier === 0 && (
-          <SmartCard onClick={onSmartClick} />
+          <SmartCard onClick={onSmartClick} active={isSmartActive} />
         )}
         {tieredExamples[activeTier].examples.map((example) => (
           <TemplateCard
@@ -774,15 +780,27 @@ const Home: NextPage = () => {
 
   const handleTemplateSelect = (example: RemotionExample) => {
     setSelectedTemplate(example);
+    setIsSmartSelected(false); // 일반 템플릿 선택 시 스마트 해제
+    setSmartStep(null);
+    setAnalysis(null);
     setPrefillPrompt(`"${example.name}" 템플릿 기반으로: `);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSmartClick = () => {
-    setIsSmartSelected(true);
-    setSelectedTemplate(null);
-    setPrefillPrompt(""); // User types their own content
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (isSmartSelected) {
+      // 이미 선택됨 → 해제 (토글)
+      setIsSmartSelected(false);
+      setSmartStep(null);
+      setAnalysis(null);
+      setStyles([]);
+      setSelectedStyle(null);
+      setSmartError("");
+    } else {
+      setIsSmartSelected(true);
+      setSelectedTemplate(null);
+      setPrefillPrompt("");
+    }
   };
 
   const handleBackToNormal = () => {
@@ -920,6 +938,7 @@ const Home: NextPage = () => {
       <TemplateGallery
         onSelect={handleTemplateSelect}
         onSmartClick={handleSmartClick}
+        isSmartActive={isSmartSelected}
       />
 
       <ProjectHistory />
