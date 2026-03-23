@@ -52,9 +52,6 @@ interface LandingPageInputProps {
   showCodeExamplesLink?: boolean;
   prefillPrompt?: string;
   onPrefillConsumed?: () => void;
-  smartMode?: boolean;
-  onSmartToggle?: () => void;
-  analyzing?: boolean;
 }
 
 export function LandingPageInput({
@@ -63,9 +60,6 @@ export function LandingPageInput({
   showCodeExamplesLink = false,
   prefillPrompt,
   onPrefillConsumed,
-  smartMode = false,
-  onSmartToggle,
-  analyzing = false,
 }: LandingPageInputProps) {
   const [prompt, setPrompt] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -253,23 +247,6 @@ export function LandingPageInput({
             </div>
 
             <div className="flex items-center gap-1">
-              {onSmartToggle && (
-                <button
-                  type="button"
-                  onClick={onSmartToggle}
-                  disabled={isNavigating}
-                  className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
-                    smartMode
-                      ? "bg-primary/20 text-primary ring-1 ring-primary/40"
-                      : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
-                  }`}
-                  title={smartMode ? "스마트 분석 켜짐" : "스마트 분석 꺼짐"}
-                >
-                  🧠
-                  {smartMode && <span>분석</span>}
-                </button>
-              )}
-
               <Button
                 type="button"
                 variant="ghost"
@@ -286,7 +263,7 @@ export function LandingPageInput({
                 type="submit"
                 size="icon-sm"
                 disabled={!prompt.trim() || isNavigating}
-                loading={isNavigating || analyzing}
+                loading={isNavigating}
                 className="bg-foreground text-background hover:bg-gray-200"
               >
                 <ArrowUp className="w-5 h-5" />
