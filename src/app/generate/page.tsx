@@ -31,6 +31,7 @@ const MAX_CORRECTION_ATTEMPTS = 3;
 function GeneratePageContent() {
   const searchParams = useSearchParams();
   const initialPrompt = searchParams.get("prompt") || "";
+  const initialModel = searchParams.get("model") || undefined;
   const aspectRatioParam = (searchParams.get("aspectRatio") ||
     DEFAULT_ASPECT_RATIO) as AspectRatioId;
   const aspectRatioConfig = ASPECT_RATIOS.find(
@@ -300,6 +301,7 @@ function GeneratePageContent() {
           compositionWidth={compositionWidth}
           compositionHeight={compositionHeight}
           aspectRatio={aspectRatioParam}
+          initialModel={initialModel as import("../../types/generation").ModelId}
         />
 
         {/* Main content area */}

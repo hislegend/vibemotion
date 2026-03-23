@@ -81,6 +81,7 @@ interface ChatSidebarProps {
   compositionWidth?: number;
   compositionHeight?: number;
   aspectRatio?: string;
+  initialModel?: ModelId;
 }
 
 export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
@@ -114,10 +115,11 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
       compositionWidth = 1920,
       compositionHeight = 1080,
       aspectRatio = "16:9",
+      initialModel,
     },
     ref,
   ) {
-    const [model, setModel] = useState<ModelId>(MODELS[1].id);
+    const [model, setModel] = useState<ModelId>(initialModel || MODELS[1].id);
     const promptRef = useRef<string>("");
 
     const { isLoading, runGeneration } = useGenerationApi();
