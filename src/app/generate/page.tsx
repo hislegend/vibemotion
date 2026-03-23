@@ -32,6 +32,7 @@ function GeneratePageContent() {
   const searchParams = useSearchParams();
   const initialPrompt = searchParams.get("prompt") || "";
   const initialModel = searchParams.get("model") || undefined;
+  const durationParam = searchParams.get("duration");
   const aspectRatioParam = (searchParams.get("aspectRatio") ||
     DEFAULT_ASPECT_RATIO) as AspectRatioId;
   const aspectRatioConfig = ASPECT_RATIOS.find(
@@ -45,7 +46,7 @@ function GeneratePageContent() {
   const willAutoStart = Boolean(initialPrompt);
 
   const [durationInFrames, setDurationInFrames] = useState(
-    examples[0]?.durationInFrames || 150,
+    durationParam ? Number(durationParam) * 30 : (examples[0]?.durationInFrames || 150),
   );
   const [fps, setFps] = useState(examples[0]?.fps || 30);
   const [currentFrame, setCurrentFrame] = useState(0);
