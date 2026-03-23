@@ -285,163 +285,49 @@ function TemplateGallery({
   );
 }
 
-/* ─── Smart Inline Flow ─── */
+/* ─── Smart Inline Results ─── */
 
-type SmartStep = "input" | "analyzing" | "result";
+type SmartStep = "analyzing" | "result";
 
-function SmartInlineFlow({
-  initialPrompt,
+function SmartInlineResults({
+  step,
+  analysis,
+  styles,
+  selectedStyle,
+  duration,
+  error,
+  voiceEnabled,
+  narrationScript,
+  selectedVoiceId,
+  generatingVoice,
+  onStyleSelect,
+  onDurationChange,
+  onVoiceToggle,
+  onVoiceIdChange,
+  onNarrationChange,
+  onGenerate,
+  onReanalyze,
   onBack,
-  onNavigating,
 }: {
-  initialPrompt: string;
+  step: SmartStep;
+  analysis: ContentAnalysis | null;
+  styles: StyleResult[];
+  selectedStyle: string | null;
+  duration: number;
+  error: string;
+  voiceEnabled: boolean;
+  narrationScript: string;
+  selectedVoiceId: string;
+  generatingVoice: boolean;
+  onStyleSelect: (style: string) => void;
+  onDurationChange: (d: number) => void;
+  onVoiceToggle: () => void;
+  onVoiceIdChange: (id: string) => void;
+  onNarrationChange: (s: string) => void;
+  onGenerate: () => void;
+  onReanalyze: () => void;
   onBack: () => void;
-  onNavigating: () => void;
 }) {
-  const router = useRouter();
-  const [input, setInput] = useState(initialPrompt);
-  const [step, setStep] = useState<SmartStep>("input");
-  const [analysis, setAnalysis] = useState<ContentAnalysis | null>(null);
-  const [styles, setStyles] = useState<StyleResult[]>([]);
-  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-  const [duration, setDuration] = useState(30);
-  const [error, setError] = useState("");
-
-  // Voice state
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [narrationScript, setNarrationScript] = useState("");
-  const [selectedVoiceId, setSelectedVoiceId] = useState(VOICE_OPTIONS[0].voiceId);
-  const [generatingVoice, setGeneratingVoice] = useState(false);
-
-  const isUrl = input.startsWith("http://") || input.startsWith("https://");
-
-  const handleAnalyze = async () => {
-    if (!input.trim()) return;
-    setError("");
-    setStep("analyzing");
-
-    try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          input: input.trim(),
-          inputType: isUrl ? "url" : "text",
-        }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "분석 실패");
-      }
-
-      const data: ContentAnalysis = await res.json();
-      setAnalysis(data);
-      setDuration(data.suggestedDuration);
-
-      // Auto-fetch styles
-      const styleRes = await fetch("/api/route-style", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (styleRes.ok) {
-        const styleData = await styleRes.json();
-        setStyles(styleData.styles);
-        setSelectedStyle(styleData.styles[0]?.style || null);
-      }
-
-      // Generate narration script
-      const script = generateNarrationScript(data, styles[0]?.style || "cinematic", data.suggestedDuration);
-      setNarrationScript(script);
-
-      setStep("result");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "오류가 발생했습니다.");
-      setStep("input");
-    }
-  };
-
-  const handleStyleSelect = (style: string) => {
-    setSelectedStyle(style);
-    if (analysis) {
-      setNarrationScript(generateNarrationScript(analysis, style, duration));
-    }
-  };
-
-  const handleDurationChange = (d: number) => {
-    setDuration(d);
-    if (analysis && selectedStyle) {
-      setNarrationScript(generateNarrationScript(analysis, selectedStyle, d));
-    }
-  };
-
-  const handleGenerate = async () => {
-    if (!analysis || !selectedStyle) return;
-
-    let voicePromptAddition = "";
-    let finalDuration = duration;
-
-    if (voiceEnabled && narrationScript.trim()) {
-      setGeneratingVoice(true);
-      try {
-        const ttsRes = await fetch("/api/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: narrationScript.trim(),
-            voiceId: selectedVoiceId,
-          }),
-        });
-        if (ttsRes.ok) {
-          const audioBlob = await ttsRes.blob();
-          // Get audio duration
-          const audioBlobUrl = URL.createObjectURL(audioBlob);
-          const audioDuration = await new Promise<number>((resolve) => {
-            const audio = new Audio(audioBlobUrl);
-            audio.addEventListener("loadedmetadata", () => {
-              resolve(Math.ceil(audio.duration));
-              URL.revokeObjectURL(audioBlobUrl);
-            });
-            audio.addEventListener("error", () => {
-              resolve(duration); // fallback to selected duration
-              URL.revokeObjectURL(audioBlobUrl);
-            });
-          });
-          // Override duration to match voice length (add 2s buffer for intro/outro)
-          const voiceDuration = audioDuration + 2;
-          setDuration(voiceDuration);
-          // Convert blob to base64 data URL (persists across page navigation)
-          const reader = new FileReader();
-          const audioDataUrl = await new Promise<string>((resolve) => {
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(audioBlob);
-          });
-          sessionStorage.setItem("voiceAudio", audioDataUrl);
-          voicePromptAddition = `\n\nThis video has ${voiceDuration}초 narration audio. The video duration MUST be exactly ${voiceDuration} seconds (${voiceDuration * 30} frames at 30fps). Distribute scenes evenly across the narration. Sync scene transitions with the narration timing.\n\nNarration script:\n${narrationScript.trim()}`;
-          // Use voice duration for the URL params
-          finalDuration = voiceDuration;
-        }
-      } catch {
-        // TTS 실패 시 음성 없이 진행
-      } finally {
-        setGeneratingVoice(false);
-      }
-    }
-
-    const prompt = generateRemotionPrompt(analysis, selectedStyle, finalDuration) + voicePromptAddition;
-    const params = new URLSearchParams({
-      prompt,
-      model: "claude-sonnet-4-6",
-      aspectRatio: "9:16",
-      duration: String(finalDuration),
-      ...(voiceEnabled ? { voice: "true" } : {}),
-    });
-    onNavigating();
-    router.push(`/generate?${params.toString()}`);
-  };
-
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 space-y-6">
       {/* Back button */}
@@ -453,53 +339,21 @@ function SmartInlineFlow({
         ← 돌아가기
       </button>
 
-      <div className="text-center">
-        <h2 className="text-xl font-bold text-foreground">🧠 스마트 분석</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          텍스트나 URL을 입력하면 AI가 분석하고 최적의 영상 스타일을 추천합니다
-        </p>
-      </div>
-
-      {/* Step 1: Input */}
-      {(step === "input" || step === "analyzing") && (
-        <div className="space-y-4">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="텍스트 또는 URL을 입력하세요"
-            rows={6}
-            disabled={step === "analyzing"}
-            className="w-full rounded-xl border border-border bg-secondary/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none resize-none disabled:opacity-50"
-          />
-          {isUrl && (
-            <p className="text-xs text-primary">
-              🔗 URL이 감지되었습니다. 웹 페이지 내용을 자동으로 가져옵니다.
-            </p>
-          )}
-          {error && (
-            <p className="text-xs text-destructive">{error}</p>
-          )}
-          <button
-            type="button"
-            onClick={handleAnalyze}
-            disabled={!input.trim() || step === "analyzing"}
-            className="w-full rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
-          >
-            {step === "analyzing" ? (
-              <span className="flex items-center justify-center gap-2">
-                <Spinner /> 분석 중...
-              </span>
-            ) : (
-              "분석하기"
-            )}
-          </button>
+      {/* Step 1: Analyzing spinner */}
+      {step === "analyzing" && (
+        <div className="flex flex-col items-center gap-3 py-12">
+          <Spinner className="h-8 w-8 text-primary" />
+          <p className="text-sm text-muted-foreground">분석 중...</p>
         </div>
+      )}
+
+      {error && (
+        <p className="text-sm text-destructive text-center">{error}</p>
       )}
 
       {/* Steps 2-5: Results + Style + Duration + Voice + Generate */}
       {step === "result" && analysis && (
         <div className="space-y-6">
-          {/* Analysis result */}
           <AnalysisCard analysis={analysis} />
 
           {/* Style picker */}
@@ -511,7 +365,7 @@ function SmartInlineFlow({
                   <button
                     key={s.style}
                     type="button"
-                    onClick={() => handleStyleSelect(s.style)}
+                    onClick={() => onStyleSelect(s.style)}
                     className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
                       selectedStyle === s.style
                         ? "border-primary bg-primary/10"
@@ -544,7 +398,7 @@ function SmartInlineFlow({
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => handleDurationChange(opt.value)}
+                  onClick={() => onDurationChange(opt.value)}
                   className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
                     duration === opt.value
                       ? "bg-primary text-primary-foreground"
@@ -562,7 +416,7 @@ function SmartInlineFlow({
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => setVoiceEnabled((v) => !v)}
+                onClick={onVoiceToggle}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   voiceEnabled ? "bg-primary" : "bg-secondary"
                 }`}
@@ -584,7 +438,7 @@ function SmartInlineFlow({
                   </label>
                   <select
                     value={selectedVoiceId}
-                    onChange={(e) => setSelectedVoiceId(e.target.value)}
+                    onChange={(e) => onVoiceIdChange(e.target.value)}
                     className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
                   >
                     {VOICE_OPTIONS.map((v) => (
@@ -601,7 +455,7 @@ function SmartInlineFlow({
                   </label>
                   <textarea
                     value={narrationScript}
-                    onChange={(e) => setNarrationScript(e.target.value)}
+                    onChange={(e) => onNarrationChange(e.target.value)}
                     rows={6}
                     className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:border-primary/60 focus:outline-none"
                   />
@@ -614,18 +468,14 @@ function SmartInlineFlow({
           <div className="flex gap-3">
             <button
               type="button"
-              onClick={() => {
-                setStep("input");
-                setAnalysis(null);
-                setStyles([]);
-              }}
+              onClick={onReanalyze}
               className="rounded-xl border border-border bg-secondary/50 px-4 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               다시 분석
             </button>
             <button
               type="button"
-              onClick={handleGenerate}
+              onClick={onGenerate}
               disabled={!selectedStyle || generatingVoice}
               className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
             >
@@ -829,6 +679,69 @@ const Home: NextPage = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<RemotionExample | null>(null);
   const [mode, setMode] = useState<"normal" | "smart">("normal");
 
+  // Smart analysis state (lifted from old SmartInlineFlow)
+  const [smartStep, setSmartStep] = useState<SmartStep | null>(null);
+  const [analysis, setAnalysis] = useState<ContentAnalysis | null>(null);
+  const [styles, setStyles] = useState<StyleResult[]>([]);
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+  const [duration, setDuration] = useState(30);
+  const [smartError, setSmartError] = useState("");
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [narrationScript, setNarrationScript] = useState("");
+  const [selectedVoiceId, setSelectedVoiceId] = useState(VOICE_OPTIONS[0].voiceId);
+  const [generatingVoice, setGeneratingVoice] = useState(false);
+
+  const runSmartAnalysis = useCallback(async (input: string) => {
+    setSmartError("");
+    setSmartStep("analyzing");
+
+    const isUrl = input.startsWith("http://") || input.startsWith("https://");
+
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: input.trim(),
+          inputType: isUrl ? "url" : "text",
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "분석 실패");
+      }
+
+      const data: ContentAnalysis = await res.json();
+      setAnalysis(data);
+      setDuration(data.suggestedDuration);
+
+      // Auto-fetch styles
+      const styleRes = await fetch("/api/route-style", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      let firstStyle = "cinematic";
+      if (styleRes.ok) {
+        const styleData = await styleRes.json();
+        setStyles(styleData.styles);
+        setSelectedStyle(styleData.styles[0]?.style || null);
+        firstStyle = styleData.styles[0]?.style || "cinematic";
+      }
+
+      // Generate narration script
+      const script = generateNarrationScript(data, firstStyle, data.suggestedDuration);
+      setNarrationScript(script);
+
+      setSmartStep("result");
+    } catch (e) {
+      setSmartError(e instanceof Error ? e.message : "오류가 발생했습니다.");
+      setSmartStep(null);
+    }
+  }, []);
+
   const handleNavigate = useCallback(
     (
       prompt: string,
@@ -836,6 +749,14 @@ const Home: NextPage = () => {
       aspectRatio: AspectRatioId,
       attachedImages?: string[],
     ) => {
+      // Smart mode: intercept and run analysis instead of navigating
+      if (mode === "smart") {
+        if (!prompt.trim()) return;
+        runSmartAnalysis(prompt.trim());
+        return;
+      }
+
+      // Normal mode: navigate to /generate
       setIsNavigating(true);
       if (attachedImages && attachedImages.length > 0) {
         sessionStorage.setItem("initialAttachedImages", JSON.stringify(attachedImages));
@@ -848,7 +769,7 @@ const Home: NextPage = () => {
       const params = new URLSearchParams({ prompt, model, aspectRatio });
       router.push(`/generate?${params.toString()}`);
     },
-    [router, selectedTemplate],
+    [router, selectedTemplate, mode, runSmartAnalysis],
   );
 
   const handleTemplateSelect = (example: RemotionExample) => {
@@ -861,14 +782,126 @@ const Home: NextPage = () => {
     setMode("smart");
     setSelectedTemplate(null);
     setPrefillPrompt("");
+    // Reset smart state
+    setSmartStep(null);
+    setAnalysis(null);
+    setStyles([]);
+    setSelectedStyle(null);
+    setSmartError("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleBackToNormal = () => {
     setMode("normal");
+    setSmartStep(null);
+    setAnalysis(null);
+    setStyles([]);
+    setSelectedStyle(null);
+    setSmartError("");
+  };
+
+  const handleSmartStyleSelect = (style: string) => {
+    setSelectedStyle(style);
+    if (analysis) {
+      setNarrationScript(generateNarrationScript(analysis, style, duration));
+    }
+  };
+
+  const handleSmartDurationChange = (d: number) => {
+    setDuration(d);
+    if (analysis && selectedStyle) {
+      setNarrationScript(generateNarrationScript(analysis, selectedStyle, d));
+    }
+  };
+
+  const handleSmartReanalyze = () => {
+    setSmartStep(null);
+    setAnalysis(null);
+    setStyles([]);
+    setSelectedStyle(null);
+    setSmartError("");
+  };
+
+  const handleSmartGenerate = async () => {
+    if (!analysis || !selectedStyle) return;
+
+    let voicePromptAddition = "";
+    let finalDuration = duration;
+
+    if (voiceEnabled && narrationScript.trim()) {
+      setGeneratingVoice(true);
+      try {
+        const ttsRes = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: narrationScript.trim(),
+            voiceId: selectedVoiceId,
+          }),
+        });
+        if (ttsRes.ok) {
+          const audioBlob = await ttsRes.blob();
+          const audioBlobUrl = URL.createObjectURL(audioBlob);
+          const audioDuration = await new Promise<number>((resolve) => {
+            const audio = new Audio(audioBlobUrl);
+            audio.addEventListener("loadedmetadata", () => {
+              resolve(Math.ceil(audio.duration));
+              URL.revokeObjectURL(audioBlobUrl);
+            });
+            audio.addEventListener("error", () => {
+              resolve(duration);
+              URL.revokeObjectURL(audioBlobUrl);
+            });
+          });
+          const voiceDuration = audioDuration + 2;
+          setDuration(voiceDuration);
+          const reader = new FileReader();
+          const audioDataUrl = await new Promise<string>((resolve) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(audioBlob);
+          });
+          sessionStorage.setItem("voiceAudio", audioDataUrl);
+          voicePromptAddition = `\n\nThis video has ${voiceDuration}초 narration audio. The video duration MUST be exactly ${voiceDuration} seconds (${voiceDuration * 30} frames at 30fps). Distribute scenes evenly across the narration. Sync scene transitions with the narration timing.\n\nNarration script:\n${narrationScript.trim()}`;
+          finalDuration = voiceDuration;
+        }
+      } catch {
+        // TTS 실패 시 음성 없이 진행
+      } finally {
+        setGeneratingVoice(false);
+      }
+    }
+
+    const prompt = generateRemotionPrompt(analysis, selectedStyle, finalDuration) + voicePromptAddition;
+    const params = new URLSearchParams({
+      prompt,
+      model: "claude-sonnet-4-6",
+      aspectRatio: "9:16",
+      duration: String(finalDuration),
+      ...(voiceEnabled ? { voice: "true" } : {}),
+    });
+    setIsNavigating(true);
+    router.push(`/generate?${params.toString()}`);
   };
 
   return (
     <PageLayout>
+      {/* Smart mode badge */}
+      {mode === "smart" && (
+        <div className="flex justify-center mb-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
+            🧠 스마트 모드
+            <button
+              type="button"
+              onClick={handleBackToNormal}
+              className="ml-1 rounded-full p-0.5 hover:bg-primary/20 transition-colors"
+              title="스마트 모드 끄기"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </span>
+        </div>
+      )}
+
       <LandingPageInput
         onNavigate={handleNavigate}
         isNavigating={isNavigating}
@@ -887,12 +920,43 @@ const Home: NextPage = () => {
         </>
       )}
 
-      {mode === "smart" && (
-        <SmartInlineFlow
-          initialPrompt=""
+      {mode === "smart" && smartStep && (
+        <SmartInlineResults
+          step={smartStep}
+          analysis={analysis}
+          styles={styles}
+          selectedStyle={selectedStyle}
+          duration={duration}
+          error={smartError}
+          voiceEnabled={voiceEnabled}
+          narrationScript={narrationScript}
+          selectedVoiceId={selectedVoiceId}
+          generatingVoice={generatingVoice}
+          onStyleSelect={handleSmartStyleSelect}
+          onDurationChange={handleSmartDurationChange}
+          onVoiceToggle={() => setVoiceEnabled((v) => !v)}
+          onVoiceIdChange={setSelectedVoiceId}
+          onNarrationChange={setNarrationScript}
+          onGenerate={handleSmartGenerate}
+          onReanalyze={handleSmartReanalyze}
           onBack={handleBackToNormal}
-          onNavigating={() => setIsNavigating(true)}
         />
+      )}
+
+      {/* Show error even when smartStep is null (analysis failed) */}
+      {mode === "smart" && !smartStep && smartError && (
+        <div className="mx-auto w-full max-w-2xl px-4 pb-8">
+          <p className="text-sm text-destructive text-center">{smartError}</p>
+          <div className="flex justify-center mt-3">
+            <button
+              type="button"
+              onClick={handleBackToNormal}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ← 돌아가기
+            </button>
+          </div>
+        </div>
       )}
     </PageLayout>
   );
