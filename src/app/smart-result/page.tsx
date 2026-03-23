@@ -199,8 +199,8 @@ export default function SmartResultPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-2xl px-4 py-8 space-y-8">
+    <div className="min-h-screen bg-background text-foreground overflow-y-auto">
+      <div className="mx-auto w-full max-w-2xl px-4 py-8 pb-24 space-y-8">
         {/* Header */}
         <div>
           <button
