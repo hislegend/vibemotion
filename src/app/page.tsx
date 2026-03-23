@@ -850,33 +850,30 @@ const Home: NextPage = () => {
 
   return (
     <PageLayout>
+      <LandingPageInput
+        onNavigate={handleNavigate}
+        isNavigating={isNavigating}
+        showCodeExamplesLink={mode === "normal"}
+        prefillPrompt={prefillPrompt}
+        onPrefillConsumed={() => setPrefillPrompt("")}
+      />
+
       {mode === "normal" && (
         <>
-          <LandingPageInput
-            onNavigate={handleNavigate}
-            isNavigating={isNavigating}
-            showCodeExamplesLink
-            prefillPrompt={prefillPrompt}
-            onPrefillConsumed={() => setPrefillPrompt("")}
-          />
-
           <TemplateGallery
             onSelect={handleTemplateSelect}
             onSmartClick={handleSmartClick}
           />
-
           <ProjectHistory />
         </>
       )}
 
       {mode === "smart" && (
-        <div className="flex-1 flex flex-col items-center overflow-y-auto py-8">
-          <SmartInlineFlow
-            initialPrompt=""
-            onBack={handleBackToNormal}
-            onNavigating={() => setIsNavigating(true)}
-          />
-        </div>
+        <SmartInlineFlow
+          initialPrompt=""
+          onBack={handleBackToNormal}
+          onNavigating={() => setIsNavigating(true)}
+        />
       )}
     </PageLayout>
   );
