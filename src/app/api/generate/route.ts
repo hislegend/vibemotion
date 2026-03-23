@@ -86,6 +86,12 @@ When generating code:
 - useVideoConfig() for fps/width/height, but plan scene timing to fill the full duration
 - If 30초 requested with 3 scenes: each scene ~300 frames, NOT 80 frames
 
+## SCENE LIMITS (prevent code too long to compile)
+- Max 4 scenes for any video. Even 60초 videos use 4 scenes max.
+- Keep code under 200 lines. Reuse styles across scenes.
+- Use <Sequence> for scene timing, NOT complex conditional logic.
+- Simple animations: spring + interpolate only. No complex physics or 3D.
+
 ## CODE RULES (only applies in GENERATING/REFINING state)
 - Export: \`export const MyAnimation = () => { ... };\`
 - Hooks first, then constants (UPPER_SNAKE_CASE), then calculations, then JSX
