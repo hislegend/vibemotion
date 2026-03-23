@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { text, voiceId = 'pNInz6obpgDQGcFmaJgB' } = await req.json();
+  const { text, voiceId = '21m00Tcm4TlvDq8ikWAM' } = await req.json(); // Rachel (다국어 자연스러움)
 
   const apiKey = process.env.ELEVENLABS_API_KEY;
   if (!apiKey) {
@@ -19,12 +19,13 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           text,
-          model_id: 'eleven_turbo_v2_5',
+          model_id: 'eleven_multilingual_v2',
           voice_settings: {
-            stability: 0.65,
-            similarity_boost: 0.8,
-            style: 0.3,
+            stability: 0.45,
+            similarity_boost: 0.75,
+            style: 0.55,
           },
+          ...(text.match(/[가-힣]/) ? { language_code: 'ko' } : {}),
         }),
       }
     );
