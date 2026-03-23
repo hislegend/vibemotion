@@ -14,6 +14,9 @@ import { productLaunchExample } from "./product-launch";
 import { testimonialCardExample } from "./testimonial-card";
 import { dataShowcaseExample } from "./data-showcase";
 import { brandIntroExample } from "./brand-intro";
+import { logoStingerExample } from "./logo-stinger";
+import { numberImpactExample } from "./number-impact";
+import { productTeaserExample } from "./product-teaser";
 
 export interface RemotionExample {
   id: string;
@@ -42,6 +45,9 @@ export const examples: RemotionExample[] = [
   testimonialCardExample,
   dataShowcaseExample,
   brandIntroExample,
+  logoStingerExample,
+  numberImpactExample,
+  productTeaserExample,
 ];
 
 export function getExampleById(id: string): RemotionExample | undefined {

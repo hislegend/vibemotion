@@ -125,7 +125,12 @@ export function useConversationState() {
       .filter((m) => m.role === "user" || m.role === "assistant")
       .map((m) => ({
         role: m.role as "user" | "assistant",
-        content: m.role === "user" ? m.content : "[Generated Code]",
+        // For conversation messages, include the actual text; for code, use placeholder
+        content: m.role === "user"
+          ? m.content
+          : m.metadata?.isConversation
+            ? m.content
+            : "[Generated Code]",
         // Include attached images for user messages so the AI remembers what was shared
         ...(m.role === "user" && m.attachedImages && m.attachedImages.length > 0
           ? { attachedImages: m.attachedImages }
@@ -159,6 +164,11 @@ export function useConversationState() {
     return undefined;
   }, [state.messages]);
 
+  // Check if AI has generated actual code (not just conversation)
+  const hasGeneratedCode = state.messages.some(
+    (m) => m.role === "assistant" && m.codeSnapshot && !m.metadata?.isConversation,
+  );
+
   return {
     ...state,
     addUserMessage,
@@ -172,5 +182,6 @@ export function useConversationState() {
     setPendingMessage,
     clearPendingMessage,
     isFirstGeneration: state.messages.length === 0,
+    hasGeneratedCode,
   };
 }

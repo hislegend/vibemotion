@@ -159,6 +159,8 @@ export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
             code={code}
             durationInFrames={durationInFrames}
             fps={fps}
+            compositionWidth={compositionWidth}
+            compositionHeight={compositionHeight}
           />
           <SettingsModal
             durationInFrames={durationInFrames}

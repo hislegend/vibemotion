@@ -238,9 +238,9 @@ export const MyAnimation = () => {
 
 export const appPromoFitnessExample: RemotionExample = {
   id: "app-promo-fitness",
-  name: "App Promo Fitness",
+  name: "앱 프로모 - 피트니스",
   description:
-    "Fitness app promotional video with mint/emerald gradient, 3D phone mockup showing workout dashboard with circular calorie chart, step counter, weekly bar graph, and spring animations.",
+    "피트니스 앱 프로모. 민트/에메랄드 그라디언트, 칼로리 차트, 걸음 수 카운터, 주간 바 그래프, 운동 대시보드",
   code: appPromoFitnessCode,
   durationInFrames: 300,
   fps: 30,

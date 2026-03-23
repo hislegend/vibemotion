@@ -203,9 +203,9 @@ export const MyAnimation = () => {
 
 export const productLaunchExample: RemotionExample = {
   id: "product-launch",
-  name: "Product Launch",
+  name: "제품 런칭",
   description:
-    "Cinematic product launch countdown on dark navy/purple gradient with bouncing 3-2-1 numbers, glow typing product name reveal, sparkle burst particles, and dramatic spring animations.",
+    "딥퍼플 그라디언트 위 카운트다운 3-2-1 → 제품 공개. 글로우 타이핑, 스파클 파티클, 시네마틱 스프링",
   code: productLaunchCode,
   durationInFrames: 300,
   fps: 30,

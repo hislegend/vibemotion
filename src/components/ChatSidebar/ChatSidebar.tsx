@@ -65,6 +65,8 @@ interface ChatSidebarProps {
     summary?: string,
     metadata?: AssistantMetadata,
   ) => void;
+  /** Called when AI responds with conversation text instead of code */
+  onConversationResponse?: (text: string, metadata?: AssistantMetadata) => void;
   onErrorMessage?: (
     message: string,
     errorType: "edit_failed" | "api" | "validation",
@@ -81,6 +83,7 @@ interface ChatSidebarProps {
   compositionWidth?: number;
   compositionHeight?: number;
   aspectRatio?: string;
+  initialModel?: ModelId;
 }
 
 export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
@@ -103,6 +106,7 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
       isFollowUp = false,
       onMessageSent,
       onGenerationComplete,
+      onConversationResponse,
       onErrorMessage,
       errorCorrection,
       onPendingMessage,
@@ -114,10 +118,11 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
       compositionWidth = 1920,
       compositionHeight = 1080,
       aspectRatio = "16:9",
+      initialModel,
     },
     ref,
   ) {
-    const [model, setModel] = useState<ModelId>(MODELS[1].id);
+    const [model, setModel] = useState<ModelId>(initialModel || MODELS[1].id);
     const promptRef = useRef<string>("");
 
     const { isLoading, runGeneration } = useGenerationApi();
@@ -158,6 +163,7 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
           onError,
           onMessageSent,
           onGenerationComplete,
+          onConversationResponse,
           onErrorMessage,
           onPendingMessage,
           onClearPendingMessage,
@@ -197,7 +203,7 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
             {/* Header */}
             <div className="flex items-start justify-between px-4 pt-4 pb-2">
               <h2 className="text-sm font-medium text-muted-foreground">
-                Assistant Chat
+                어시스턴트 채팅
               </h2>
               <div className="flex items-center gap-1 -mt-1">
                 <Button
@@ -206,17 +212,17 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
                   onClick={() => {
                     if (
                       window.confirm(
-                        "Start over? This will reset your animation.",
+                        "처음부터 다시 시작할까요? 애니메이션이 초기화됩니다.",
                       )
                     ) {
                       window.location.href = "/";
                     }
                   }}
-                  title="Start over"
+                  title="처음부터 다시"
                   className="text-muted-foreground hover:text-foreground text-xs gap-1 h-7 px-2"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  Reset
+                  초기화
                 </Button>
                 <Button
                   variant="ghost"

@@ -31,7 +31,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const iconMap: Record<string, LucideIcon> = {
   Type,
@@ -50,14 +50,19 @@ interface LandingPageInputProps {
   ) => void;
   isNavigating?: boolean;
   showCodeExamplesLink?: boolean;
+  prefillPrompt?: string;
+  onPrefillConsumed?: () => void;
 }
 
 export function LandingPageInput({
   onNavigate,
   isNavigating = false,
   showCodeExamplesLink = false,
+  prefillPrompt,
+  onPrefillConsumed,
 }: LandingPageInputProps) {
   const [prompt, setPrompt] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [model, setModel] = useState<ModelId>("claude-sonnet-4-6");
   const [aspectRatio, setAspectRatio] =
     useState<AspectRatioId>(DEFAULT_ASPECT_RATIO);
@@ -75,6 +80,22 @@ export function LandingPageInput({
     error,
     clearError,
   } = useImageAttachments();
+
+  // 템플릿 선택 시 프롬프트 자동 채우기
+  useEffect(() => {
+    if (prefillPrompt) {
+      setPrompt(prefillPrompt);
+      onPrefillConsumed?.();
+      // textarea에 포커스 + 커서를 끝으로
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          textareaRef.current.selectionStart = prefillPrompt.length;
+          textareaRef.current.selectionEnd = prefillPrompt.length;
+        }
+      }, 100);
+    }
+  }, [prefillPrompt, onPrefillConsumed]);
 
   // Auto-clear error after 5 seconds
   useEffect(() => {
@@ -106,7 +127,7 @@ export function LandingPageInput({
   return (
     <div className="flex flex-col items-center justify-center flex-1 px-4">
       <h1 className="text-5xl font-bold text-white mb-10 text-center">
-        What do you want to create?
+        어떤 영상을 만들까요?
       </h1>
 
       <form onSubmit={handleSubmit} className="w-full max-w-3xl">
@@ -153,14 +174,15 @@ export function LandingPageInput({
           )}
 
           <textarea
+            ref={textareaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             placeholder={
               isDragging
-                ? "Drop images here..."
-                : "Describe your animation... (paste or drop images)"
+                ? "이미지를 여기에 놓으세요..."
+                : "만들고 싶은 영상을 설명해주세요... (이미지 붙여넣기 또는 드롭)"
             }
             className="w-full bg-transparent text-foreground placeholder:text-muted-foreground-dim focus:outline-none resize-none overflow-y-auto text-base min-h-[60px] max-h-[200px]"
             style={{ fieldSizing: "content" }}
@@ -232,7 +254,7 @@ export function LandingPageInput({
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isNavigating || !canAddMore}
                 className="text-muted-foreground hover:text-foreground"
-                title="Attach images"
+                title="이미지 첨부"
               >
                 <Paperclip className="w-5 h-5" />
               </Button>
@@ -252,7 +274,7 @@ export function LandingPageInput({
 
         <div className="flex flex-wrap items-center justify-center mt-6 gap-2">
           <span className="text-muted-foreground-dim text-xs mr-1">
-            Prompt Examples
+            프롬프트 예시
           </span>
           {examplePrompts.map((example) => {
             const Icon = iconMap[example.icon];
@@ -280,7 +302,7 @@ export function LandingPageInput({
               href="/code-examples"
               className="text-muted-foreground-dim hover:text-muted-foreground text-xs transition-colors flex items-center gap-1"
             >
-              View Code examples
+              코드 예제 보기
               <SquareArrowOutUpRight className="w-3 h-3" />
             </Link>
           </div>

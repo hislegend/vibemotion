@@ -94,7 +94,22 @@ function ChatMessage({ message }: { message: ConversationMessage }) {
     );
   }
 
-  // Assistant message
+  // Assistant conversation message (chat bubble style)
+  if (metadata?.isConversation) {
+    return (
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-blue-400">Assistant</span>
+          <span className="text-xs text-muted-foreground-dim">{time}</span>
+        </div>
+        <div className="text-sm text-foreground leading-relaxed bg-blue-500/10 border border-blue-500/20 rounded-lg px-3 py-2 whitespace-pre-wrap">
+          {message.content}
+        </div>
+      </div>
+    );
+  }
+
+  // Assistant code generation message
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-2">
@@ -158,7 +173,7 @@ function PendingMessage({ skills }: { skills?: string[] }) {
 
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <div className="w-3 h-3 border-2 border-muted-foreground border-t-blue-400 rounded-full animate-spin" />
-        <span>Generating...</span>
+        <span>응답 중...</span>
         {skills && skills.length > 0 && (
           <Tooltip>
             <TooltipTrigger asChild>

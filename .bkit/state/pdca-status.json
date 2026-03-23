@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-23T02:49:21.266Z",
+  "lastUpdated": "2026-03-23T05:39:35.439Z",
   "activeFeatures": [
     "skills",
     "generate",
@@ -10,7 +10,13 @@
     "RenderControls",
     "AnimationPlayer",
     "remotion",
-    "ChatSidebar"
+    "ChatSidebar",
+    "code",
+    "code-examples",
+    "tts",
+    "analyze",
+    "route-style",
+    "smart"
   ],
   "primaryFeature": "skills",
   "features": {
@@ -23,7 +29,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T16:24:51.208Z",
-        "lastUpdated": "2026-03-22T16:24:57.529Z"
+        "lastUpdated": "2026-03-23T03:01:53.031Z"
       },
       "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/skills/index.ts"
     },
@@ -36,9 +42,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T16:24:58.869Z",
-        "lastUpdated": "2026-03-22T18:10:24.370Z"
+        "lastUpdated": "2026-03-23T05:38:53.703Z"
       },
-      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/generate/route.ts"
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/generate/page.tsx"
     },
     "vibemotion": {
       "phase": "do",
@@ -49,7 +55,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T16:37:47.585Z",
-        "lastUpdated": "2026-03-23T02:49:21.266Z"
+        "lastUpdated": "2026-03-23T05:39:35.439Z"
       },
       "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/page.tsx"
     },
@@ -75,7 +81,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T17:01:28.393Z",
-        "lastUpdated": "2026-03-22T17:54:42.591Z"
+        "lastUpdated": "2026-03-23T03:17:43.896Z"
       },
       "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/helpers/use-rendering.ts"
     },
@@ -88,9 +94,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T17:01:52.274Z",
-        "lastUpdated": "2026-03-22T17:55:00.803Z"
+        "lastUpdated": "2026-03-23T03:20:23.307Z"
       },
-      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/AnimationPlayer/RenderControls/index.tsx"
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/AnimationPlayer/RenderControls/Error.tsx"
     },
     "AnimationPlayer": {
       "phase": "do",
@@ -101,9 +107,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T17:54:53.162Z",
-        "lastUpdated": "2026-03-22T18:09:25.267Z"
+        "lastUpdated": "2026-03-23T03:18:33.566Z"
       },
-      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/AnimationPlayer/index.tsx"
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/AnimationPlayer/SettingsModal.tsx"
     },
     "remotion": {
       "phase": "do",
@@ -127,9 +133,87 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-22T18:09:48.711Z",
-        "lastUpdated": "2026-03-22T18:10:01.624Z"
+        "lastUpdated": "2026-03-23T05:28:44.236Z"
       },
-      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/ChatSidebar/ChatSidebar.tsx"
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/components/ChatSidebar/ChatHistory.tsx"
+    },
+    "code": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T03:00:41.338Z",
+        "lastUpdated": "2026-03-23T03:39:36.551Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/examples/code/word-carousel.ts"
+    },
+    "code-examples": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T03:18:59.470Z",
+        "lastUpdated": "2026-03-23T03:19:00.477Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/code-examples/page.tsx"
+    },
+    "tts": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T03:19:33.440Z",
+        "lastUpdated": "2026-03-23T03:19:33.440Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/tts/route.ts"
+    },
+    "analyze": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T04:24:15.641Z",
+        "lastUpdated": "2026-03-23T04:24:15.641Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/analyze/route.ts"
+    },
+    "route-style": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T04:24:25.927Z",
+        "lastUpdated": "2026-03-23T04:24:25.927Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/api/route-style/route.ts"
+    },
+    "smart": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-23T04:25:26.779Z",
+        "lastUpdated": "2026-03-23T04:44:54.191Z"
+      },
+      "lastFile": "/Users/jong-kwonlee/Projects/vibemotion/src/app/smart/page.tsx"
     }
   },
   "pipeline": {
@@ -140,7 +224,7 @@
   "session": {
     "startedAt": "2026-03-22T16:22:35.833Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-23T02:49:21.266Z"
+    "lastActivity": "2026-03-23T05:39:35.439Z"
   },
   "history": [
     {
@@ -433,6 +517,720 @@
     },
     {
       "timestamp": "2026-03-23T02:49:21.266Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T02:59:36.819Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T02:59:40.376Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:00:41.338Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:01.151Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:33.712Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:38.854Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:40.039Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:46.722Z",
+      "feature": "skills",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:47.892Z",
+      "feature": "skills",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:01:53.031Z",
+      "feature": "skills",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:30.992Z",
+      "feature": "helpers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:32.536Z",
+      "feature": "RenderControls",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:34.137Z",
+      "feature": "RenderControls",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:34.692Z",
+      "feature": "RenderControls",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:41.322Z",
+      "feature": "helpers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:42.789Z",
+      "feature": "helpers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:43.896Z",
+      "feature": "helpers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:53.626Z",
+      "feature": "RenderControls",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:54.704Z",
+      "feature": "RenderControls",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:17:57.257Z",
+      "feature": "RenderControls",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:03.655Z",
+      "feature": "AnimationPlayer",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:10.679Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:12.962Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:13.969Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:15.475Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:16.301Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:24.026Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:25.293Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:28.154Z",
+      "feature": "AnimationPlayer",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:29.871Z",
+      "feature": "AnimationPlayer",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:30.401Z",
+      "feature": "AnimationPlayer",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:33.474Z",
+      "feature": "AnimationPlayer",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:33.566Z",
+      "feature": "AnimationPlayer",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:39.914Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:41.300Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:42.727Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:43.928Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:46.855Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:46.975Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:48.287Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:49.195Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:51.244Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:58.576Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:18:59.470Z",
+      "feature": "code-examples",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:19:00.477Z",
+      "feature": "code-examples",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:19:08.166Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:19:33.440Z",
+      "feature": "tts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:20:00.180Z",
+      "feature": "RenderControls",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:20:23.307Z",
+      "feature": "RenderControls",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:37:53.549Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:02.105Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:07.211Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:13.499Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:18.837Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:24.789Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:29.956Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:36.995Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:40.691Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:46.487Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:50.640Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:38:56.013Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:39:01.611Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:39:10.618Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:39:14.802Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:39:20.807Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:39:25.114Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:39:29.452Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T03:39:36.551Z",
+      "feature": "code",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:24:15.641Z",
+      "feature": "analyze",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:24:25.927Z",
+      "feature": "route-style",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:24:37.213Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:25:26.779Z",
+      "feature": "smart",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:25:41.121Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:25:48.162Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:25:53.753Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:26:16.822Z",
+      "feature": "smart",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:44:33.147Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:44:49.198Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:44:54.191Z",
+      "feature": "smart",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:45:01.886Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:45:06.467Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:46:34.289Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:46:41.646Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T04:46:53.278Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:11:16.348Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:11:20.745Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:11:27.710Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:12:58.036Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:25:07.466Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:25:24.162Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:25:57.718Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:04.394Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:18.854Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:29.713Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:34.138Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:26:55.102Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:07.062Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:15.712Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:21.828Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:28.395Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:33.794Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:41.382Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:48.974Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:27:56.226Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:05.046Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:13.041Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:20.741Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:39.625Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:28:44.236Z",
+      "feature": "ChatSidebar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:29:13.362Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:38:08.135Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:38:19.356Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:38:26.736Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:38:35.075Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:38:42.066Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:38:53.703Z",
+      "feature": "generate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:39:03.432Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:39:29.045Z",
+      "feature": "vibemotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-23T05:39:35.439Z",
       "feature": "vibemotion",
       "phase": "do",
       "action": "updated"

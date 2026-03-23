@@ -213,9 +213,9 @@ export const MyAnimation = () => {
 
 export const brandIntroExample: RemotionExample = {
   id: "brand-intro",
-  name: "Brand Intro",
+  name: "브랜드 인트로",
   description:
-    "Premium brand intro/outro on dark background with spring-scaled logo, letter-by-letter staggered brand name, slogan fade-in, and glow/shadow effects for a cinematic premium feel.",
+    "다크 배경 위 프리미엄 브랜드 인트로/아웃트로. 스프링 로고, 글자별 스태거, 슬로건 페이드, 글로우 효과",
   code: brandIntroCode,
   durationInFrames: 240,
   fps: 30,

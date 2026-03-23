@@ -148,8 +148,7 @@ export function ChatInput({
                 ))}
               </div>
               <p className="text-[10px] text-muted-foreground-dim mt-1">
-                Images for reference only, they cannot be embedded in the
-                animation
+                참고용 이미지입니다. 애니메이션에 직접 삽입되지 않습니다
               </p>
             </div>
           )}
@@ -161,8 +160,8 @@ export function ChatInput({
             onPaste={handlePaste}
             placeholder={
               isDragging
-                ? "Drop images here..."
-                : "Tune your animation... (paste or drop images)"
+                ? "이미지를 여기에 놓으세요..."
+                : "애니메이션을 수정해보세요... (이미지 붙여넣기 또는 드롭)"
             }
             className="w-full bg-transparent text-foreground placeholder:text-muted-foreground-dim focus:outline-none resize-none text-sm min-h-[36px] max-h-[120px]"
             style={{ fieldSizing: "content" } as React.CSSProperties}
@@ -208,7 +207,7 @@ export function ChatInput({
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading || !canAddMore}
                 className="text-muted-foreground hover:text-foreground h-7 w-7"
-                title="Attach images"
+                title="이미지 첨부"
               >
                 <Paperclip className="w-4 h-4" />
               </Button>
@@ -220,10 +219,10 @@ export function ChatInput({
                 disabled={!canCapture}
                 onClick={handleCapture}
                 className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs"
-                title="Use current frame of Preview as image in chat"
+                title="현재 프리뷰 프레임을 이미지로 사용"
               >
                 <Camera className="w-3.5 h-3.5 mr-1" />
-                Use Frame
+                프레임 사용
               </Button>
 
               <Button

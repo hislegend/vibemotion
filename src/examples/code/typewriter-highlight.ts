@@ -190,9 +190,9 @@ export const MyAnimation = () => {
 
 export const typewriterHighlightExample: RemotionExample = {
   id: "typewriter-highlight",
-  name: "Typewriter with Highlight",
+  name: "타이프라이터 하이라이트",
   description:
-    "Typewriter effect with blinking cursor and spring-animated word highlight",
+    "깜빡이는 커서 타이프라이터 효과 + 스프링 단어 하이라이트",
   category: "Text",
   durationInFrames: 90,
   fps: 30,

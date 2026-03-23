@@ -36,6 +36,8 @@ interface GenerationCallbacks {
     summary?: string,
     metadata?: AssistantMetadata,
   ) => void;
+  /** Called when AI responds with conversation text instead of code */
+  onConversationResponse?: (text: string, metadata?: AssistantMetadata) => void;
   onErrorMessage?: (
     message: string,
     errorType: "edit_failed" | "api" | "validation",
@@ -102,6 +104,7 @@ export function useGenerationApi(): UseGenerationApiReturn {
         onError,
         onMessageSent,
         onGenerationComplete,
+        onConversationResponse,
         onErrorMessage,
         onPendingMessage,
         onClearPendingMessage,
@@ -124,8 +127,9 @@ export function useGenerationApi(): UseGenerationApiReturn {
             prompt,
             model,
             currentCode: isFollowUp ? currentCode : undefined,
-            conversationHistory: isFollowUp ? conversationHistory : [],
-            previouslyUsedSkills: isFollowUp ? previouslyUsedSkills : [],
+            // Always send conversation history for multi-turn conversation
+            conversationHistory,
+            previouslyUsedSkills,
             isFollowUp,
             hasManualEdits,
             errorCorrection,
@@ -176,6 +180,9 @@ export function useGenerationApi(): UseGenerationApiReturn {
         let accumulatedText = "";
         let buffer = "";
         let streamMetadata: AssistantMetadata = {};
+        // Track whether this response is code or conversation
+        // null = not yet determined, true = code, false = conversation
+        let isCodeResponse: boolean | null = null;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -204,8 +211,35 @@ export function useGenerationApi(): UseGenerationApiReturn {
                 onStreamPhaseChange?.("generating");
               } else if (event.type === "text-delta") {
                 accumulatedText += event.delta;
-                const codeToShow = stripMarkdownFences(accumulatedText);
-                onCodeGenerated?.(codeToShow);
+
+                // Detect code vs conversation once we have enough text
+                if (isCodeResponse === null && accumulatedText.trimStart().length > 10) {
+                  const trimmed = accumulatedText.trimStart();
+                  // Check for direct code or code inside markdown fences
+                  isCodeResponse = trimmed.startsWith("import ") || 
+                    trimmed.startsWith("import{") ||
+                    /```(?:tsx?|jsx?|javascript|typescript)?\s*\n\s*import\s/.test(trimmed) ||
+                    trimmed.includes("\nimport ") ||
+                    trimmed.includes("\nimport{");
+                }
+
+                // Re-check on every delta if still undetermined
+                if (isCodeResponse === null || isCodeResponse === false) {
+                  const t = accumulatedText.trimStart();
+                  if (t.startsWith("import ") || t.startsWith("import{") || 
+                      /```(?:tsx?|jsx?|javascript|typescript)?\s*\n\s*import\s/.test(t) ||
+                      t.includes("\nimport ")) {
+                    isCodeResponse = true;
+                  }
+                }
+
+                // Feed to code editor if confirmed code
+                if (isCodeResponse === true) {
+                  const codeToShow = stripMarkdownFences(accumulatedText);
+                  const extracted = extractComponentCode(codeToShow);
+                  onCodeGenerated?.(extracted || codeToShow);
+                }
+                // If still unknown or conversation, buffer silently
               } else if (event.type === "error") {
                 throw new Error(event.error);
               }
@@ -220,19 +254,40 @@ export function useGenerationApi(): UseGenerationApiReturn {
           }
         }
 
-        let finalCode = stripMarkdownFences(accumulatedText);
-        finalCode = extractComponentCode(finalCode);
-        onCodeGenerated?.(finalCode);
-        onClearPendingMessage?.();
-        onGenerationComplete?.(
-          finalCode,
-          undefined,
-          streamMetadata.skills?.length ? streamMetadata : undefined,
-        );
+        // Final determination if not yet decided
+        if (isCodeResponse === null) {
+          const trimmed = accumulatedText.trimStart();
+          isCodeResponse = trimmed.startsWith("import ") || 
+            trimmed.startsWith("import{") ||
+            /```(?:tsx?|jsx?|javascript|typescript)?\s*\n\s*import\s/.test(trimmed) ||
+            trimmed.includes("\nimport ") ||
+            trimmed.includes("\nimport{");
+        }
 
-        const validation = validateGptResponse(finalCode);
-        if (!validation.isValid && validation.error) {
-          onError?.(validation.error, "validation");
+        onClearPendingMessage?.();
+
+        if (isCodeResponse) {
+          // Code response — existing behavior
+          let finalCode = stripMarkdownFences(accumulatedText);
+          finalCode = extractComponentCode(finalCode);
+          onCodeGenerated?.(finalCode);
+          onGenerationComplete?.(
+            finalCode,
+            undefined,
+            streamMetadata.skills?.length ? streamMetadata : undefined,
+          );
+
+          const validation = validateGptResponse(finalCode);
+          if (!validation.isValid && validation.error) {
+            onError?.(validation.error, "validation");
+          }
+        } else {
+          // Conversation response — show as chat message, don't compile
+          const metadata: AssistantMetadata = {
+            ...streamMetadata,
+            isConversation: true,
+          };
+          onConversationResponse?.(accumulatedText.trim(), metadata);
         }
       } catch (error) {
         console.error("Error generating code:", error);

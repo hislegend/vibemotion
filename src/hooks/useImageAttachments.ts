@@ -94,6 +94,12 @@ export function useImageAttachments(): UseImageAttachmentsReturn {
   const handlePaste = useCallback(
     async (e: ClipboardEvent) => {
       const items = Array.from(e.clipboardData.items);
+      // If clipboard has text content, let it paste as text (don't intercept for images)
+      const hasText = items.some((item) => item.type === "text/plain");
+      const textContent = e.clipboardData.getData("text/plain");
+      if (hasText && textContent.trim().length > 0) {
+        return; // Let the default paste behavior handle text
+      }
       const imageItems = items.filter((item) => item.type.startsWith("image/"));
       if (imageItems.length > 0) {
         e.preventDefault();

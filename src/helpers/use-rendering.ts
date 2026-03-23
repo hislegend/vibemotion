@@ -27,12 +27,16 @@ interface RenderingOptions {
   Component: ComponentType | null;
   durationInFrames: number;
   fps: number;
+  compositionWidth?: number;
+  compositionHeight?: number;
 }
 
 export const useRendering = ({
   Component,
   durationInFrames,
   fps,
+  compositionWidth,
+  compositionHeight,
 }: RenderingOptions) => {
   const [state, setState] = useState<State>({
     status: "init",
@@ -53,11 +57,13 @@ export const useRendering = ({
         composition: {
           component: Component,
           id: "browser-render",
-          width: 1920,
-          height: 1080,
+          width: compositionWidth || 1920,
+          height: compositionHeight || 1080,
           fps,
           durationInFrames,
         },
+        videoCodec: "h264",
+        container: "mp4",
         inputProps: {},
         onProgress: ({ progress }) => {
           setState({ status: "rendering", progress });
@@ -83,7 +89,7 @@ export const useRendering = ({
         error: err as Error,
       });
     }
-  }, [Component, durationInFrames, fps]);
+  }, [Component, durationInFrames, fps, compositionWidth, compositionHeight]);
 
   const undo = useCallback(() => {
     // Abort any in-progress render

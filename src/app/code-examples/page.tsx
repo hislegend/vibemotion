@@ -88,12 +88,12 @@ function DemoPageContent() {
             className="flex items-center gap-1.5 text-xs text-muted-foreground-dim hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-3 h-3" />
-            Back to Home
+            홈으로 돌아가기
           </Link>
         </div>
         <div className="h-10 w-px bg-border" />
         <h1 className="text-sm font-medium text-muted-foreground">
-          Example Gallery
+          예제 갤러리
         </h1>
       </header>
 

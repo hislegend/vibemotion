@@ -186,9 +186,9 @@ export const MyAnimation = () => {
 
 export const goldPriceChartExample: RemotionExample = {
   id: "gold-price-chart",
-  name: "Gold Price Chart",
+  name: "금 시세 차트",
   description:
-    "Animated bar chart with Y-axis labels and staggered spring animations",
+    "월별 데이터 바 차트, Y축 레이블, 스태거 애니메이션",
   category: "Charts",
   durationInFrames: 150,
   fps: 30,

@@ -13,6 +13,12 @@ import { examples } from "../../examples/code";
 import { useAnimationState } from "../../hooks/useAnimationState";
 import { useAutoCorrection } from "../../hooks/useAutoCorrection";
 import { useConversationState } from "../../hooks/useConversationState";
+import {
+  generateTitle,
+  getProject,
+  saveProject,
+  updateProject,
+} from "../../lib/project-storage";
 import type {
   AssistantMetadata,
   EditOperation,
@@ -30,8 +36,19 @@ const MAX_CORRECTION_ATTEMPTS = 3;
 
 function GeneratePageContent() {
   const searchParams = useSearchParams();
-  const initialPrompt = searchParams.get("prompt") || "";
-  const aspectRatioParam = (searchParams.get("aspectRatio") ||
+  const projectParam = searchParams.get("project");
+  const loadedProject = projectParam ? getProject(projectParam) : null;
+
+  const initialPrompt = loadedProject?.prompt || searchParams.get("prompt") || "";
+  const initialModel = loadedProject?.model || searchParams.get("model") || undefined;
+  const durationParam = loadedProject
+    ? String(loadedProject.duration)
+    : searchParams.get("duration");
+  const hasVoice = loadedProject?.voiceAudioUrl
+    ? true
+    : searchParams.get("voice") === "true";
+  const aspectRatioParam = (loadedProject?.aspectRatio ||
+    searchParams.get("aspectRatio") ||
     DEFAULT_ASPECT_RATIO) as AspectRatioId;
   const aspectRatioConfig = ASPECT_RATIOS.find(
     (ar) => ar.id === aspectRatioParam,
@@ -44,7 +61,7 @@ function GeneratePageContent() {
   const willAutoStart = Boolean(initialPrompt);
 
   const [durationInFrames, setDurationInFrames] = useState(
-    examples[0]?.durationInFrames || 150,
+    durationParam ? Number(durationParam) * 30 : (examples[0]?.durationInFrames || 150),
   );
   const [fps, setFps] = useState(examples[0]?.fps || 30);
   const [currentFrame, setCurrentFrame] = useState(0);
@@ -54,6 +71,23 @@ function GeneratePageContent() {
   );
   const [prompt, setPrompt] = useState(initialPrompt);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
+  const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(
+    loadedProject?.id ?? null,
+  );
+
+  // Load voice audio from project or sessionStorage
+  useEffect(() => {
+    if (loadedProject?.voiceAudioUrl) {
+      setVoiceAudioUrl(loadedProject.voiceAudioUrl);
+    } else if (hasVoice) {
+      const storedAudio = sessionStorage.getItem("voiceAudio");
+      if (storedAudio) {
+        setVoiceAudioUrl(storedAudio);
+      }
+    }
+  }, [hasVoice, loadedProject]);
   const [hasGeneratedOnce, setHasGeneratedOnce] = useState(false);
   const [generationError, setGenerationError] = useState<{
     message: string;
@@ -80,6 +114,7 @@ function GeneratePageContent() {
     setPendingMessage,
     clearPendingMessage,
     isFirstGeneration,
+    hasGeneratedCode,
   } = useConversationState();
 
   // Sidebar collapse state
@@ -92,7 +127,16 @@ function GeneratePageContent() {
     isCompiling,
     setCode,
     compileCode,
-  } = useAnimationState(examples[0]?.code || "");
+  } = useAnimationState(loadedProject?.code || examples[0]?.code || "");
+
+  // Compile loaded project code on mount
+  useEffect(() => {
+    if (loadedProject?.code) {
+      compileCode(loadedProject.code);
+      setHasGeneratedOnce(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Runtime errors from the Player (e.g., "cannot access variable before initialization")
   const [runtimeError, setRuntimeError] = useState<string | null>(null);
@@ -105,6 +149,8 @@ function GeneratePageContent() {
   const isStreamingRef = useRef(isStreaming);
   const codeRef = useRef(code);
   const chatSidebarRef = useRef<ChatSidebarRef>(null);
+  // Track if last response was conversation (to skip compile on stream end)
+  const lastResponseWasConversationRef = useRef(false);
 
   // Auto-correction hook - use combined code error (compilation + runtime)
   const { markAsAiGenerated, markAsUserEdited } = useAutoCorrection({
@@ -147,10 +193,14 @@ function GeneratePageContent() {
     const wasStreaming = isStreamingRef.current;
     isStreamingRef.current = isStreaming;
 
-    // Compile when streaming ends - mark as AI change
-    if (wasStreaming && !isStreaming) {
+    // Compile when streaming ends - but only if it was a code response
+    if (wasStreaming && !isStreaming && !lastResponseWasConversationRef.current) {
       markAsAiGenerated();
       compileCode(codeRef.current);
+    }
+    // Reset conversation flag when streaming starts
+    if (isStreaming) {
+      lastResponseWasConversationRef.current = false;
     }
   }, [isStreaming, compileCode, markAsAiGenerated]);
 
@@ -191,15 +241,57 @@ function GeneratePageContent() {
     [addUserMessage],
   );
 
-  // Handle generation complete for history
+  // Handle generation complete for history + auto-save project
   const handleGenerationComplete = useCallback(
     (generatedCode: string, summary?: string, metadata?: AssistantMetadata) => {
       const content =
-        summary || "Generated your animation, any follow up edits?";
+        summary || "애니메이션을 생성했습니다. 추가 수정이 필요하신가요?";
       addAssistantMessage(content, generatedCode, metadata);
       markAsAiGenerated();
+
+      // Auto-save project
+      const durationSec = Math.round(durationInFrames / fps);
+      const currentVoice = voiceAudioUrl ?? undefined;
+      if (currentProjectId) {
+        updateProject(currentProjectId, {
+          code: generatedCode,
+          duration: durationSec,
+          voiceAudioUrl: currentVoice,
+        });
+      } else {
+        const promptText = initialPrompt || "Untitled";
+        const saved = saveProject({
+          title: generateTitle(promptText),
+          prompt: promptText,
+          code: generatedCode,
+          model: initialModel || "claude-sonnet-4-6",
+          aspectRatio: aspectRatioParam,
+          duration: durationSec,
+          voiceAudioUrl: currentVoice,
+        });
+        setCurrentProjectId(saved.id);
+      }
     },
-    [addAssistantMessage, markAsAiGenerated],
+    [
+      addAssistantMessage,
+      markAsAiGenerated,
+      currentProjectId,
+      durationInFrames,
+      fps,
+      voiceAudioUrl,
+      initialPrompt,
+      initialModel,
+      aspectRatioParam,
+    ],
+  );
+
+  // Handle conversation response (AI replied with text, not code)
+  const handleConversationResponse = useCallback(
+    (text: string, metadata?: AssistantMetadata) => {
+      lastResponseWasConversationRef.current = true;
+      addAssistantMessage(text, "", metadata);
+    },
+    [addAssistantMessage],
   );
 
   // Cleanup debounce on unmount
@@ -284,9 +376,10 @@ function GeneratePageContent() {
           currentCode={code}
           conversationHistory={getFullContext()}
           previouslyUsedSkills={getPreviouslyUsedSkills()}
-          isFollowUp={!isFirstGeneration}
+          isFollowUp={hasGeneratedCode && !isFirstGeneration}
           onMessageSent={handleMessageSent}
           onGenerationComplete={handleGenerationComplete}
+          onConversationResponse={handleConversationResponse}
           onErrorMessage={addErrorMessage}
           errorCorrection={errorCorrection ?? undefined}
           onPendingMessage={setPendingMessage}
@@ -300,6 +393,7 @@ function GeneratePageContent() {
           compositionWidth={compositionWidth}
           compositionHeight={compositionHeight}
           aspectRatio={aspectRatioParam}
+          initialModel={initialModel as import("../../types/generation").ModelId}
         />
 
         {/* Main content area */}
@@ -334,6 +428,14 @@ function GeneratePageContent() {
           />
         </div>
       </div>
+
+      {/* Voice audio player */}
+      {voiceAudioUrl && (
+        <div className="fixed bottom-4 right-4 z-50 bg-secondary border border-border rounded-xl p-3 shadow-lg flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">🔊 내레이션</span>
+          <audio ref={audioRef} src={voiceAudioUrl} controls className="h-8" />
+        </div>
+      )}
     </PageLayout>
   );
 }
