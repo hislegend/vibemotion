@@ -63,26 +63,26 @@ export function SettingsModal({
       <DialogTrigger asChild>
         <Button variant="outline">
           <Settings className="w-4 h-4" />
-          Settings
+          설정
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-background-elevated border-border text-foreground">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+          <DialogTitle>설정</DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Configure your animation settings.
+            애니메이션 설정을 구성하세요.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
           <div className="grid gap-4">
-            <h3 className="text-sm font-medium text-foreground">Animation</h3>
+            <h3 className="text-sm font-medium text-foreground">애니메이션</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <label
                   htmlFor="duration"
                   className="text-muted-foreground text-sm"
                 >
-                  Duration (frames)
+                  재생 시간 (프레임)
                 </label>
                 <input
                   id="duration"
@@ -112,14 +112,14 @@ export function SettingsModal({
               </div>
             </div>
             <p className="text-xs text-muted-foreground-dim">
-              Video length: {(durationInFrames / fps).toFixed(2)}s (
-              {durationInFrames} frames / {fps} FPS)
+              영상 길이: {(durationInFrames / fps).toFixed(2)}초 (
+              {durationInFrames} 프레임 / {fps} FPS)
             </p>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Close
+            닫기
           </Button>
         </DialogFooter>
       </DialogContent>

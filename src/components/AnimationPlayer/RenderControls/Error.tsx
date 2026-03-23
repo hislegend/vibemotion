@@ -5,6 +5,6 @@ export const ErrorComp: React.FC<{
   message: string;
 }> = ({ message }) => {
   return (
-    <ErrorDisplay error={message} title="Render error" variant="card" size="md" />
+    <ErrorDisplay error={message} title="렌더링 오류" variant="card" size="md" />
   );
 };

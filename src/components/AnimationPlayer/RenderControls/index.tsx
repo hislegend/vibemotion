@@ -13,11 +13,15 @@ export const RenderControls: React.FC<{
   code: string;
   durationInFrames: number;
   fps: number;
-}> = ({ Component, code, durationInFrames, fps }) => {
+  compositionWidth?: number;
+  compositionHeight?: number;
+}> = ({ Component, code, durationInFrames, fps, compositionWidth, compositionHeight }) => {
   const { renderMedia, state, undo } = useRendering({
     Component,
     durationInFrames,
     fps,
+    compositionWidth,
+    compositionHeight,
   });
   const previousPropsRef = useRef({ code, durationInFrames, fps });
 
@@ -45,7 +49,7 @@ export const RenderControls: React.FC<{
     return (
       <div>
         {!isWebCodecsSupported && (
-          <ErrorComp message="Render requires Chrome/Edge 94+. Your browser doesn't support WebCodecs (VideoEncoder)." />
+          <ErrorComp message="렌더링에는 Chrome/Edge 94 이상이 필요합니다. 브라우저가 WebCodecs(VideoEncoder)를 지원하지 않습니다." />
         )}
         <Button
           disabled={state.status === "invoking" || !code || !Component || !isWebCodecsSupported}
@@ -54,8 +58,8 @@ export const RenderControls: React.FC<{
         >
           <Download className="w-4 h-4 mr-2" />
           {state.status === "invoking"
-            ? "Starting render..."
-            : "Render & Download"}
+            ? "렌더링 시작 중..."
+            : "렌더링 & 다운로드"}
         </Button>
         {state.status === "error" && (
           <ErrorComp message={state.error.message} />

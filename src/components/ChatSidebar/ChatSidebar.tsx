@@ -197,7 +197,7 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
             {/* Header */}
             <div className="flex items-start justify-between px-4 pt-4 pb-2">
               <h2 className="text-sm font-medium text-muted-foreground">
-                Assistant Chat
+                어시스턴트 채팅
               </h2>
               <div className="flex items-center gap-1 -mt-1">
                 <Button
@@ -206,17 +206,17 @@ export const ChatSidebar = forwardRef<ChatSidebarRef, ChatSidebarProps>(
                   onClick={() => {
                     if (
                       window.confirm(
-                        "Start over? This will reset your animation.",
+                        "처음부터 다시 시작할까요? 애니메이션이 초기화됩니다.",
                       )
                     ) {
                       window.location.href = "/";
                     }
                   }}
-                  title="Start over"
+                  title="처음부터 다시"
                   className="text-muted-foreground hover:text-foreground text-xs gap-1 h-7 px-2"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  Reset
+                  초기화
                 </Button>
                 <Button
                   variant="ghost"

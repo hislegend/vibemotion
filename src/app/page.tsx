@@ -119,10 +119,10 @@ function TemplateGallery({
     <section className="mx-auto w-full max-w-4xl px-4 pb-16">
       <div className="mb-6 text-center">
         <h2 className="text-xl font-bold text-foreground">
-          Start from a template
+          템플릿으로 시작하기
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pick a template and customize it with AI
+          AI가 원하는 대로 커스터마이징해줍니다
         </p>
       </div>
 

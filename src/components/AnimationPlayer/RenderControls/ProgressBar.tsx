@@ -8,7 +8,7 @@ export const ProgressBar: React.FC<{
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">Rendering...</span>
+        <span className="text-muted-foreground">렌더링 중...</span>
         <span className="font-medium">{percentage}%</span>
       </div>
       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">

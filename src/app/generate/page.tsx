@@ -195,7 +195,7 @@ function GeneratePageContent() {
   const handleGenerationComplete = useCallback(
     (generatedCode: string, summary?: string, metadata?: AssistantMetadata) => {
       const content =
-        summary || "Generated your animation, any follow up edits?";
+        summary || "애니메이션을 생성했습니다. 추가 수정이 필요하신가요?";
       addAssistantMessage(content, generatedCode, metadata);
       markAsAiGenerated();
     },

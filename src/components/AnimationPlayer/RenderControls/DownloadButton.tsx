@@ -19,7 +19,7 @@ export const DownloadButton: React.FC<{
   undo: () => void;
 }> = ({ state, undo }) => {
   if (state.status === "rendering") {
-    return <Button disabled>Download video</Button>;
+    return <Button disabled>영상 다운로드</Button>;
   }
 
   if (state.status !== "done") {
@@ -31,9 +31,9 @@ export const DownloadButton: React.FC<{
       <Button variant="secondary" onClick={undo}>
         <UndoIcon></UndoIcon>
       </Button>
-      <a href={state.url}>
+      <a href={state.url} download="vibemotion.webm">
         <Button>
-          Download video
+          영상 다운로드
           <span className="ml-geist-quarter">
             <Megabytes sizeInBytes={state.size} />
           </span>
