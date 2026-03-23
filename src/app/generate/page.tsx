@@ -3,7 +3,7 @@
 import { Loader2 } from "lucide-react";
 import type { NextPage } from "next";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useState, useRef } from "react";
 import { AnimationPlayer } from "../../components/AnimationPlayer";
 import { ChatSidebar, type ChatSidebarRef } from "../../components/ChatSidebar";
 import { CodeEditor } from "../../components/CodeEditor";
@@ -72,7 +72,6 @@ function GeneratePageContent() {
   const [prompt, setPrompt] = useState(initialPrompt);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
   const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(
     loadedProject?.id ?? null,
   );
@@ -435,19 +434,14 @@ function GeneratePageContent() {
                 onFrameChange={setCurrentFrame}
                 compositionWidth={compositionWidth}
                 compositionHeight={compositionHeight}
+                audioSrc={voiceAudioUrl}
               />
             }
           />
         </div>
       </div>
 
-      {/* Voice audio player */}
-      {voiceAudioUrl && (
-        <div className="fixed bottom-4 right-4 z-50 bg-secondary border border-border rounded-xl p-3 shadow-lg flex items-center gap-3">
-          <span className="text-sm text-muted-foreground">🔊 내레이션</span>
-          <audio ref={audioRef} src={voiceAudioUrl} controls className="h-8" />
-        </div>
-      )}
+      {/* Audio is now embedded in the Remotion composition via AudioWrapper */}
     </PageLayout>
   );
 }

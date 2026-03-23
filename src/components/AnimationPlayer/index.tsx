@@ -1,7 +1,8 @@
 "use client";
 
 import { Player, type ErrorFallback, type PlayerRef } from "@remotion/player";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
+import { createAudioWrappedComponent } from "../../remotion/AudioWrapper";
 import { ErrorDisplay, type ErrorType } from "../ErrorDisplay";
 import { RenderControls } from "./RenderControls";
 import { SettingsModal } from "./SettingsModal";
@@ -38,6 +39,7 @@ interface AnimationPlayerProps {
   onFrameChange?: (frame: number) => void;
   compositionWidth?: number;
   compositionHeight?: number;
+  audioSrc?: string | null;
 }
 
 export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
@@ -55,8 +57,15 @@ export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
   onFrameChange,
   compositionWidth = 1920,
   compositionHeight = 1080,
+  audioSrc,
 }) => {
   const playerRef = useRef<PlayerRef>(null);
+
+  // Wrap component with audio if audioSrc is provided
+  const WrappedComponent = useMemo(() => {
+    if (!Component) return null;
+    return createAudioWrappedComponent(Component, audioSrc);
+  }, [Component, audioSrc]);
 
   // Listen for runtime errors from the Player's error boundary
   // Component is included in deps because the Player remounts when Component changes (via key={Component.toString()})
@@ -121,7 +130,7 @@ export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
       );
     }
 
-    if (!Component) {
+    if (!WrappedComponent) {
       return (
         <div className="w-full aspect-video max-h-[calc(100%-80px)] flex justify-center items-center bg-background-elevated rounded-lg overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.5)] text-muted-foreground-dim text-lg font-sans">
           Select an example to get started
@@ -134,8 +143,8 @@ export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
         <div className="w-full aspect-video max-h-[calc(100%-80px)] rounded-lg overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.5)]">
           <Player
             ref={playerRef}
-            key={Component.toString()}
-            component={Component}
+            key={WrappedComponent.toString()}
+            component={WrappedComponent}
             durationInFrames={durationInFrames}
             fps={fps}
             compositionHeight={compositionHeight}
@@ -155,7 +164,7 @@ export const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
         </div>
         <div className="flex items-center justify-between gap-6 mt-4">
           <RenderControls
-            Component={Component}
+            Component={WrappedComponent}
             code={code}
             durationInFrames={durationInFrames}
             fps={fps}
