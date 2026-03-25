@@ -52,6 +52,8 @@ interface LandingPageInputProps {
   showCodeExamplesLink?: boolean;
   prefillPrompt?: string;
   onPrefillConsumed?: () => void;
+  prefillAspectRatio?: AspectRatioId | null;
+  onAspectRatioConsumed?: () => void;
 }
 
 export function LandingPageInput({
@@ -60,6 +62,8 @@ export function LandingPageInput({
   showCodeExamplesLink = false,
   prefillPrompt,
   onPrefillConsumed,
+  prefillAspectRatio,
+  onAspectRatioConsumed,
 }: LandingPageInputProps) {
   const [prompt, setPrompt] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -81,12 +85,11 @@ export function LandingPageInput({
     clearError,
   } = useImageAttachments();
 
-  // 템플릿 선택 시 프롬프트 자동 채우기
+  // 프리셋/스타일 선택 시 프롬프트 + 비율 자동 채우기
   useEffect(() => {
     if (prefillPrompt) {
       setPrompt(prefillPrompt);
       onPrefillConsumed?.();
-      // textarea에 포커스 + 커서를 끝으로
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.focus();
@@ -96,6 +99,13 @@ export function LandingPageInput({
       }, 100);
     }
   }, [prefillPrompt, onPrefillConsumed]);
+
+  useEffect(() => {
+    if (prefillAspectRatio) {
+      setAspectRatio(prefillAspectRatio);
+      onAspectRatioConsumed?.();
+    }
+  }, [prefillAspectRatio, onAspectRatioConsumed]);
 
   // Auto-clear error after 5 seconds
   useEffect(() => {

@@ -123,6 +123,7 @@ When generating code:
 - Available: useCurrentFrame, useVideoConfig, AbsoluteFill, interpolate, spring, Sequence, TransitionSeries, @remotion/shapes, @remotion/three
 - NEVER shadow import names as variables
 - NEVER use undefined variables — define ALL variables before using them
+- Template literals: use standard backtick syntax \`...\${expr}...\`. NEVER double-escape or produce \\u escape sequences in template strings.
 - ONLY use colors as hex strings ('#ffffff'), never as sRGB/Color objects
 - ONLY import from: 'remotion', '@remotion/*' packages. No other npm packages.
 - spring() for organic motion, interpolate() for linear progress

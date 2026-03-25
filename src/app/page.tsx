@@ -328,6 +328,7 @@ const Home: NextPage = () => {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
   const [prefillPrompt, setPrefillPrompt] = useState("");
+  const [prefillAspectRatio, setPrefillAspectRatio] = useState<AspectRatioId | null>(null);
   const [isSmartSelected, setIsSmartSelected] = useState(false);
   const [smartAnalyzing, setSmartAnalyzing] = useState(false);
   const [smartError, setSmartError] = useState("");
@@ -420,9 +421,11 @@ const Home: NextPage = () => {
       setIsSmartSelected((prev) => !prev);
       setSmartError("");
       setPrefillPrompt("");
+      setPrefillAspectRatio(null);
     } else {
       setIsSmartSelected(false);
       setPrefillPrompt(card.prefillPrompt || "");
+      setPrefillAspectRatio(card.aspectRatio || null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -430,6 +433,7 @@ const Home: NextPage = () => {
   const handlePresetClick = (preset: PresetPrompt) => {
     setIsSmartSelected(false);
     setPrefillPrompt(preset.prompt);
+    setPrefillAspectRatio(preset.aspectRatio || null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -441,6 +445,8 @@ const Home: NextPage = () => {
         showCodeExamplesLink
         prefillPrompt={prefillPrompt}
         onPrefillConsumed={() => setPrefillPrompt("")}
+        prefillAspectRatio={prefillAspectRatio}
+        onAspectRatioConsumed={() => setPrefillAspectRatio(null)}
       />
 
       {/* Smart analyzing overlay */}
