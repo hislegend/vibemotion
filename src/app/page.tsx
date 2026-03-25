@@ -109,6 +109,13 @@ const PRESET_PROMPTS: PresetPrompt[] = [
     prompt:
       '이벤트 D-day 카운트다운. 3-2-1 글로우 타이핑 효과, 스파클 파티클, "Grand Opening" 리빌, 다크 네이비 배경에 골드 악센트. 15초',
   },
+  {
+    id: "cardnews-design-patent",
+    label: "카드뉴스: 디자인 특허",
+    prompt:
+      '카드뉴스 만들어줘. 주제: "디자인 특허의 중요성". 6장 구성. 표지: "경쟁사가 베끼는 건 기술이 아닙니다" 헤드라인. 본문: 핵심 요소 4가지(목록형), 보호 전 vs 후(비교형), 출원 3단계(단계형). 마무리: CTA. 4:5 비율, professional 테마, 블루 악센트. 바로 만들어줘.',
+    aspectRatio: "4:5",
+  },
 ];
 
 /* ─── small components ─── */
