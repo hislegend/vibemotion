@@ -49,10 +49,7 @@ const EXAMPLE_SKILLS = [
   "example-logo-stinger",
   "example-number-impact",
   "example-product-teaser",
-  "example-cardnews-cover",
-  "example-cardnews-body-list",
-  "example-cardnews-body-split",
-  "example-cardnews-closing",
+  "example-cardnews-carousel",
 ] as const;
 
 export const SKILL_NAMES = [...GUIDANCE_SKILLS, ...EXAMPLE_SKILLS] as const;
@@ -95,10 +92,7 @@ const exampleIdMap: Record<(typeof EXAMPLE_SKILLS)[number], string> = {
   "example-logo-stinger": "logo-stinger",
   "example-number-impact": "number-impact",
   "example-product-teaser": "product-teaser",
-  "example-cardnews-cover": "cardnews-cover",
-  "example-cardnews-body-list": "cardnews-body-list",
-  "example-cardnews-body-split": "cardnews-body-split",
-  "example-cardnews-closing": "cardnews-closing",
+  "example-cardnews-carousel": "cardnews-carousel",
 };
 
 export function getSkillContent(skillName: SkillName): string {
@@ -167,9 +161,6 @@ Code examples (complete working references):
 - example-logo-stinger: logo stinger / brand bumper, logo entrance with spring scale and rotation, glow pulse, tagline fade-in, dark gradient background
 - example-number-impact: single impact number with eased count-up, landing pulse, underline reveal, label stagger, dark background
 - example-product-teaser: product/app teaser with 3D-tilted phone device mockup, headline, CTA, bokeh background, spring entrances
-- example-cardnews-cover: card news cover slide with dark gradient, tag pill badge, headline with accent keyword highlight, brand mark
-- example-cardnews-body-list: card news body slide list mode with numbered badges, staggered slide-up items, highlight box, page indicators
-- example-cardnews-body-split: card news body slide split/comparison mode with before/after columns, divider line draw, contrast styling
-- example-cardnews-closing: card news closing slide with centered brand logo spring, CTA text, contact info, dark gradient
+- example-cardnews-carousel: complete Instagram card news carousel with cover, body slides (list/split modes), and closing — auto layout 4:5 vertical
 
 Return an array of matching category names. Return an empty array if none apply.`;

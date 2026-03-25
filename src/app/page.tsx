@@ -36,10 +36,7 @@ const TEMPLATE_ORDER = [
   "gold-price-chart",
   "histogram",
   "falling-spheres",
-  "cardnews-cover",
-  "cardnews-body-list",
-  "cardnews-body-split",
-  "cardnews-closing",
+  "cardnews-carousel",
 ];
 
 const categoryEmoji: Record<RemotionExample["category"], string> = {

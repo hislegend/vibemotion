@@ -17,10 +17,7 @@ import { brandIntroExample } from "./brand-intro";
 import { logoStingerExample } from "./logo-stinger";
 import { numberImpactExample } from "./number-impact";
 import { productTeaserExample } from "./product-teaser";
-import { cardnewsCoverExample } from "./cardnews-cover";
-import { cardnewsBodyListExample } from "./cardnews-body-list";
-import { cardnewsBodySplitExample } from "./cardnews-body-split";
-import { cardnewsClosingExample } from "./cardnews-closing";
+import { cardnewsCarouselExample } from "./cardnews-carousel";
 
 export interface RemotionExample {
   id: string;
@@ -52,10 +49,7 @@ export const examples: RemotionExample[] = [
   logoStingerExample,
   numberImpactExample,
   productTeaserExample,
-  cardnewsCoverExample,
-  cardnewsBodyListExample,
-  cardnewsBodySplitExample,
-  cardnewsClosingExample,
+  cardnewsCarouselExample,
 ];
 
 export function getExampleById(id: string): RemotionExample | undefined {
