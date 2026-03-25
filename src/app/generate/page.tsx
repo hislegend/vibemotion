@@ -61,7 +61,7 @@ function GeneratePageContent() {
   const willAutoStart = Boolean(initialPrompt);
 
   const [durationInFrames, setDurationInFrames] = useState(
-    durationParam ? Number(durationParam) * 30 : (examples[0]?.durationInFrames || 150),
+    durationParam ? Number(durationParam) * 30 : 450, // 15초 기본값
   );
   const [fps, setFps] = useState(examples[0]?.fps || 30);
   const [currentFrame, setCurrentFrame] = useState(0);

@@ -3,10 +3,6 @@
 import { LandingPageInput } from "@/components/LandingPageInput";
 import { PageLayout } from "@/components/PageLayout";
 import {
-  examples,
-  type RemotionExample,
-} from "@/examples/code";
-import {
   deleteProject,
   getProjects,
   renameProject,
@@ -18,211 +14,126 @@ import type { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/* ─── template categories ─── */
+/* ─── Style cards (4종) ─── */
 
-interface TemplateCategory {
-  label: string;
+interface StyleCard {
+  id: string;
   emoji: string;
-  ids: string[];
+  title: string;
+  description: string;
+  action: "smart" | "prefill";
+  prefillPrompt?: string;
+  aspectRatio?: AspectRatioId;
 }
 
-const TEMPLATE_CATEGORIES: TemplateCategory[] = [
+const STYLE_CARDS: StyleCard[] = [
   {
-    label: "브랜딩",
+    id: "smart",
+    emoji: "🧠",
+    title: "스마트 분석",
+    description: "URL이나 텍스트를 넣으면 AI가 분석하고 최적 영상을 만듭니다",
+    action: "smart",
+  },
+  {
+    id: "motion",
     emoji: "🎬",
-    ids: ["logo-intro", "product-teaser"],
+    title: "모션그래픽",
+    description: "로고 인트로, 제품 소개, 데이터 시각화, 텍스트 효과",
+    action: "prefill",
+    prefillPrompt: "",
   },
   {
-    label: "데이터",
-    emoji: "📊",
-    ids: ["bar-chart", "countup-number", "progress-bar"],
-  },
-  {
-    label: "SNS",
+    id: "cardnews",
     emoji: "📱",
-    ids: ["app-promo", "testimonial-card", "cardnews-carousel"],
+    title: "카드뉴스",
+    description: "인스타그램 카루셀 슬라이드. 표지→본문→마무리 자동 구성",
+    action: "prefill",
+    prefillPrompt: "카드뉴스 스타일로 만들기: ",
+    aspectRatio: "4:5",
   },
   {
-    label: "모션",
-    emoji: "✨",
-    ids: ["text-effects", "animated-shapes", "lottie-animation", "falling-spheres"],
+    id: "cinematic",
+    emoji: "🎥",
+    title: "시네마틱",
+    description: "감성적이고 몰입감 있는 스토리텔링 영상",
+    action: "prefill",
+    prefillPrompt: "시네마틱 스타일로 만들기: ",
   },
 ];
 
-const categoryEmoji: Record<RemotionExample["category"], string> = {
-  Text: "✍️",
-  Charts: "📊",
-  Animation: "🎨",
-  "3D": "🧊",
-  Other: "✨",
-};
+/* ─── Preset prompts (6종) ─── */
 
-function formatDuration(durationInFrames: number, fps: number): string {
-  const seconds = Math.round(durationInFrames / fps);
-  return `${seconds}s`;
+interface PresetPrompt {
+  id: string;
+  label: string;
+  prompt: string;
+  aspectRatio?: AspectRatioId;
 }
+
+const PRESET_PROMPTS: PresetPrompt[] = [
+  {
+    id: "brand-intro",
+    label: "크랩스 브랜드 인트로",
+    prompt:
+      '크랩스(Crabs) 브랜드 인트로 영상. 인디고-바이올렛 그라데이션 배경, 로고 스프링 등장, 슬로건 "Build faster, ship smarter" 페이드인. 10초, 9:16 세로형',
+    aspectRatio: "9:16",
+  },
+  {
+    id: "revenue-chart",
+    label: "매출 성장 그래프",
+    prompt:
+      '월별 매출 성장 바 차트. 1월 100만→6월 850만 순차 스프링 등장. 다크 배경, 블루 악센트, 마지막에 "850% 성장" 임팩트 숫자. 15초',
+  },
+  {
+    id: "product-teaser",
+    label: "신제품 출시 티저",
+    prompt:
+      "신제품 앱 출시 티저. 3D 틸트 폰 목업에 앱 화면, 파스텔 그라데이션 배경. Coming Soon → 기능 3개 하이라이트 → CTA. 20초, 9:16",
+    aspectRatio: "9:16",
+  },
+  {
+    id: "testimonial",
+    label: "고객 후기 카드",
+    prompt:
+      "고객 리뷰 카드. 따뜻한 베이지 배경, 리뷰 텍스트 타이핑 효과, 별 5개 순차 등장, 고객명과 직함 페이드인. 10초",
+  },
+  {
+    id: "startup-intro",
+    label: "AI 스타트업 소개",
+    prompt:
+      "AI 스타트업 회사 소개 영상. 다크 테마, 숫자 카운트업(유저 10만, MAU 5만, 성장률 320%), 글래스 카드 위에 표시, 시네마틱 분위기. 25초",
+  },
+  {
+    id: "event-countdown",
+    label: "이벤트 카운트다운",
+    prompt:
+      '이벤트 D-day 카운트다운. 3-2-1 글로우 타이핑 효과, 스파클 파티클, "Grand Opening" 리빌, 다크 네이비 배경에 골드 악센트. 15초',
+  },
+];
 
 /* ─── small components ─── */
 
 function Spinner({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <svg className={`animate-spin ${className}`} viewBox="0 0 24 24" fill="none">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    <svg
+      className={`animate-spin ${className}`}
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      />
     </svg>
-  );
-}
-
-/* ─── Template components ─── */
-
-function SmartCard({
-  onClick,
-  active,
-  voiceEnabled,
-  onVoiceToggle,
-}: {
-  onClick: () => void;
-  active: boolean;
-  voiceEnabled: boolean;
-  onVoiceToggle: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group relative flex flex-col gap-3 rounded-xl border p-4 text-left transition-all ${
-        active
-          ? "border-primary bg-primary/15 ring-2 ring-primary/40"
-          : "border-primary/30 bg-primary/5 hover:border-primary/60 hover:bg-primary/10"
-      }`}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <span className="text-lg">{voiceEnabled ? "🧠+🔊" : "🧠"}</span>
-        <div className="flex items-center gap-1.5">
-          <span
-            role="button"
-            tabIndex={0}
-            onClick={(e) => {
-              e.stopPropagation();
-              onVoiceToggle();
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.stopPropagation();
-                onVoiceToggle();
-              }
-            }}
-            className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium transition-colors cursor-pointer ${
-              voiceEnabled
-                ? "bg-primary/20 text-primary"
-                : "bg-secondary text-muted-foreground hover:text-foreground"
-            }`}
-            title={voiceEnabled ? "음성 끄기" : "음성 켜기"}
-          >
-            🔊 {voiceEnabled ? "ON" : "OFF"}
-          </span>
-          <span className="shrink-0 rounded-full bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-            AI 분석
-          </span>
-        </div>
-      </div>
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-          스마트 분석
-        </h3>
-        <p className="text-xs text-muted-foreground line-clamp-2">
-          텍스트나 URL을 AI가 분석하고 최적의 영상을 만듭니다
-        </p>
-      </div>
-    </button>
-  );
-}
-
-function TemplateCard({
-  example,
-  onClick,
-}: {
-  example: RemotionExample;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex flex-col gap-3 rounded-xl border border-border bg-secondary/50 p-4 text-left transition-all hover:border-primary/40 hover:bg-secondary"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <span className="text-lg">{categoryEmoji[example.category]}</span>
-        <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-          {formatDuration(example.durationInFrames, example.fps)}
-        </span>
-      </div>
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-          {example.name}
-        </h3>
-        <p className="text-xs text-muted-foreground line-clamp-2">
-          {example.description}
-        </p>
-      </div>
-    </button>
-  );
-}
-
-function TemplateGallery({
-  onSelect,
-  onSmartClick,
-  isSmartActive,
-  voiceEnabled,
-  onVoiceToggle,
-}: {
-  onSelect: (example: RemotionExample) => void;
-  onSmartClick: () => void;
-  isSmartActive: boolean;
-  voiceEnabled: boolean;
-  onVoiceToggle: () => void;
-}) {
-  const exampleMap = new Map(examples.map((e) => [e.id, e]));
-
-  return (
-    <section className="mx-auto w-full max-w-4xl px-4 pb-16">
-      <div className="mb-6 text-center">
-        <h2 className="text-xl font-bold text-foreground">템플릿으로 시작하기</h2>
-        <p className="mt-1 text-sm text-muted-foreground">AI가 원하는 대로 커스터마이징해줍니다</p>
-      </div>
-
-      {/* Smart Analysis — always visible */}
-      <div className="mb-8">
-        <SmartCard onClick={onSmartClick} active={isSmartActive} voiceEnabled={voiceEnabled} onVoiceToggle={onVoiceToggle} />
-      </div>
-
-      {/* Category groups */}
-      <div className="flex flex-col gap-8">
-        {TEMPLATE_CATEGORIES.map((cat) => {
-          const catExamples = cat.ids
-            .map((id) => exampleMap.get(id))
-            .filter((e): e is RemotionExample => e !== undefined);
-          if (catExamples.length === 0) return null;
-
-          return (
-            <div key={cat.label}>
-              <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                {cat.emoji} {cat.label}
-              </h3>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {catExamples.map((example) => (
-                  <TemplateCard
-                    key={example.id}
-                    example={example}
-                    onClick={() => onSelect(example)}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
   );
 }
 
@@ -380,7 +291,9 @@ function ProjectHistory() {
             onRename={(title) => {
               renameProject(project.id, title);
               setProjects((prev) =>
-                prev.map((p) => (p.id === project.id ? { ...p, title } : p)),
+                prev.map((p) =>
+                  p.id === project.id ? { ...p, title } : p,
+                ),
               );
             }}
           />
@@ -408,59 +321,64 @@ const Home: NextPage = () => {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
   const [prefillPrompt, setPrefillPrompt] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<RemotionExample | null>(null);
   const [isSmartSelected, setIsSmartSelected] = useState(false);
   const [smartAnalyzing, setSmartAnalyzing] = useState(false);
   const [smartError, setSmartError] = useState("");
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [voiceEnabled] = useState(false);
 
-  const runSmartAnalysis = useCallback(async (input: string) => {
-    setSmartError("");
-    setSmartAnalyzing(true);
+  const runSmartAnalysis = useCallback(
+    async (input: string) => {
+      setSmartError("");
+      setSmartAnalyzing(true);
 
-    const isUrl = input.startsWith("http://") || input.startsWith("https://");
+      const isUrl =
+        input.startsWith("http://") || input.startsWith("https://");
 
-    try {
-      // Step 1: Analyze content
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          input: input.trim(),
-          inputType: isUrl ? "url" : "text",
-        }),
-      });
+      try {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            input: input.trim(),
+            inputType: isUrl ? "url" : "text",
+          }),
+        });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "분석 실패");
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "분석 실패");
+        }
+
+        const data = await res.json();
+
+        const styleRes = await fetch("/api/route-style", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        let stylesData: unknown[] = [];
+        if (styleRes.ok) {
+          const parsed = await styleRes.json();
+          stylesData = parsed.styles;
+        }
+
+        sessionStorage.setItem("smartAnalysis", JSON.stringify(data));
+        sessionStorage.setItem("smartStyles", JSON.stringify(stylesData));
+        sessionStorage.setItem(
+          "smartVoiceEnabled",
+          JSON.stringify(voiceEnabled),
+        );
+        router.push("/smart-result");
+      } catch (e) {
+        setSmartError(
+          e instanceof Error ? e.message : "오류가 발생했습니다.",
+        );
+        setSmartAnalyzing(false);
       }
-
-      const data = await res.json();
-
-      // Step 2: Fetch recommended styles
-      const styleRes = await fetch("/api/route-style", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      let stylesData: unknown[] = [];
-      if (styleRes.ok) {
-        const parsed = await styleRes.json();
-        stylesData = parsed.styles;
-      }
-
-      // Step 3: Store in sessionStorage and navigate
-      sessionStorage.setItem("smartAnalysis", JSON.stringify(data));
-      sessionStorage.setItem("smartStyles", JSON.stringify(stylesData));
-      sessionStorage.setItem("smartVoiceEnabled", JSON.stringify(voiceEnabled));
-      router.push("/smart-result");
-    } catch (e) {
-      setSmartError(e instanceof Error ? e.message : "오류가 발생했습니다.");
-      setSmartAnalyzing(false);
-    }
-  }, [router, voiceEnabled]);
+    },
+    [router, voiceEnabled],
+  );
 
   const handleNavigate = useCallback(
     (
@@ -469,45 +387,43 @@ const Home: NextPage = () => {
       aspectRatio: AspectRatioId,
       attachedImages?: string[],
     ) => {
-      // Smart mode: run analysis then navigate to /smart-result
       if (isSmartSelected) {
         if (!prompt.trim()) return;
         runSmartAnalysis(prompt.trim());
         return;
       }
 
-      // Normal mode: navigate to /generate
       setIsNavigating(true);
       if (attachedImages && attachedImages.length > 0) {
-        sessionStorage.setItem("initialAttachedImages", JSON.stringify(attachedImages));
+        sessionStorage.setItem(
+          "initialAttachedImages",
+          JSON.stringify(attachedImages),
+        );
       } else {
         sessionStorage.removeItem("initialAttachedImages");
-      }
-      if (selectedTemplate) {
-        sessionStorage.setItem("templateCode", selectedTemplate.code);
       }
       const params = new URLSearchParams({ prompt, model, aspectRatio });
       router.push(`/generate?${params.toString()}`);
     },
-    [router, selectedTemplate, isSmartSelected, runSmartAnalysis],
+    [router, isSmartSelected, runSmartAnalysis],
   );
 
-  const handleTemplateSelect = (example: RemotionExample) => {
-    setSelectedTemplate(example);
-    setIsSmartSelected(false);
-    setPrefillPrompt(`"${example.name}" 템플릿 기반으로: `);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleStyleClick = (card: StyleCard) => {
+    if (card.action === "smart") {
+      setIsSmartSelected((prev) => !prev);
+      setSmartError("");
+      setPrefillPrompt("");
+    } else {
+      setIsSmartSelected(false);
+      setPrefillPrompt(card.prefillPrompt || "");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
-  const handleSmartClick = () => {
-    if (isSmartSelected) {
-      setIsSmartSelected(false);
-      setSmartError("");
-    } else {
-      setIsSmartSelected(true);
-      setSelectedTemplate(null);
-      setPrefillPrompt("");
-    }
+  const handlePresetClick = (preset: PresetPrompt) => {
+    setIsSmartSelected(false);
+    setPrefillPrompt(preset.prompt);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -525,7 +441,9 @@ const Home: NextPage = () => {
         <div className="mx-auto w-full max-w-2xl px-4 pb-6">
           <div className="flex flex-col items-center gap-3 py-8">
             <Spinner className="h-8 w-8 text-primary" />
-            <p className="text-sm text-muted-foreground">AI가 콘텐츠를 분석하고 있습니다...</p>
+            <p className="text-sm text-muted-foreground">
+              AI가 콘텐츠를 분석하고 있습니다...
+            </p>
           </div>
         </div>
       )}
@@ -537,13 +455,60 @@ const Home: NextPage = () => {
         </div>
       )}
 
-      <TemplateGallery
-        onSelect={handleTemplateSelect}
-        onSmartClick={handleSmartClick}
-        isSmartActive={isSmartSelected}
-        voiceEnabled={voiceEnabled}
-        onVoiceToggle={() => setVoiceEnabled((v) => !v)}
-      />
+      {/* ─── Style cards (4종) ─── */}
+      <section className="mx-auto w-full max-w-3xl px-4 pb-10">
+        <h2 className="mb-4 text-center text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          스타일로 시작하기
+        </h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {STYLE_CARDS.map((card) => (
+            <button
+              key={card.id}
+              type="button"
+              onClick={() => handleStyleClick(card)}
+              className={`group flex flex-col items-center gap-2 rounded-xl border p-5 text-center transition-all ${
+                card.action === "smart" && isSmartSelected
+                  ? "border-primary bg-primary/15 ring-2 ring-primary/40"
+                  : "border-border bg-secondary/50 hover:border-primary/40 hover:bg-secondary"
+              }`}
+            >
+              <span className="text-3xl">{card.emoji}</span>
+              <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                {card.title}
+              </h3>
+              <p className="text-xs text-muted-foreground line-clamp-2">
+                {card.description}
+              </p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── Preset prompts (6종) ─── */}
+      <section className="mx-auto w-full max-w-3xl px-4 pb-16">
+        <div className="mb-4 text-center">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            프리셋으로 바로 체험
+          </h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            클릭하면 프롬프트가 채워집니다. 엔터만 누르세요.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {PRESET_PROMPTS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => handlePresetClick(preset)}
+              className="rounded-lg border border-border bg-secondary/30 px-4 py-3 text-left transition-all hover:border-primary/40 hover:bg-secondary/60"
+            >
+              <span className="text-sm font-medium text-foreground">
+                {preset.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
 
       <ProjectHistory />
     </PageLayout>
