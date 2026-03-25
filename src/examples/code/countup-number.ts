@@ -1,6 +1,6 @@
 import { RemotionExample } from "./index";
 
-export const dataShowcaseCode = `import {
+export const countupNumberCode = `import {
   AbsoluteFill,
   interpolate,
   spring,
@@ -156,12 +156,12 @@ export const MyAnimation = () => {
   );
 };`;
 
-export const dataShowcaseExample: RemotionExample = {
-  id: "data-showcase",
+export const countupNumberExample: RemotionExample = {
+  id: "countup-number",
   name: "임팩트 숫자",
   description:
-    "인디고-바이올렛 그라디언트 위 카운트업 숫자 쇼케이스. 유저/매출/성장률, 하이라이트 언더라인, 글래스 카드",
-  code: dataShowcaseCode,
+    "숫자 카운트업 + 글래스 카드 + 하이라이트. 매출/유저/성장률 등 핵심 지표 강조",
+  code: countupNumberCode,
   durationInFrames: 270,
   fps: 30,
   category: "Other",

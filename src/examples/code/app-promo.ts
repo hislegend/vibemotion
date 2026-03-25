@@ -1,6 +1,6 @@
 import { RemotionExample } from "./index";
 
-export const appPromoFinanceCode = `import {
+export const appPromoCode = `import {
   AbsoluteFill,
   interpolate,
   spring,
@@ -666,11 +666,12 @@ export const MyAnimation = () => {
 };
 `;
 
-export const appPromoFinanceExample: RemotionExample = {
-  id: "app-promo-finance",
-  name: "앱 프로모 - 금융",
-  description: "금융 앱 프로모 영상. 3D 폰 목업, 대시보드 UI, 파스텔 그라디언트, 보케 파티클, 스프링 애니메이션, 3씬 크로스페이드",
-  code: appPromoFinanceCode,
+export const appPromoExample: RemotionExample = {
+  id: "app-promo",
+  name: "앱 프로모",
+  description:
+    "3D 틸트 폰 목업 + 앱 UI + 파스텔 그라데이션. 프롬프트로 업종 지정",
+  code: appPromoCode,
   durationInFrames: 300,
   fps: 30,
   category: "Other",

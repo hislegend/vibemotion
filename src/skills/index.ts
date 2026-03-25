@@ -30,26 +30,18 @@ const GUIDANCE_SKILLS = [
 
 // Example skills (complete working code references)
 const EXAMPLE_SKILLS = [
-  "example-histogram",
+  "example-logo-intro",
+  "example-product-teaser",
+  "example-bar-chart",
+  "example-countup-number",
   "example-progress-bar",
-  "example-text-rotation",
-  "example-falling-spheres",
+  "example-app-promo",
+  "example-testimonial-card",
+  "example-cardnews-carousel",
+  "example-text-effects",
   "example-animated-shapes",
   "example-lottie",
-  "example-gold-price-chart",
-  "example-typewriter-highlight",
-  "example-word-carousel",
-  "example-app-promo-finance",
-  "example-app-promo-social",
-  "example-app-promo-fitness",
-  "example-product-launch",
-  "example-testimonial-card",
-  "example-data-showcase",
-  "example-brand-intro",
-  "example-logo-stinger",
-  "example-number-impact",
-  "example-product-teaser",
-  "example-cardnews-carousel",
+  "example-falling-spheres",
 ] as const;
 
 export const SKILL_NAMES = [...GUIDANCE_SKILLS, ...EXAMPLE_SKILLS] as const;
@@ -73,26 +65,18 @@ const guidanceSkillContent: Record<(typeof GUIDANCE_SKILLS)[number], string> = {
 
 // Map example skill names to example IDs
 const exampleIdMap: Record<(typeof EXAMPLE_SKILLS)[number], string> = {
-  "example-histogram": "histogram",
+  "example-logo-intro": "logo-intro",
+  "example-product-teaser": "product-teaser",
+  "example-bar-chart": "bar-chart",
+  "example-countup-number": "countup-number",
   "example-progress-bar": "progress-bar",
-  "example-text-rotation": "text-rotation",
-  "example-falling-spheres": "falling-spheres",
+  "example-app-promo": "app-promo",
+  "example-testimonial-card": "testimonial-card",
+  "example-cardnews-carousel": "cardnews-carousel",
+  "example-text-effects": "text-effects",
   "example-animated-shapes": "animated-shapes",
   "example-lottie": "lottie-animation",
-  "example-gold-price-chart": "gold-price-chart",
-  "example-typewriter-highlight": "typewriter-highlight",
-  "example-word-carousel": "word-carousel",
-  "example-app-promo-finance": "app-promo-finance",
-  "example-app-promo-social": "app-promo-social",
-  "example-app-promo-fitness": "app-promo-fitness",
-  "example-product-launch": "product-launch",
-  "example-testimonial-card": "testimonial-card",
-  "example-data-showcase": "data-showcase",
-  "example-brand-intro": "brand-intro",
-  "example-logo-stinger": "logo-stinger",
-  "example-number-impact": "number-impact",
-  "example-product-teaser": "product-teaser",
-  "example-cardnews-carousel": "cardnews-carousel",
+  "example-falling-spheres": "falling-spheres",
 };
 
 export function getSkillContent(skillName: SkillName): string {
@@ -142,25 +126,17 @@ Guidance categories (patterns and rules):
 - cardnews-carousel: Instagram carousel cards, card news, multi-slide information posts, educational slides, 카드뉴스, 카루셀, slide deck for social media, infographic carousel, 인스타 카드
 
 Code examples (complete working references):
-- example-histogram: animated bar chart with spring animations and @remotion/shapes
-- example-progress-bar: loading bar animation from 0 to 100%
-- example-text-rotation: rotating words with fade/blur transitions
-- example-falling-spheres: 3D bouncing spheres with ThreeJS and physics simulation
+- example-logo-intro: brand intro/outro with spring-scaled logo, letter-by-letter stagger, slogan fade, glow effects
+- example-product-teaser: product/app teaser with 3D-tilted phone mockup, headline, CTA, bokeh background
+- example-bar-chart: animated bar chart with spring animations, Y-axis labels, staggered entrance
+- example-countup-number: count-up number showcase with glass cards, highlight underlines, key metrics display
+- example-progress-bar: loading/progress bar animation from 0 to 100%
+- example-app-promo: app promotional video with 3D phone mockup, app UI, pastel gradients, multi-scene
+- example-testimonial-card: customer testimonial card with typing effect, star ratings, quote icon spring
+- example-cardnews-carousel: complete Instagram card news carousel with cover, body slides (list/split), closing
+- example-text-effects: typewriter + cursor blink + word highlight, kinetic typography
 - example-animated-shapes: bouncing/rotating SVG shapes (circle, triangle, rect, star)
 - example-lottie: loading and displaying Lottie animations from URL
-- example-gold-price-chart: bar chart with Y-axis labels, monthly data, staggered animations
-- example-typewriter-highlight: typewriter effect with cursor blink, pause, and word highlight
-- example-word-carousel: rotating words with crossfade and blur transitions
-- example-app-promo-finance: app promotional video with 3D tilted phone mockup, detailed finance app UI, pastel gradients, bokeh, spring animations, 3 scenes
-- example-app-promo-social: SNS app promo with Instagram/TikTok-style feed, story rings, lavender gradient, 3D phone mockup, staggered springs
-- example-app-promo-fitness: fitness app promo with mint/emerald gradient, circular calorie chart, step counter, weekly bar graph, workout dashboard
-- example-product-launch: product launch countdown (3-2-1) with dark navy gradient, glow typing reveal, sparkle particles, cinematic spring animations
-- example-testimonial-card: customer testimonial card on warm beige, typing review text, staggered star ratings, quote icon spring, minimal premium aesthetic
-- example-data-showcase: impact number showcase on indigo-violet gradient, count-up numbers (Users/Revenue/Growth), highlight underlines, glass cards
-- example-brand-intro: brand intro/outro on dark background, spring-scaled logo, letter-by-letter stagger name, slogan fade, glow/shadow premium effects
-- example-logo-stinger: logo stinger / brand bumper, logo entrance with spring scale and rotation, glow pulse, tagline fade-in, dark gradient background
-- example-number-impact: single impact number with eased count-up, landing pulse, underline reveal, label stagger, dark background
-- example-product-teaser: product/app teaser with 3D-tilted phone device mockup, headline, CTA, bokeh background, spring entrances
-- example-cardnews-carousel: complete Instagram card news carousel with cover, body slides (list/split modes), and closing — auto layout 4:5 vertical
+- example-falling-spheres: 3D bouncing spheres with ThreeJS and physics simulation
 
 Return an array of matching category names. Return an empty array if none apply.`;

@@ -1,6 +1,6 @@
 import { RemotionExample } from "./index";
 
-export const brandIntroCode = `import {
+export const logoIntroCode = `import {
   AbsoluteFill,
   interpolate,
   spring,
@@ -211,12 +211,12 @@ export const MyAnimation = () => {
   );
 };`;
 
-export const brandIntroExample: RemotionExample = {
-  id: "brand-intro",
-  name: "브랜드 인트로",
+export const logoIntroExample: RemotionExample = {
+  id: "logo-intro",
+  name: "로고 인트로",
   description:
-    "다크 배경 위 프리미엄 브랜드 인트로/아웃트로. 스프링 로고, 글자별 스태거, 슬로건 페이드, 글로우 효과",
-  code: brandIntroCode,
+    "로고 등장 + 브랜드명 스태거 + 슬로건. 인트로/아웃트로 겸용",
+  code: logoIntroCode,
   durationInFrames: 240,
   fps: 30,
   category: "Other",

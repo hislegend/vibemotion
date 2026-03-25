@@ -1,6 +1,6 @@
 import { RemotionExample } from "./index";
 
-export const typewriterHighlightCode = `import React from "react";
+export const textEffectsCode = `import React from "react";
 import {
   useCurrentFrame,
   useVideoConfig,
@@ -188,13 +188,13 @@ export const MyAnimation = () => {
   );
 };`;
 
-export const typewriterHighlightExample: RemotionExample = {
-  id: "typewriter-highlight",
-  name: "타이프라이터 하이라이트",
+export const textEffectsExample: RemotionExample = {
+  id: "text-effects",
+  name: "텍스트 효과",
   description:
-    "깜빡이는 커서 타이프라이터 효과 + 스프링 단어 하이라이트",
+    "타이핑 + 커서 + 하이라이트. 키네틱 타이포그래피 범용",
   category: "Text",
   durationInFrames: 90,
   fps: 30,
-  code: typewriterHighlightCode,
+  code: textEffectsCode,
 };

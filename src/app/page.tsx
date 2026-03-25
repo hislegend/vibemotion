@@ -18,25 +18,35 @@ import type { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/* ─── template display order ─── */
+/* ─── template categories ─── */
 
-const TEMPLATE_ORDER = [
-  "brand-intro",
-  "progress-bar",
-  "text-rotation",
-  "typewriter-highlight",
-  "word-carousel",
-  "animated-shapes",
-  "app-promo-finance",
-  "app-promo-social",
-  "app-promo-fitness",
-  "testimonial-card",
-  "product-launch",
-  "data-showcase",
-  "gold-price-chart",
-  "histogram",
-  "falling-spheres",
-  "cardnews-carousel",
+interface TemplateCategory {
+  label: string;
+  emoji: string;
+  ids: string[];
+}
+
+const TEMPLATE_CATEGORIES: TemplateCategory[] = [
+  {
+    label: "브랜딩",
+    emoji: "🎬",
+    ids: ["logo-intro", "product-teaser"],
+  },
+  {
+    label: "데이터",
+    emoji: "📊",
+    ids: ["bar-chart", "countup-number", "progress-bar"],
+  },
+  {
+    label: "SNS",
+    emoji: "📱",
+    ids: ["app-promo", "testimonial-card", "cardnews-carousel"],
+  },
+  {
+    label: "모션",
+    emoji: "✨",
+    ids: ["text-effects", "animated-shapes", "lottie-animation", "falling-spheres"],
+  },
 ];
 
 const categoryEmoji: Record<RemotionExample["category"], string> = {
@@ -173,14 +183,6 @@ function TemplateGallery({
   onVoiceToggle: () => void;
 }) {
   const exampleMap = new Map(examples.map((e) => [e.id, e]));
-  const orderedExamples = TEMPLATE_ORDER
-    .map((id) => exampleMap.get(id))
-    .filter((e): e is RemotionExample => e !== undefined);
-
-  // Include any examples not in the explicit order (future-proofing)
-  const orderedIds = new Set(TEMPLATE_ORDER);
-  const remaining = examples.filter((e) => !orderedIds.has(e.id));
-  const allExamples = [...orderedExamples, ...remaining];
 
   return (
     <section className="mx-auto w-full max-w-4xl px-4 pb-16">
@@ -189,16 +191,36 @@ function TemplateGallery({
         <p className="mt-1 text-sm text-muted-foreground">AI가 원하는 대로 커스터마이징해줍니다</p>
       </div>
 
-      {/* Cards grid — flat, no tier tabs */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Smart Analysis — always visible */}
+      <div className="mb-8">
         <SmartCard onClick={onSmartClick} active={isSmartActive} voiceEnabled={voiceEnabled} onVoiceToggle={onVoiceToggle} />
-        {allExamples.map((example) => (
-          <TemplateCard
-            key={example.id}
-            example={example}
-            onClick={() => onSelect(example)}
-          />
-        ))}
+      </div>
+
+      {/* Category groups */}
+      <div className="flex flex-col gap-8">
+        {TEMPLATE_CATEGORIES.map((cat) => {
+          const catExamples = cat.ids
+            .map((id) => exampleMap.get(id))
+            .filter((e): e is RemotionExample => e !== undefined);
+          if (catExamples.length === 0) return null;
+
+          return (
+            <div key={cat.label}>
+              <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                {cat.emoji} {cat.label}
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {catExamples.map((example) => (
+                  <TemplateCard
+                    key={example.id}
+                    example={example}
+                    onClick={() => onSelect(example)}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

@@ -1,23 +1,22 @@
-import { animatedShapesExample } from "./animated-shapes";
-import { fallingSpheresExample } from "./falling-spheres";
-import { goldPriceChartExample } from "./gold-price-chart";
-import { histogramExample } from "./histogram";
-import { lottieAnimationExample } from "./lottie-animation";
-import { progressBarExample } from "./progress-bar";
-import { textRotationExample } from "./text-rotation";
-import { typewriterHighlightExample } from "./typewriter-highlight";
-import { wordCarouselExample } from "./word-carousel";
-import { appPromoFinanceExample } from "./app-promo-finance";
-import { appPromoSocialExample } from "./app-promo-social";
-import { appPromoFitnessExample } from "./app-promo-fitness";
-import { productLaunchExample } from "./product-launch";
-import { testimonialCardExample } from "./testimonial-card";
-import { dataShowcaseExample } from "./data-showcase";
-import { brandIntroExample } from "./brand-intro";
-import { logoStingerExample } from "./logo-stinger";
-import { numberImpactExample } from "./number-impact";
+// ─── Branding ───
+import { logoIntroExample } from "./logo-intro";
 import { productTeaserExample } from "./product-teaser";
+
+// ─── Data ───
+import { barChartExample } from "./bar-chart";
+import { countupNumberExample } from "./countup-number";
+import { progressBarExample } from "./progress-bar";
+
+// ─── SNS ───
+import { appPromoExample } from "./app-promo";
+import { testimonialCardExample } from "./testimonial-card";
 import { cardnewsCarouselExample } from "./cardnews-carousel";
+
+// ─── Motion ───
+import { textEffectsExample } from "./text-effects";
+import { animatedShapesExample } from "./animated-shapes";
+import { lottieAnimationExample } from "./lottie-animation";
+import { fallingSpheresExample } from "./falling-spheres";
 
 export interface RemotionExample {
   id: string;
@@ -30,26 +29,22 @@ export interface RemotionExample {
 }
 
 export const examples: RemotionExample[] = [
-  textRotationExample,
-  histogramExample,
+  // 🎬 Branding
+  logoIntroExample,
+  productTeaserExample,
+  // 📊 Data
+  barChartExample,
+  countupNumberExample,
   progressBarExample,
+  // 📱 SNS
+  appPromoExample,
+  testimonialCardExample,
+  cardnewsCarouselExample,
+  // ✨ Motion
+  textEffectsExample,
   animatedShapesExample,
   lottieAnimationExample,
   fallingSpheresExample,
-  goldPriceChartExample,
-  typewriterHighlightExample,
-  wordCarouselExample,
-  appPromoFinanceExample,
-  appPromoSocialExample,
-  appPromoFitnessExample,
-  productLaunchExample,
-  testimonialCardExample,
-  dataShowcaseExample,
-  brandIntroExample,
-  logoStingerExample,
-  numberImpactExample,
-  productTeaserExample,
-  cardnewsCarouselExample,
 ];
 
 export function getExampleById(id: string): RemotionExample | undefined {

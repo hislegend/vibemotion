@@ -1,6 +1,6 @@
 import { RemotionExample } from "./index";
 
-export const goldPriceChartCode = `import { useCurrentFrame, useVideoConfig, AbsoluteFill, spring } from "remotion";
+export const barChartCode = `import { useCurrentFrame, useVideoConfig, AbsoluteFill, spring } from "remotion";
 
 export const MyAnimation = () => {
   /*
@@ -184,13 +184,13 @@ export const MyAnimation = () => {
   );
 };`;
 
-export const goldPriceChartExample: RemotionExample = {
-  id: "gold-price-chart",
-  name: "금 시세 차트",
+export const barChartExample: RemotionExample = {
+  id: "bar-chart",
+  name: "바 차트",
   description:
-    "월별 데이터 바 차트, Y축 레이블, 스태거 애니메이션",
+    "스프링 애니메이션 바 차트. Y축 라벨, 스태거 등장, 데이터 시각화 범용",
   category: "Charts",
   durationInFrames: 150,
   fps: 30,
-  code: goldPriceChartCode,
+  code: barChartCode,
 };
