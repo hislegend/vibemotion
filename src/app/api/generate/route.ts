@@ -90,6 +90,15 @@ Do NOT write any text before the code. No "네, 만들어드릴게요" — just 
 The code starts with import and ends with };
 After code generation, the system will show it in the editor automatically.
 
+**INTERNAL PLANNING (do this mentally before writing code):**
+Before writing any code, plan a video-config structure in your head:
+1. How many scenes? (max 4)
+2. Each scene: { type: Hero|List|Grid|Stat|Flow|Focus|Split, durationInFrames: N, title, items }
+3. Total durationInFrames = sum of all scene durations (or use Series for auto-calculation)
+4. Transition type between scenes (fade/slide/none)
+5. Design tokens: background color, accent color, font
+Then write code that implements this exact structure. This prevents duration miscalculation.
+
 ### STATE: REFINING
 Code exists and user gives feedback.
 '더 화려하게', '색상 바꿔', '텍스트 수정해줘' → apply changes.

@@ -113,7 +113,23 @@ const PRESET_PROMPTS: PresetPrompt[] = [
     id: "cardnews-design-patent",
     label: "카드뉴스: 디자인 특허",
     prompt:
-      '카드뉴스를 Remotion React 코드로 바로 생성해. 4:5 비율(1080x1350). 6장 슬라이드를 <Series>로 순차 연결, 각 슬라이드 durationInFrames=90(3초), 총 540프레임. 각 슬라이드는 별도 함수 컴포넌트로 만들고 useCurrentFrame()으로 로컬 프레임 사용. 표지: 다크 배경 + 헤드라인 "경쟁사가 베끼는 건 기술이 아닙니다". 본문1: 핵심 요소 4가지 목록, 번호 뱃지 spring 순차 등장. 본문2: 보호 전 vs 후 2열 비교. 본문3: 출원 3단계 프로세스. 본문4: "외관이 곧 경쟁력" 인용 강조. 마무리: 로고 + CTA. 색상은 hex만 사용, spring+interpolate+clamp만 사용. 코드만 출력해.',
+      `카드뉴스를 Remotion React 코드로 바로 생성해. 아래 video-config를 정확히 따라서 코드를 작성해:
+
+video-config:
+  aspectRatio: 4:5 (1080x1350)
+  totalScenes: 6
+  scenes:
+    - { type: Hero, duration: 90, title: "경쟁사가 베끼는 건 기술이 아닙니다", subtitle: "디자인 특허로 브랜드를 지키는 법" }
+    - { type: List, duration: 90, title: "디자인 특허의 4가지 핵심 요소", items: ["독창적인 외관", "시각적 심미감", "물품성", "신규성"] }
+    - { type: Split, duration: 90, title: "디자인 보호 전 vs 후", left: ["복제 방치","브랜드 혼동","대응 불가"], right: ["침해 차단","독보적 정체성","법적 청구 가능"] }
+    - { type: Flow, duration: 90, title: "출원 3단계", steps: ["디자인 조사","출원서 작성","심사·등록"] }
+    - { type: Focus, duration: 90, quote: "외관이 곧 경쟁력입니다" }
+    - { type: Hero, duration: 90, title: "BRAND", cta: "디자인 특허, 지금 시작하세요", url: "brand.com" }
+  totalDuration: 540 (6 x 90)
+  transition: none (카드뉴스는 전환 없이 Series로 순차)
+  tokens: { bg: "#0f172a", bgLight: "#fafafa", accent: "#3b82f6", text: "#ffffff", textDark: "#171717", font: "Inter, system-ui, sans-serif" }
+
+<Series>로 6개 씬을 순차 연결. 각 씬은 별도 함수 컴포넌트, useCurrentFrame()으로 로컬 프레임 사용. spring+interpolate+clamp만 사용. 색상은 hex만. 코드만 출력해.`,
     aspectRatio: "4:5",
   },
 ];
