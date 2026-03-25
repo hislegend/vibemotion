@@ -86,7 +86,10 @@ export function getSkillContent(skillName: SkillName): string {
       exampleIdMap[skillName as (typeof EXAMPLE_SKILLS)[number]];
     const example = examples.find((e) => e.id === exampleId);
     if (example) {
-      return `## Example: ${example.name}\n${example.description}\n\n\`\`\`tsx\n${example.code}\n\`\`\``;
+      // Normalize escaped backticks from code-as-string storage
+      // so AI sees clean template literals, not triple-escaped forms
+      const cleanCode = example.code.replace(/\\\\/g, "\\");
+      return `## Example: ${example.name}\n${example.description}\n\n\`\`\`tsx\n${cleanCode}\n\`\`\``;
     }
     return "";
   }
