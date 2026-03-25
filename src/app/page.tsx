@@ -18,48 +18,28 @@ import type { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/* ─── tier config ─── */
+/* ─── template display order ─── */
 
-interface TierConfig {
-  label: string;
-  emoji: string;
-  ids: string[];
-}
-
-const tiers: TierConfig[] = [
-  {
-    label: "Snack (5-10s)",
-    emoji: "⚡",
-    ids: [
-      "brand-intro",
-      "progress-bar",
-      "text-rotation",
-      "typewriter-highlight",
-      "word-carousel",
-      "animated-shapes",
-    ],
-  },
-  {
-    label: "Reels (15-30s)",
-    emoji: "📱",
-    ids: [
-      "app-promo-finance",
-      "app-promo-social",
-      "app-promo-fitness",
-      "testimonial-card",
-    ],
-  },
-  {
-    label: "Short (30-50s)",
-    emoji: "🎬",
-    ids: [
-      "product-launch",
-      "data-showcase",
-      "gold-price-chart",
-      "histogram",
-      "falling-spheres",
-    ],
-  },
+const TEMPLATE_ORDER = [
+  "brand-intro",
+  "progress-bar",
+  "text-rotation",
+  "typewriter-highlight",
+  "word-carousel",
+  "animated-shapes",
+  "app-promo-finance",
+  "app-promo-social",
+  "app-promo-fitness",
+  "testimonial-card",
+  "product-launch",
+  "data-showcase",
+  "gold-price-chart",
+  "histogram",
+  "falling-spheres",
+  "cardnews-cover",
+  "cardnews-body-list",
+  "cardnews-body-split",
+  "cardnews-closing",
 ];
 
 const categoryEmoji: Record<RemotionExample["category"], string> = {
@@ -195,14 +175,15 @@ function TemplateGallery({
   voiceEnabled: boolean;
   onVoiceToggle: () => void;
 }) {
-  const [activeTier, setActiveTier] = useState(0);
   const exampleMap = new Map(examples.map((e) => [e.id, e]));
-  const tieredExamples = tiers.map((tier) => ({
-    ...tier,
-    examples: tier.ids
-      .map((id) => exampleMap.get(id))
-      .filter((e): e is RemotionExample => e !== undefined),
-  }));
+  const orderedExamples = TEMPLATE_ORDER
+    .map((id) => exampleMap.get(id))
+    .filter((e): e is RemotionExample => e !== undefined);
+
+  // Include any examples not in the explicit order (future-proofing)
+  const orderedIds = new Set(TEMPLATE_ORDER);
+  const remaining = examples.filter((e) => !orderedIds.has(e.id));
+  const allExamples = [...orderedExamples, ...remaining];
 
   return (
     <section className="mx-auto w-full max-w-4xl px-4 pb-16">
@@ -211,30 +192,10 @@ function TemplateGallery({
         <p className="mt-1 text-sm text-muted-foreground">AI가 원하는 대로 커스터마이징해줍니다</p>
       </div>
 
-      {/* Tier tabs */}
-      <div className="mb-6 flex justify-center gap-2">
-        {tieredExamples.map((tier, i) => (
-          <button
-            key={tier.label}
-            type="button"
-            onClick={() => setActiveTier(i)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-              activeTier === i
-                ? "bg-primary text-primary-foreground"
-                : "bg-secondary text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {tier.emoji} {tier.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Cards grid */}
+      {/* Cards grid — flat, no tier tabs */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {activeTier === 0 && (
-          <SmartCard onClick={onSmartClick} active={isSmartActive} voiceEnabled={voiceEnabled} onVoiceToggle={onVoiceToggle} />
-        )}
-        {tieredExamples[activeTier].examples.map((example) => (
+        <SmartCard onClick={onSmartClick} active={isSmartActive} voiceEnabled={voiceEnabled} onVoiceToggle={onVoiceToggle} />
+        {allExamples.map((example) => (
           <TemplateCard
             key={example.id}
             example={example}
