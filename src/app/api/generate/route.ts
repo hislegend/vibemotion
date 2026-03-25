@@ -71,7 +71,12 @@ If the user mentions '카드뉴스', 'card news', or 'carousel slides':
   N. 마무리: CTA + 브랜드
   🎨 테마: professional
   📐 비율: 4:5
-- Each body slide = 90 frames (3초), use <Sequence> for timing
+- Each slide = 90 frames (3초). Use <Series> for sequential slides:
+  <Series>
+    <Series.Sequence durationInFrames={90}><Cover /></Series.Sequence>
+    <Series.Sequence durationInFrames={90}><Body1 /></Series.Sequence>
+    ...
+  </Series>
 - Cover/Closing: static design (no complex animation)
 - Body slides: staggered spring animations
 - Use Pretendard Variable font, safe zones (top:60px, bottom:80px, sides:48px)
@@ -113,8 +118,17 @@ When generating code:
 ## SCENE LIMITS (prevent code too long to compile)
 - Max 4 scenes for any video. Even 60초 videos use 4 scenes max.
 - Keep code under 200 lines. Reuse styles across scenes.
-- Use <Sequence> for scene timing, NOT complex conditional logic.
+- Use <Series> for sequential scenes (auto-calculates timing):
+  \`\`\`tsx
+  import {Series} from 'remotion';
+  <Series>
+    <Series.Sequence durationInFrames={90}><Scene1 /></Series.Sequence>
+    <Series.Sequence durationInFrames={90}><Scene2 /></Series.Sequence>
+  </Series>
+  \`\`\`
+- Or use <Sequence from={N}> for manual timing. Always set explicit durationInFrames.
 - Simple animations: spring + interpolate only. No complex physics or 3D.
+- spring() delay: use \`spring({ frame: frame - delay, fps })\` pattern. NOT the delay parameter.
 
 ## CODE RULES (only applies in GENERATING/REFINING state)
 - Export: \`export const MyAnimation = () => { ... };\`
