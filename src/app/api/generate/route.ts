@@ -130,19 +130,75 @@ When generating code:
 - Simple animations: spring + interpolate only. No complex physics or 3D.
 - spring() delay: use \`spring({ frame: frame - delay, fps })\` pattern. NOT the delay parameter.
 
+## SCENE TEMPLATES (choose the best fit for each scene)
+- Hero: title card with headline + subtitle. Spring scale entrance.
+- List: 3-5 items appearing sequentially with stagger delay.
+- Grid: 2×2 or 3×2 card layout. Scale-up spring per card.
+- Stat: big number count-up + label. For metrics/KPIs.
+- Flow: step-by-step process with connectors.
+- Focus: single quote or key message, large centered text.
+- Split: side-by-side comparison (before/after, vs).
+
+## SCENE TRANSITIONS (for multi-scene videos)
+Use \`<TransitionSeries>\` from '@remotion/transitions' for smooth scene cuts:
+\`\`\`tsx
+import {TransitionSeries, linearTiming} from '@remotion/transitions';
+import {fade} from '@remotion/transitions/fade';
+import {slide} from '@remotion/transitions/slide';
+
+<TransitionSeries>
+  <TransitionSeries.Sequence durationInFrames={150}>
+    <Scene1 />
+  </TransitionSeries.Sequence>
+  <TransitionSeries.Transition
+    presentation={fade()}
+    timing={linearTiming({durationInFrames: 15})}
+  />
+  <TransitionSeries.Sequence durationInFrames={150}>
+    <Scene2 />
+  </TransitionSeries.Sequence>
+</TransitionSeries>
+\`\`\`
+Available transitions: fade, slide (from-left/right/top/bottom), wipe, flip.
+NOTE: transitions overlap scenes, so total duration = sum of sequences - sum of transitions.
+
+## DESIGN TOKENS (consistent styling)
+Define all design values as constants at the top of the component:
+\`\`\`tsx
+// Colors
+const COLOR_BG = '#0f172a';
+const COLOR_PRIMARY = '#3b82f6';
+const COLOR_TEXT = '#ffffff';
+const COLOR_TEXT_DIM = '#94a3b8';
+// Typography
+const FONT = 'Inter, system-ui, sans-serif';
+const FONT_SIZE_DISPLAY = 64;
+const FONT_SIZE_BODY = 24;
+// Spacing
+const SAFE_TOP = 60;
+const SAFE_BOTTOM = 80;
+const SAFE_SIDES = 48;
+\`\`\`
+Never hardcode colors/sizes inline. Always reference constants.
+
 ## CODE RULES (only applies in GENERATING/REFINING state)
 - Export: \`export const MyAnimation = () => { ... };\`
 - Hooks first, then constants (UPPER_SNAKE_CASE), then calculations, then JSX
 - All constants INSIDE component body, AFTER hooks
-- Available: useCurrentFrame, useVideoConfig, AbsoluteFill, interpolate, spring, Sequence, TransitionSeries, @remotion/shapes, @remotion/three
+- Available: useCurrentFrame, useVideoConfig, AbsoluteFill, interpolate, spring, Sequence, Series, TransitionSeries, @remotion/shapes, @remotion/transitions
 - NEVER shadow import names as variables
 - NEVER use undefined variables — define ALL variables before using them
-- Template literals: use standard backtick syntax \`...\${expr}...\`. NEVER double-escape or produce \\u escape sequences in template strings.
+- Template literals: use standard backtick syntax. NEVER double-escape or produce \\u escape sequences.
 - ONLY use colors as hex strings ('#ffffff'), never as sRGB/Color objects
 - ONLY import from: 'remotion', '@remotion/*' packages. No other npm packages.
+- CSS transitions/animations are FORBIDDEN — they don't render in Remotion.
+- Tailwind animation classes are FORBIDDEN — use interpolate()/spring() instead.
 - spring() for organic motion, interpolate() for linear progress
 - Always clamp: { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
 - Responsive sizing: Math.max(minValue, Math.round(width * percentage))
+- For staggered animations: \`spring({ frame: Math.max(0, frame - delay), fps, config: {damping: 15, stiffness: 200}, durationInFrames: 25 })\`
+- Always use premountFor on Sequence/Series.Sequence to preload components:
+  \`<Series.Sequence durationInFrames={90} premountFor={30}>\`
 `;
 
 const FOLLOW_UP_SYSTEM_PROMPT = `
