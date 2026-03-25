@@ -438,10 +438,14 @@ export async function POST(req: Request) {
   // Load skill-specific content only for NEW skills (previously used skills are already in context)
   const guidanceSkills = (newSkills as SkillName[]).filter(s => !s.startsWith('example-'));
   const exampleSkills = (newSkills as SkillName[]).filter(s => s.startsWith('example-'));
-  const limitedSkills = [
-    ...guidanceSkills.slice(0, 1),
-    ...exampleSkills.slice(0, 1),
-  ];
+  // Card news: guidance-only (example code has template literal escaping that breaks AI output)
+  const hasCardNews = guidanceSkills.some(s => s === 'cardnews-carousel');
+  const limitedSkills = hasCardNews
+    ? guidanceSkills.slice(0, 1)
+    : [
+        ...guidanceSkills.slice(0, 1),
+        ...exampleSkills.slice(0, 1),
+      ];
   const skillContent = getCombinedSkillContent(limitedSkills);
   const enhancedSystemPrompt = skillContent
     ? `${SYSTEM_PROMPT}${dimensionsPrompt}\n## SKILL-SPECIFIC GUIDANCE\n${skillContent}`
