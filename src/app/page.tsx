@@ -462,7 +462,7 @@ const Home: NextPage = () => {
       }
       router.push(`/generate?${params.toString()}`);
     },
-    [router, isSmartSelected, runSmartAnalysis],
+    [router, isSmartSelected, runSmartAnalysis, prefillDuration],
   );
 
   const handleStyleClick = (card: StyleCard) => {
