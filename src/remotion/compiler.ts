@@ -64,8 +64,9 @@ function extractComponentBody(code: string): string {
   cleaned = cleaned.trim();
 
   // Extract body from "export const MyAnimation = () => { ... };"
+  // Also handles: export const X: React.FC = () => { ... };
   const match = cleaned.match(
-    /^([\s\S]*?)export\s+const\s+\w+\s*=\s*\(\s*\)\s*=>\s*\{([\s\S]*)\};?\s*$/,
+    /^([\s\S]*?)export\s+const\s+\w+\s*(?::\s*[\w.<>,\s|]+)?\s*=\s*\(\s*\)\s*=>\s*\{([\s\S]*)\};?\s*$/,
   );
 
   if (match) {

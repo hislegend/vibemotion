@@ -220,13 +220,14 @@ const SAFE_SIDES = 48;
 Never hardcode colors/sizes inline. Always reference constants.
 
 ## CODE RULES (only applies in GENERATING/REFINING state)
-- Export: \`export const MyAnimation = () => { ... };\`
+- Export: \`export const MyAnimation = () => { ... };\` (NEVER use React.FC type annotation)
 - Hooks first, then constants (UPPER_SNAKE_CASE), then calculations, then JSX
 - All constants INSIDE component body, AFTER hooks
 - Available: useCurrentFrame, useVideoConfig, AbsoluteFill, interpolate, spring, Sequence, Series, TransitionSeries, @remotion/shapes, @remotion/transitions
 - NEVER shadow import names as variables
 - NEVER use undefined variables — define ALL variables before using them
 - Template literals: use standard backtick syntax. NEVER double-escape or produce \\u escape sequences.
+- Korean text: ALWAYS put Korean strings in const variables, then reference in JSX. NEVER put Korean directly inside template literal expressions. Example: const TITLE = "경쟁사가 베끼는 건"; then use {TITLE} in JSX.
 - ONLY use colors as hex strings ('#ffffff'), never as sRGB/Color objects
 - ONLY import from: 'remotion', '@remotion/*' packages. No other npm packages.
 - CSS transitions/animations are FORBIDDEN — they don't render in Remotion.
