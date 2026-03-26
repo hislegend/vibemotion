@@ -111,7 +111,7 @@ const PRESET_PROMPTS: PresetPrompt[] = [
   },
   {
     id: "cardnews-design-patent",
-    label: "카드뉴스: 디자인 특허",
+    label: "카드뉴스: 디자인 특허 (태정 스타일)",
     prompt:
       `카드뉴스를 Remotion React 코드로 바로 생성해. 아래 video-config를 정확히 따라서 코드를 작성해:
 
@@ -127,7 +127,15 @@ video-config:
     - { type: Hero, duration: 90, title: "BRAND", cta: "디자인 특허, 지금 시작하세요", url: "brand.com" }
   totalDuration: 540 (6 x 90)
   transition: none (카드뉴스는 전환 없이 Series로 순차)
-  tokens: { bg: "#0f172a", bgLight: "#fafafa", accent: "#3b82f6", text: "#ffffff", textDark: "#171717", font: "Inter, system-ui, sans-serif" }
+  theme: taejeong (다크 차콜 배경, 시안 악센트, 항목별 다른 색상 바)
+  tokens: { bg: "#1a1a2e", bgDark: "#2d2d44", accent: "#00AEEF", accentLight: "#E0F7FF", text: "#ffffff", font: "Inter, system-ui, sans-serif" }
+  itemColors: ["#ef4444", "#f97316", "#8b5cf6", "#ec4899", "#22c55e"] (각 항목 바에 다른 색상, rgba 0.15 배경)
+
+디자인 규칙:
+- 각 본문 슬라이드 하단에 accent 배경 강조 박스 필수 (핵심 문장)
+- list 모드: 항목마다 다른 색상 바(rounded-xl) + 좌측 emoji 아이콘 + 우측 태그 pill
+- 상단 바: accent 스트라이프 4px + 슬라이드 번호 + 우측 브랜드명
+- 면적 3분할: 상단 30%(타이틀) / 중앙 50%(콘텐츠) / 하단 20%(강조)
 
 <Series>로 6개 씬을 순차 연결. 각 씬은 별도 함수 컴포넌트, useCurrentFrame()으로 로컬 프레임 사용. spring+interpolate+clamp만 사용. 색상은 hex만. 코드만 출력해.`,
     aspectRatio: "4:5",
