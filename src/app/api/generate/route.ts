@@ -109,6 +109,7 @@ Code exists and user gives feedback.
 - User approved proposal → GENERATING
 - Code already generated + user feedback → REFINING (generate edited code)
 - User explicitly says '바로 만들어' → PROPOSING (skip gathering)
+- If prompt contains 'video-config' or '코드만 출력해' or starts with explicit technical specs (durationInFrames, Series, Sequence) → GENERATING directly. Skip GATHERING and PROPOSING entirely.
 
 ## DURATION RULES (CRITICAL for GENERATING state)
 When generating code:
