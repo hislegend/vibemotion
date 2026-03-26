@@ -114,31 +114,66 @@ const PRESET_PROMPTS: PresetPrompt[] = [
     id: "cardnews-design-patent",
     label: "카드뉴스: 디자인 특허 (태정 스타일)",
     prompt:
-      `카드뉴스를 Remotion React 코드로 바로 생성해. 아래 video-config를 정확히 따라서 코드를 작성해:
+      `카드뉴스를 Remotion React 코드로 생성해. 구현 정확성보다 먼저 "고밀도, 에디토리얼, 완성도 높은 카드뉴스 디자인"을 우선한다.
+
+비주얼 목표:
+- 레퍼런스 느낌: 스타트업 인사이트 카드뉴스 + 프리미엄 SNS 에디토리얼
+- 화면이 듬성듬성 비어 보이면 실패
+- 모든 씬은 4:5 캔버스에서 시각적으로 82~90% 이상을 사용
+- 텍스트를 그냥 놓지 말고, 반드시 패널/카드/장식 요소와 함께 배치
+- 중앙에 작은 요소를 띄우는 구도 금지
+- 각 씬은 명확한 시각적 덩어리 2~4개로 구성
+- 단순한 PPT처럼 보이지 말고, 카드뉴스 디자이너가 만든 것처럼 보여야 함
 
 video-config:
-  aspectRatio: 4:5 (1080x1350)
-  totalScenes: 6
-  scenes:
-    - { type: Hero, duration: 90, title: "경쟁사가 베끼는 건 기술이 아닙니다", subtitle: "디자인 특허로 브랜드를 지키는 법" }
-    - { type: List, duration: 90, title: "디자인 특허의 4가지 핵심 요소", items: ["독창적인 외관", "시각적 심미감", "물품성", "신규성"] }
-    - { type: Split, duration: 90, title: "디자인 보호 전 vs 후", left: ["복제 방치","브랜드 혼동","대응 불가"], right: ["침해 차단","독보적 정체성","법적 청구 가능"] }
-    - { type: Flow, duration: 90, title: "출원 3단계", steps: ["디자인 조사","출원서 작성","심사·등록"] }
-    - { type: Focus, duration: 90, quote: "외관이 곧 경쟁력입니다" }
-    - { type: Hero, duration: 90, title: "BRAND", cta: "디자인 특허, 지금 시작하세요", url: "brand.com" }
-  totalDuration: 540 (6 x 90)
-  transition: none (카드뉴스는 전환 없이 Series로 순차)
-  theme: taejeong (다크 차콜 배경, 시안 악센트, 항목별 다른 색상 바)
-  tokens: { bg: "#1a1a2e", bgDark: "#2d2d44", accent: "#00AEEF", accentLight: "#E0F7FF", text: "#ffffff", font: "Inter, system-ui, sans-serif" }
-  itemColors: ["#ef4444", "#f97316", "#8b5cf6", "#ec4899", "#22c55e"] (각 항목 바에 다른 색상, rgba 0.15 배경)
+aspectRatio: 1080x1350
+totalScenes: 6
+transition: none
+theme:
+  bg: "#1a1a2e"
+  bgDark: "#2d2d44"
+  accent: "#00AEEF"
+  accentLight: "#E0F7FF"
+  text: "#ffffff"
+  font: "Inter, system-ui, sans-serif"
+itemColors: ["#ef4444", "#f97316", "#8b5cf6", "#ec4899", "#22c55e"]
 
-디자인 규칙:
-- 각 본문 슬라이드 하단에 accent 배경 강조 박스 필수 (핵심 문장)
-- list 모드: 항목마다 다른 색상 바(rounded-xl) + 좌측 emoji 아이콘 + 우측 태그 pill
-- 상단 바: accent 스트라이프 4px + 슬라이드 번호 + 우측 브랜드명
-- 면적 3분할: 상단 30%(타이틀) / 중앙 50%(콘텐츠) / 하단 20%(강조)
+공통 레이아웃 규칙:
+- 외곽 패딩 60px
+- 상단 바 높이 44px, accent 스트라이프 4px 필수
+- 상단 바에는 슬라이드 번호와 우측 브랜드명 표시
+- 본문 영역은 상단 28%, 중앙 52%, 하단 20%
+- 하단 강조 박스는 모든 본문 씬에서 반드시 크게 사용, 높이 150~180px
+- 메인 콘텐츠는 캔버스 너비의 최소 84%를 차지
+- 카드, 패널, 강조 박스는 모두 rounded corners 사용
+- 8-digit hex만 사용 가능, rgba 금지
+- 배경에는 최소 2개의 장식 레이어 사용: 큰 반투명 패널, 얇은 라인/그리드/워드마크 중 택2
 
-<Series>로 6개 씬을 순차 연결. 각 씬은 별도 함수 컴포넌트, useCurrentFrame()으로 로컬 프레임 사용. spring+interpolate+clamp만 사용. 색상은 hex만. 코드만 출력해.`,
+타이포 규칙:
+- Hero title: 72~92px, 800, line-height 0.95~1.05, 최대 3줄
+- Body title: 52~64px, 800, 최대 2줄
+- Body text: 30~38px
+- Quote: 96~120px, 800
+- 한국어 긴 제목은 의미 단위로 줄바꿈해 시각적으로 큰 덩어리를 유지
+- 폰트를 줄여서 해결하지 말고 줄바꿈과 블록 크기로 해결
+
+씬 구성:
+1. Cover(Hero): "경쟁사가 베끼는 건 기술이 아닙니다", sub: "디자인 특허로 브랜드를 지키는 법". 좌측 정렬, 배경에 초대형 워드마크
+2. List: "디자인 특허의 4가지 핵심 요소", items: ["독창적인 외관","시각적 심미감","물품성","신규성"]. 각 항목 높이 110px, 좌측 16px 컬러바, emoji, 우측 pill
+3. Split: "보호 전 vs 후". 좌우 카드 각 42% 너비. left:["복제 방치","혼동","대응 불가"], right:["침해 차단","독보적 정체성","법적 청구 가능"]
+4. Flow: "출원 3단계". 수직 연결, 화살표/번호칩. steps:["디자인 조사","출원서 작성","심사·등록"]
+5. Focus: "외관이 곧 경쟁력입니다". 96~120px, 큰 따옴표 160px, 배경 반투명 패널
+6. Closing: BRAND를 배경 워드마크(300px, opacity 0.04), CTA 박스 전면, url pill
+
+하지 말 것:
+- 작은 텍스트 묶음을 화면 중앙에 띄우지 말 것
+- 요소들을 균등분포로 띄엄띄엄 배치하지 말 것
+- 단일 평면 배경 위에 텍스트만 올리지 말 것
+- 카드 높이를 콘텐츠에 맞춰 작게 만들지 말 것
+- 타이틀 폰트를 과도하게 줄이지 말 것
+- 모든 씬을 동일한 레이아웃으로 반복하지 말 것
+
+각 씬 durationInFrames: 90. <Series>로 연결. 별도 함수 컴포넌트. useCurrentFrame(). spring+interpolate+clamp. 코드만 출력해.`,
     aspectRatio: "4:5",
     duration: 18,
   },
