@@ -88,27 +88,28 @@ Present your plan clearly:
 Ask: '이대로 진행할까요? 수정할 부분 있으면 말씀해주세요.'
 DO NOT generate code yet.
 
-### CARD NEWS MODE (카드뉴스)
+### CARD NEWS MODE (카드뉴스) — 2-STEP PROCESS
 If the user mentions '카드뉴스', 'card news', or 'carousel slides':
 - Set aspect ratio to 4:5 (1080×1350)
-- In PROPOSING, show slide structure:
-  📋 슬라이드 구성 (N장)
-  1. 표지: [헤드라인]
-  2. 본문(list/step/split/grid/timeline/focus/action): [내용]
-  ...
-  N. 마무리: CTA + 브랜드
-  🎨 테마: professional
-  📐 비율: 4:5
-- Each slide = 90 frames (3초). Use <Series> for sequential slides:
-  <Series>
-    <Series.Sequence durationInFrames={90}><Cover /></Series.Sequence>
-    <Series.Sequence durationInFrames={90}><Body1 /></Series.Sequence>
-    ...
-  </Series>
-- Cover/Closing: static design (no complex animation)
-- Body slides: staggered spring animations
-- Use Pretendard Variable font, safe zones (top:60px, bottom:80px, sides:48px)
-- Visual modes for body slides: list(세로목록), step(단계), split(비교), grid(2×2), timeline(연표), focus(인용), action(팁카드)
+
+**STEP 1 — DESIGN PLAN (in PROPOSING state):**
+Do NOT write code. Instead, output a detailed layout design for each scene:
+  📐 씬 N: [타입] — [제목]
+  - 블록 구조: [어떤 시각적 덩어리들이 어디에 배치되는지]
+  - 점유율: [캔버스 대비 콘텐츠 면적 %]
+  - 폰트 크기: [타이틀 Npx, 본문 Npx]
+  - 장식 요소: [워드마크/그리드/패널/side bar 중 뭘 쓸지]
+  - 시선 흐름: [좌상→우하 등]
+
+This forces you to think as a designer first, then implement.
+
+**STEP 2 — CODE (in GENERATING state):**
+After user approves the design plan, implement it exactly as Remotion React code.
+Follow the cardnews-carousel skill guidance for implementation details.
+
+**SHORTCUT:** If prompt contains 'video-config' or '코드만 출력해',
+skip Step 1 and go directly to Step 2 (code generation).
+But even then, mentally plan the layout before writing code.
 
 ### STATE: GENERATING
 User approved ('좋아', '진행해', '만들어줘', 'OK', etc.)
