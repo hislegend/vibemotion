@@ -196,6 +196,23 @@ function GeneratePageContent() {
     if (wasStreaming && !isStreaming && !lastResponseWasConversationRef.current) {
       markAsAiGenerated();
       compileCode(codeRef.current);
+
+      // Final duration parse after streaming completes (catches self-healing rewrites)
+      if (!durationParam && codeRef.current) {
+        const finalCode = codeRef.current;
+        const allDurations = Array.from(finalCode.matchAll(/durationInFrames\s*[=:]\s*(\d+)/g))
+          .map(m => parseInt(m[1], 10))
+          .filter(d => d > 0);
+        if (allDurations.length > 0) {
+          const usesSeries = finalCode.includes("Series.Sequence") || finalCode.includes("<Series>");
+          const parsedDuration = usesSeries && allDurations.length > 1
+            ? allDurations.reduce((sum, d) => sum + d, 0)
+            : Math.max(...allDurations);
+          if (parsedDuration > 0) {
+            setDurationInFrames(parsedDuration);
+          }
+        }
+      }
     }
     // Reset conversation flag when streaming starts
     if (isStreaming) {
@@ -209,8 +226,8 @@ function GeneratePageContent() {
       setHasGeneratedOnce(true);
 
       // Parse durationInFrames from AI-generated code
-      // BUT only if no explicit duration was passed via URL (user/smart analysis choice takes priority)
-      if (isStreamingRef.current && !durationParam) {
+      // Parse during streaming AND after follow-up edits (non-streaming)
+      if (!durationParam) {
         // Strategy 1: Find all durationInFrames values and sum Series.Sequence durations
         const allDurations = Array.from(newCode.matchAll(/durationInFrames\s*[=:]\s*(\d+)/g))
           .map(m => parseInt(m[1], 10))
