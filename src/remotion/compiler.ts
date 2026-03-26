@@ -63,6 +63,10 @@ function extractComponentBody(code: string): string {
 
   cleaned = cleaned.trim();
 
+  // Fix escaped backticks from AI output: \` → `
+  // AI sometimes produces escaped template literals that Babel can't parse
+  cleaned = cleaned.replace(/\\`/g, "`");
+
   // Extract body from "export const MyAnimation = () => { ... };"
   // Also handles: export const X: React.FC = () => { ... };
   const match = cleaned.match(
