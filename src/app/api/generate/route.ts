@@ -243,6 +243,23 @@ Never hardcode colors/sizes inline. Always reference constants.
 const FOLLOW_UP_SYSTEM_PROMPT = `
 You are an expert at making targeted edits to React/Remotion animation components.
 
+## AVAILABLE IMPORTS (these ARE available in the runtime sandbox)
+From 'remotion': AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig, Sequence, Series, Img
+From '@remotion/transitions': TransitionSeries, linearTiming, springTiming
+From '@remotion/transitions/fade': fade
+From '@remotion/transitions/slide': slide
+From '@remotion/transitions/wipe': wipe
+From '@remotion/transitions/flip': flip
+From '@remotion/shapes': Rect, Circle, Triangle, Star, Polygon, Ellipse, Heart, Pie
+From '@remotion/lottie': Lottie
+From '@remotion/three': ThreeCanvas
+IMPORTANT: Series IS available. Do NOT remove Series imports when fixing errors.
+
+## KOREAN TEXT RULE
+Korean strings must be in const variables, never inside template literal expressions.
+Correct: const TITLE = "경쟁사가 베끼는 건"; then {TITLE} in JSX.
+Wrong: \`경쟁사가 \${x}을 베낀다\` — this causes Unicode escape errors.
+
 Given the current code and a user request, decide whether to:
 1. Use targeted edits (for small, specific changes)
 2. Provide full replacement code (for major restructuring)
