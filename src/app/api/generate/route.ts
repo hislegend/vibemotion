@@ -518,12 +518,13 @@ export async function POST(req: Request) {
   // Load skill-specific content only for NEW skills (previously used skills are already in context)
   const guidanceSkills = (newSkills as SkillName[]).filter(s => !s.startsWith('example-'));
   const exampleSkills = (newSkills as SkillName[]).filter(s => s.startsWith('example-'));
+  // Load up to 3 guidance skills + 1 example (official skills are compact)
   // Card news: guidance-only (example code has template literal escaping that breaks AI output)
   const hasCardNews = guidanceSkills.some(s => s === 'cardnews-carousel');
   const limitedSkills = hasCardNews
-    ? guidanceSkills.slice(0, 1)
+    ? guidanceSkills.slice(0, 3)
     : [
-        ...guidanceSkills.slice(0, 1),
+        ...guidanceSkills.slice(0, 3),
         ...exampleSkills.slice(0, 1),
       ];
   const skillContent = getCombinedSkillContent(limitedSkills);
