@@ -211,9 +211,24 @@ function GeneratePageContent() {
       // Parse durationInFrames from AI-generated code
       // BUT only if no explicit duration was passed via URL (user/smart analysis choice takes priority)
       if (isStreamingRef.current && !durationParam) {
-        const durationMatch = newCode.match(/durationInFrames\s*[=:]\s*(\d+)/);
-        if (durationMatch) {
-          const parsedDuration = parseInt(durationMatch[1], 10);
+        // Strategy 1: Find all durationInFrames values and sum Series.Sequence durations
+        const allDurations = Array.from(newCode.matchAll(/durationInFrames\s*[=:]\s*(\d+)/g))
+          .map(m => parseInt(m[1], 10))
+          .filter(d => d > 0);
+
+        if (allDurations.length > 0) {
+          // If code uses <Series> or <Series.Sequence>, sum all sequence durations
+          const usesSeries = newCode.includes("Series.Sequence") || newCode.includes("<Series>");
+          let parsedDuration: number;
+
+          if (usesSeries && allDurations.length > 1) {
+            // Sum all Series.Sequence durations
+            parsedDuration = allDurations.reduce((sum, d) => sum + d, 0);
+          } else {
+            // Use the largest value (likely the total composition duration)
+            parsedDuration = Math.max(...allDurations);
+          }
+
           if (parsedDuration > 0 && parsedDuration !== durationInFrames) {
             setDurationInFrames(parsedDuration);
           }
