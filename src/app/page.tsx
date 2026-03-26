@@ -68,6 +68,7 @@ interface PresetPrompt {
   label: string;
   prompt: string;
   aspectRatio?: AspectRatioId;
+  duration?: number; // seconds
 }
 
 const PRESET_PROMPTS: PresetPrompt[] = [
@@ -139,6 +140,7 @@ video-config:
 
 <Series>로 6개 씬을 순차 연결. 각 씬은 별도 함수 컴포넌트, useCurrentFrame()으로 로컬 프레임 사용. spring+interpolate+clamp만 사용. 색상은 hex만. 코드만 출력해.`,
     aspectRatio: "4:5",
+    duration: 18,
   },
 ];
 
@@ -353,6 +355,7 @@ const Home: NextPage = () => {
   const [isNavigating, setIsNavigating] = useState(false);
   const [prefillPrompt, setPrefillPrompt] = useState("");
   const [prefillAspectRatio, setPrefillAspectRatio] = useState<AspectRatioId | null>(null);
+  const [prefillDuration, setPrefillDuration] = useState<number | null>(null);
   const [isSmartSelected, setIsSmartSelected] = useState(false);
   const [smartAnalyzing, setSmartAnalyzing] = useState(false);
   const [smartError, setSmartError] = useState("");
@@ -435,6 +438,10 @@ const Home: NextPage = () => {
         sessionStorage.removeItem("initialAttachedImages");
       }
       const params = new URLSearchParams({ prompt, model, aspectRatio });
+      // Add duration for presets that specify it (prevents 1-second video)
+      if (prefillDuration) {
+        params.set("duration", String(prefillDuration));
+      }
       router.push(`/generate?${params.toString()}`);
     },
     [router, isSmartSelected, runSmartAnalysis],
@@ -458,6 +465,7 @@ const Home: NextPage = () => {
     setIsSmartSelected(false);
     setPrefillPrompt(preset.prompt);
     setPrefillAspectRatio(preset.aspectRatio || null);
+    setPrefillDuration(preset.duration || null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
