@@ -114,70 +114,31 @@ const PRESET_PROMPTS: PresetPrompt[] = [
     id: "cardnews-design-patent",
     label: "카드뉴스: 디자인 특허 (태정 스타일)",
     prompt:
-      `카드뉴스를 Remotion React 코드로 생성해. 구현 정확성보다 먼저 "고밀도, 에디토리얼, 완성도 높은 카드뉴스 디자인"을 우선한다.
+      `Card News Carousel 가이드를 기본으로 따르되, 이번 결과에서는 다음 override를 우선 적용해:
 
-비주얼 목표:
-- 레퍼런스 느낌: 스타트업 인사이트 카드뉴스 + 프리미엄 SNS 에디토리얼
-- 화면이 듬성듬성 비어 보이면 실패
-- 모든 씬은 4:5 캔버스에서 시각적으로 82~90% 이상을 사용
-- 텍스트를 그냥 놓지 말고, 반드시 패널/카드/장식 요소와 함께 배치
-- 중앙에 작은 요소를 띄우는 구도 금지
-- 각 씬은 명확한 시각적 덩어리 2~4개로 구성
-- 단순한 PPT처럼 보이지 말고, 카드뉴스 디자이너가 만든 것처럼 보여야 함
+OVERRIDE (가이드보다 우선):
+- 콘텐츠 면적을 각 슬라이드의 80~88%까지 사용
+- 모든 본문 카드 높이를 최소 96px 이상으로 유지
+- 항목 간격은 8~10px로 제한
+- 타이틀과 본문 사이 간격은 12~16px
+- 작은 요소를 중앙에 띄우지 말고 큰 패널 위주로 배치
+- 각 씬마다 배경 패널 2개 이상 사용
+- 텍스트만 놓지 말고 반드시 카드/패널/강조바 위에 배치
+- 결과가 sparse하거나 PPT처럼 보이면 실패로 간주
+- Cover / List / Split / Focus 씬은 화면을 꽉 채우는 editorial layout으로 재해석
 
-video-config:
-aspectRatio: 1080x1350
-totalScenes: 6
-transition: none
-theme:
-  bg: "#1a1a2e"
-  bgDark: "#2d2d44"
-  accent: "#00AEEF"
-  accentLight: "#E0F7FF"
-  text: "#ffffff"
-  font: "Inter, system-ui, sans-serif"
+theme: bg "#1a1a2e", accent "#00AEEF", text "#ffffff", font "Inter, system-ui, sans-serif"
 itemColors: ["#ef4444", "#f97316", "#8b5cf6", "#ec4899", "#22c55e"]
 
-공통 레이아웃 규칙:
-- 외곽 패딩 60px
-- 상단 바 높이 44px, accent 스트라이프 4px 필수
-- 상단 바에는 슬라이드 번호와 우측 브랜드명 표시
-- 본문 영역은 상단 28%, 중앙 52%, 하단 20%
-- 하단 강조 박스는 모든 본문 씬에서 반드시 크게 사용, 높이 150~180px
-- 메인 콘텐츠는 캔버스 너비의 최소 84%를 차지
-- 카드, 패널, 강조 박스는 모두 rounded corners 사용
-- 8-digit hex만 사용 가능, rgba 금지
-- 배경에는 최소 2개의 장식 레이어 사용: 큰 반투명 패널, 얇은 라인/그리드/워드마크 중 택2
+씬 구성 (6장, 각 durationInFrames: 90):
+1. Cover: "경쟁사가 베끼는 건 기술이 아닙니다" (72~92px, w800, 좌정렬), sub "디자인 특허로 브랜드를 지키는 법", 배경 워드마크
+2. List: "핵심 요소 4가지" — 4개 항목 높이 110px, 좌 16px 컬러바 + emoji + pill. items:["독창적인 외관","시각적 심미감","물품성","신규성"]
+3. Split: "보호 전 vs 후" — 좌우 42% 너비 카드. left:["복제 방치","혼동","대응 불가"], right:["침해 차단","독보적 정체성","법적 청구 가능"]
+4. Flow: "출원 3단계" — 번호 배지+연결선. steps:["디자인 조사","출원서 작성","심사·등록"]
+5. Focus: "외관이 곧 경쟁력입니다" (96~120px), 큰 따옴표 장식 160px, accent side bar
+6. Closing: BRAND 워드마크 300px + CTA 박스 전면
 
-타이포 규칙:
-- Hero title: 72~92px, 800, line-height 0.95~1.05, 최대 3줄
-- Body title: 52~64px, 800, 최대 2줄
-- Body text: 30~38px
-- Quote: 96~120px, 800
-- 한국어 긴 제목은 의미 단위로 줄바꿈해 시각적으로 큰 덩어리를 유지
-- 폰트를 줄여서 해결하지 말고 줄바꿈과 블록 크기로 해결
-
-씬별 디자인 규칙:
-1) Hero: 좌측 정렬, 대제목이 화면 시각적 중심을 크게 차지, 배경에 초대형 반투명 워드마크, 하단 CTA/서브카피는 독립 박스로 강조, 빈 공간이 남으면 큰 배경 패널로 메워라
-   title: "경쟁사가 베끼는 건 기술이 아닙니다", sub: "디자인 특허로 브랜드를 지키는 법"
-2) List: 항목 4개를 세로로 빽빽하게 배치, 각 항목 높이 110~120px 큰 카드, 좌측 16px 컬러바+emoji+제목+우측pill 필수, 간격 18~22px, 각 카드 뒤에 약한 tinted panel
-   title: "디자인 특허의 4가지 핵심 요소", items: ["독창적인 외관","시각적 심미감","물품성","신규성"]
-3) Split: 좌우 카드 각 42~44% 너비, 중앙 간격 24px, left는 경고느낌 right는 해결느낌, 상단title+중앙비교+하단강조 꽉 차게
-   title: "보호 전 vs 후", left:["복제 방치","혼동","대응 불가"], right:["침해 차단","독보적 정체성","법적 청구 가능"]
-4) Flow: 3개 step 카드를 연결 구조로 배치, 번호 원형 배지와 연결선 필수, 리듬감 있게, 각 step 카드 충분히 크고 중앙 꽉 채움
-   title: "출원 3단계", steps:["디자인 조사","출원서 작성","심사·등록"]
-5) Focus: quote를 매우 크게(96~120px), 큰 따옴표 장식(160px)+accent side bar+반투명 배경 패널 필수, 장식 요소로 밀도감 확보
-   quote: "외관이 곧 경쟁력입니다"
-6) Final Hero: "BRAND"를 초대형 배경 워드마크(300px, 0.04), CTA 박스를 전면 하단에 크게, 강한 엔딩 카드
-
-금지 사항:
-- 텍스트만 배경 위에 띄우기
-- 과도한 중앙 정렬
-- 작은 카드 여러 개를 띄엄띄엄 배치
-- 콘텐츠 크기를 줄여 여백을 만드는 방식
-- 모든 씬을 동일한 레이아웃 패턴으로 반복
-
-각 씬 durationInFrames: 90. <Series>로 연결. 별도 함수 컴포넌트. useCurrentFrame(). spring+interpolate+clamp. 코드만 출력해.`,
+<Series>로 연결. 별도 함수 컴포넌트. useCurrentFrame(). spring+interpolate+clamp. 8-digit hex only. 코드만 출력해.`,
     aspectRatio: "4:5",
     duration: 18,
   },
