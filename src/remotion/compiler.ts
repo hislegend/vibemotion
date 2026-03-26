@@ -17,6 +17,7 @@ import {
   AbsoluteFill,
   Img,
   Sequence,
+  Series,
   interpolate,
   spring,
   useCurrentFrame,
@@ -102,6 +103,7 @@ export function compileCode(code: string): CompilationResult {
       useVideoConfig,
       spring,
       Sequence,
+      Series,
       Img,
     };
 
@@ -120,6 +122,7 @@ export function compileCode(code: string): CompilationResult {
       "useVideoConfig",
       "spring",
       "Sequence",
+      "Series",
       "Img",
       "useState",
       "useEffect",
@@ -166,6 +169,7 @@ export function compileCode(code: string): CompilationResult {
       useVideoConfig,
       spring,
       Sequence,
+      Series,
       Img,
       useState,
       useEffect,
