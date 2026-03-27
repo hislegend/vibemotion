@@ -230,6 +230,7 @@ Never hardcode colors/sizes inline. Always reference constants.
 - Template literals: use standard backtick syntax. NEVER double-escape or produce \\u escape sequences.
 - Korean text: ALWAYS put Korean strings in const variables, then reference in JSX. NEVER put Korean directly inside template literal expressions. Example: const TITLE = "경쟁사가 베끼는 건"; then use {TITLE} in JSX.
 - ONLY use colors as hex strings ('#ffffff'), never as sRGB/Color objects
+- NEVER concatenate hex + opacity inside template literals like \`\${COLOR}0F\`. This breaks compilation. Instead define full 8-digit hex as constants: const COLOR_ACCENT_10 = "#00AEEF1A"; const COLOR_ACCENT_50 = "#00AEEF80";
 - ONLY import from: 'remotion', '@remotion/*' packages. No other npm packages.
 - CSS transitions/animations are FORBIDDEN — they don't render in Remotion.
 - Tailwind animation classes are FORBIDDEN — use interpolate()/spring() instead.
@@ -255,6 +256,10 @@ From '@remotion/shapes': Rect, Circle, Triangle, Star, Polygon, Ellipse, Heart, 
 From '@remotion/lottie': Lottie
 From '@remotion/three': ThreeCanvas
 IMPORTANT: Series IS available. Do NOT remove Series imports when fixing errors.
+
+## HEX COLOR RULE
+NEVER concatenate hex + opacity inside template literals like \`\${COLOR}0F\`.
+Define full 8-digit hex as constants: const COLOR_10 = "#00AEEF1A";
 
 ## KOREAN TEXT RULE
 Korean strings must be in const variables, never inside template literal expressions.

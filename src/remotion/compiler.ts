@@ -72,6 +72,10 @@ function extractComponentBody(code: string): string {
   cleaned = cleaned.replace(/'([^']*\$\{[^}]+\}[^']*)'/g, "`$1`");
   cleaned = cleaned.replace(/"([^"]*\$\{[^}]+\}[^"]*)"/g, "`$1`");
 
+  // Fix hex+opacity concatenation: `${COLOR}0F` → `${COLOR + "0F"}` or full hex
+  // Pattern: }XX where XX is hex chars immediately after template expression close
+  cleaned = cleaned.replace(/\}([0-9A-Fa-f]{2})(?=[`'"])/g, ' + "$1"}');
+
   // Extract body from "export const MyAnimation = () => { ... };"
   // Also handles: export const X: React.FC = () => { ... };
   const match = cleaned.match(
