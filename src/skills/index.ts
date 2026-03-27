@@ -39,6 +39,9 @@ import trimmingSkill from "./trimming.md";
 import videosSkill from "./videos.md";
 import voiceoverSkill from "./voiceover.md";
 
+// ─── Anthropic Official Skills ───
+import frontendDesignSkill from "./frontend-design.md";
+
 // ─── Custom Skills (7) ───
 import appPromoSkill from "./app-promo.md";
 import cardnewsCarouselSkill from "./cardnews-carousel.md";
@@ -88,6 +91,8 @@ const GUIDANCE_SKILLS = [
   "trimming",
   "videos",
   "voiceover",
+  // Anthropic
+  "frontend-design",
   // Custom (7)
   "app-promo",
   "cardnews-carousel",
@@ -158,6 +163,8 @@ const guidanceSkillContent: Record<(typeof GUIDANCE_SKILLS)[number], string> = {
   trimming: trimmingSkill,
   videos: videosSkill,
   voiceover: voiceoverSkill,
+  // Anthropic
+  "frontend-design": frontendDesignSkill,
   // Custom
   "app-promo": appPromoSkill,
   "cardnews-carousel": cardnewsCarouselSkill,
@@ -250,6 +257,7 @@ Guidance categories (Remotion official + custom):
 - trimming: video trimming, cutting clips
 - videos: Video component, OffthreadVideo, video playback
 - voiceover: text-to-speech, voiceover generation
+- frontend-design: distinctive UI design, production-grade interfaces, visual polish, creative aesthetics, anti-generic-AI-slop
 - app-promo: app promotional videos, device mockups, phone screens, pastel gradients
 - cardnews-carousel: Instagram carousel cards, card news, multi-slide posts, 카드뉴스, 카루셀
 - crabs-brand: Crabs brand colors (indigo/violet/amber), Inter font, clean modern style

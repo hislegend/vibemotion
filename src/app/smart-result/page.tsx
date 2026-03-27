@@ -84,6 +84,7 @@ export default function SmartResultPage() {
   const [generatingVoice, setGeneratingVoice] = useState(false);
   const [generatingScript, setGeneratingScript] = useState(false);
   const [scriptFetched, setScriptFetched] = useState(false);
+  const [useOpus, setUseOpus] = useState(false);
 
   const fetchScript = useCallback(async (data: ContentAnalysis) => {
     setGeneratingScript(true);
@@ -210,7 +211,7 @@ export default function SmartResultPage() {
     const prompt = generateRemotionPrompt(analysis, selectedStyle, finalDuration, density) + voicePromptAddition;
     const params = new URLSearchParams({
       prompt,
-      model: "claude-sonnet-4-6",
+      model: useOpus ? "claude-opus-4-6" : "claude-sonnet-4-6",
       aspectRatio: "9:16",
       duration: String(finalDuration),
       ...(voiceEnabled ? { voice: "true" } : {}),
@@ -339,13 +340,32 @@ export default function SmartResultPage() {
               </div>
             </div>
 
+            {/* Model quality toggle */}
+            <div className="flex items-center justify-between rounded-xl border border-border bg-secondary/50 px-5 py-3">
+              <div>
+                <span className="text-sm font-semibold text-foreground">🧠 고품질 모드 (Opus)</span>
+                <p className="text-xs text-muted-foreground">더 정교한 디자인, 느리지만 퀄리티 높음</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setUseOpus((v) => !v)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                  useOpus
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {useOpus ? "ON" : "OFF"}
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={handleGenerate}
               disabled={!selectedStyle}
               className="w-full rounded-xl bg-primary py-4 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
             >
-              🎬 영상 만들기
+              🎬 영상 만들기 {useOpus && "(Opus)"}
             </button>
           </>
         )}
@@ -422,6 +442,27 @@ export default function SmartResultPage() {
               </div>
             )}
 
+            {/* Model quality toggle */}
+            {!generatingScript && scriptFetched && (
+              <div className="flex items-center justify-between rounded-xl border border-border bg-secondary/50 px-5 py-3">
+                <div>
+                  <span className="text-sm font-semibold text-foreground">🧠 고품질 모드 (Opus)</span>
+                  <p className="text-xs text-muted-foreground">더 정교한 디자인, 느리지만 퀄리티 높음</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setUseOpus((v) => !v)}
+                  className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                    useOpus
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {useOpus ? "ON" : "OFF"}
+                </button>
+              </div>
+            )}
+
             {/* Generate button */}
             {!generatingScript && scriptFetched && (
               <button
@@ -435,7 +476,7 @@ export default function SmartResultPage() {
                     <Spinner /> 음성 생성 중...
                   </span>
                 ) : (
-                  "🎬 영상 만들기"
+                  `🎬 영상 만들기 ${useOpus ? "(Opus)" : ""}`
                 )}
               </button>
             )}
