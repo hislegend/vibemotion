@@ -67,6 +67,11 @@ function extractComponentBody(code: string): string {
   // AI sometimes produces escaped template literals that Babel can't parse
   cleaned = cleaned.replace(/\\`/g, "`");
 
+  // Fix single-quoted strings containing ${} interpolation → convert to backtick template literals
+  // Opus tends to write: '1px solid ${COLOR}' instead of `1px solid ${COLOR}`
+  cleaned = cleaned.replace(/'([^']*\$\{[^}]+\}[^']*)'/g, "`$1`");
+  cleaned = cleaned.replace(/"([^"]*\$\{[^}]+\}[^"]*)"/g, "`$1`");
+
   // Extract body from "export const MyAnimation = () => { ... };"
   // Also handles: export const X: React.FC = () => { ... };
   const match = cleaned.match(
