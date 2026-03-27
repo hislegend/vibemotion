@@ -379,6 +379,8 @@ const Home: NextPage = () => {
   const [smartError, setSmartError] = useState("");
   const [voiceEnabled] = useState(false);
 
+  const [smartModel, setSmartModel] = useState<string | null>(null);
+
   const runSmartAnalysis = useCallback(
     async (input: string) => {
       setSmartError("");
@@ -422,6 +424,10 @@ const Home: NextPage = () => {
           "smartVoiceEnabled",
           JSON.stringify(voiceEnabled),
         );
+        // Pass selected model to smart-result
+        if (smartModel) {
+          sessionStorage.setItem("smartModel", smartModel);
+        }
         router.push("/smart-result");
       } catch (e) {
         setSmartError(
@@ -442,6 +448,7 @@ const Home: NextPage = () => {
     ) => {
       if (isSmartSelected) {
         if (!prompt.trim()) return;
+        setSmartModel(model);
         runSmartAnalysis(prompt.trim());
         return;
       }
