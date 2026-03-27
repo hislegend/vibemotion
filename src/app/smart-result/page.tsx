@@ -39,11 +39,10 @@ const STYLE_LABELS: Record<string, string> = {
   social: "⚡ SNS 숏폼",
 };
 
-const DURATION_OPTIONS = [
-  { label: "8초", value: 8 },
-  { label: "15초", value: 15 },
-  { label: "30초", value: 30 },
-  { label: "60초", value: 60 },
+const DENSITY_OPTIONS = [
+  { label: "⚡ 짧게", value: "short", description: "핵심만 빠르게", durationRange: "8~15초" },
+  { label: "📄 보통", value: "normal", description: "적절한 분량", durationRange: "15~30초" },
+  { label: "📖 길게", value: "long", description: "상세하게", durationRange: "30~60초" },
 ];
 
 const VOICE_OPTIONS = [
@@ -76,7 +75,7 @@ export default function SmartResultPage() {
   const [analysis, setAnalysis] = useState<ContentAnalysis | null>(null);
   const [styles, setStyles] = useState<StyleResult[]>([]);
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-  const [duration, setDuration] = useState(30);
+  const [density, setDensity] = useState("normal");
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [scriptVersions, setScriptVersions] = useState<ScriptVersion[]>([]);
   const [selectedVersionIdx, setSelectedVersionIdx] = useState<number | null>(null);
@@ -124,7 +123,10 @@ export default function SmartResultPage() {
       }
       const data: ContentAnalysis = JSON.parse(raw);
       setAnalysis(data);
-      setDuration(data.suggestedDuration);
+      // Map suggestedDuration to density
+      if (data.suggestedDuration <= 15) setDensity("short");
+      else if (data.suggestedDuration <= 30) setDensity("normal");
+      else setDensity("long");
 
       const isVoice = rawVoice ? JSON.parse(rawVoice) === true : false;
       setVoiceEnabled(isVoice);
@@ -158,7 +160,9 @@ export default function SmartResultPage() {
     if (!analysis || !selectedStyle) return;
 
     let voicePromptAddition = "";
-    let finalDuration = duration;
+    // Density → duration mapping (AI will fine-tune within range)
+    const densityDurationMap: Record<string, number> = { short: 12, normal: 20, long: 45 };
+    let finalDuration = densityDurationMap[density] || 20;
 
     if (voiceEnabled && editedScript.trim()) {
       setGeneratingVoice(true);
@@ -182,7 +186,7 @@ export default function SmartResultPage() {
               URL.revokeObjectURL(audioBlobUrl);
             });
             audio.addEventListener("error", () => {
-              resolve(duration);
+              resolve(finalDuration);
               URL.revokeObjectURL(audioBlobUrl);
             });
           });
@@ -203,7 +207,7 @@ export default function SmartResultPage() {
       }
     }
 
-    const prompt = generateRemotionPrompt(analysis, selectedStyle, finalDuration) + voicePromptAddition;
+    const prompt = generateRemotionPrompt(analysis, selectedStyle, finalDuration, density) + voicePromptAddition;
     const params = new URLSearchParams({
       prompt,
       model: "claude-sonnet-4-6",
@@ -314,20 +318,22 @@ export default function SmartResultPage() {
         {!voiceEnabled && (
           <>
             <div>
-              <h3 className="mb-4 text-base font-semibold text-foreground">⏱ 영상 길이</h3>
-              <div className="flex gap-2">
-                {DURATION_OPTIONS.map((opt) => (
+              <h3 className="mb-4 text-base font-semibold text-foreground">📏 콘텐츠 밀도</h3>
+              <div className="flex gap-3">
+                {DENSITY_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => setDuration(opt.value)}
-                    className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
-                      duration === opt.value
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-muted-foreground hover:text-foreground"
+                    onClick={() => setDensity(opt.value)}
+                    className={`flex flex-col items-center gap-1 rounded-xl border px-5 py-3 text-center transition-all flex-1 ${
+                      density === opt.value
+                        ? "border-primary bg-primary/10 ring-2 ring-primary/40"
+                        : "border-border bg-secondary/50 hover:border-primary/40"
                     }`}
                   >
-                    {opt.label}
+                    <span className="text-sm font-semibold text-foreground">{opt.label}</span>
+                    <span className="text-xs text-muted-foreground">{opt.description}</span>
+                    <span className="text-xs text-primary">{opt.durationRange}</span>
                   </button>
                 ))}
               </div>
