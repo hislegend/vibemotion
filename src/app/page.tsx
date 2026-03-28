@@ -21,9 +21,10 @@ interface StyleCard {
   emoji: string;
   title: string;
   description: string;
-  action: "smart" | "prefill";
+  action: "smart" | "prefill" | "link";
   prefillPrompt?: string;
   aspectRatio?: AspectRatioId;
+  href?: string;
 }
 
 const STYLE_CARDS: StyleCard[] = [
@@ -47,9 +48,8 @@ const STYLE_CARDS: StyleCard[] = [
     emoji: "📱",
     title: "카드뉴스",
     description: "인스타그램 카루셀 슬라이드. 표지→본문→마무리 자동 구성",
-    action: "prefill",
-    prefillPrompt: "카드뉴스 스타일로 만들기: ",
-    aspectRatio: "4:5",
+    action: "link" as const,
+    href: "/cardnews",
   },
   {
     id: "cinematic",
@@ -473,6 +473,10 @@ const Home: NextPage = () => {
   );
 
   const handleStyleClick = (card: StyleCard) => {
+    if (card.action === "link" && card.href) {
+      router.push(card.href);
+      return;
+    }
     if (card.action === "smart") {
       setIsSmartSelected((prev) => !prev);
       setSmartError("");
