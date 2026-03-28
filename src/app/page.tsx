@@ -44,6 +44,7 @@ const STYLE_CARDS: StyleCard[] = [
     description: "로고 인트로, 제품 소개, 데이터 시각화, 텍스트 효과",
     action: "prefill",
     prefillPrompt: "",
+    template: "motion",
   },
   {
     id: "cardnews",

@@ -22,6 +22,7 @@ import {
 import { saveTemplate } from "../../lib/template-storage";
 import { Player } from "@remotion/player";
 import { CardNewsTemplate, type SlideContent } from "../../remotion/CardNewsTemplate";
+import { MotionTemplate, type MotionScene } from "../../remotion/MotionTemplate";
 import type {
   AssistantMetadata,
   EditOperation,
@@ -96,6 +97,7 @@ function GeneratePageContent() {
 
   // Template mode state
   const [templateSlides, setTemplateSlides] = useState<SlideContent[] | null>(null);
+  const [motionScenes, setMotionScenes] = useState<MotionScene[] | null>(null);
   const [templateLoading, setTemplateLoading] = useState(false);
   const [generationError, setGenerationError] = useState<{
     message: string;
@@ -176,6 +178,37 @@ function GeneratePageContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [templateParam, initialPrompt, templateSlides, templateLoading, hasAutoStarted]);
+
+  // Motion template mode
+  useEffect(() => {
+    if (templateParam === "motion" && initialPrompt && !motionScenes && !templateLoading && !hasAutoStarted) {
+      setHasAutoStarted(true);
+      setTemplateLoading(true);
+      const model = initialModel || "claude-sonnet-4-6";
+      fetch("/api/generate-motion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: initialPrompt, model }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.scenes) {
+            setMotionScenes(data.scenes);
+            setDurationInFrames(data.scenes.length * 150);
+            setHasGeneratedOnce(true);
+            addAssistantMessage(
+              `🎬 모션그래픽 ${data.scenes.length}장면을 생성했습니다. 수정하고 싶은 부분이 있으면 말씀해주세요.`,
+              ""
+            );
+          }
+        })
+        .catch(() => {
+          addAssistantMessage("모션그래픽 생성에 실패했습니다. 다시 시도해주세요.", "");
+        })
+        .finally(() => setTemplateLoading(false));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [templateParam, initialPrompt, motionScenes, templateLoading, hasAutoStarted]);
 
   // Runtime errors from the Player (e.g., "cannot access variable before initialization")
   const [runtimeError, setRuntimeError] = useState<string | null>(null);
@@ -494,11 +527,11 @@ function GeneratePageContent() {
               />
             }
             previewContent={
-              templateSlides ? (
+              templateSlides || motionScenes || templateLoading ? (
                 <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#0a0a0a" }}>
                   {templateLoading ? (
-                    <div style={{ color: "#888", fontSize: 14 }}>카드뉴스 생성 중...</div>
-                  ) : (
+                    <div style={{ color: "#888", fontSize: 14 }}>생성 중...</div>
+                  ) : templateSlides ? (
                     <div style={{ width: "100%", maxWidth: 480, aspectRatio: "4/5" }}>
                       <Player
                         component={CardNewsTemplate}
@@ -513,7 +546,22 @@ function GeneratePageContent() {
                         autoPlay
                       />
                     </div>
-                  )}
+                  ) : motionScenes ? (
+                    <div style={{ width: "100%", maxWidth: 640, aspectRatio: "9/16" }}>
+                      <Player
+                        component={MotionTemplate}
+                        inputProps={{ scenes: motionScenes }}
+                        durationInFrames={motionScenes.length * 150}
+                        fps={30}
+                        compositionWidth={1080}
+                        compositionHeight={1920}
+                        style={{ width: "100%", height: "100%" }}
+                        controls
+                        loop
+                        autoPlay
+                      />
+                    </div>
+                  ) : null}
                 </div>
               ) : (
               <AnimationPlayer
