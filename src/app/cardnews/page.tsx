@@ -2,7 +2,9 @@
 
 import { Player } from "@remotion/player";
 import { CardNewsTemplate } from "@/remotion/CardNewsTemplate";
-import { useState } from "react";
+import { compileCode } from "@/remotion/compiler";
+import { getTemplates, deleteTemplate, type SavedTemplate } from "@/lib/template-storage";
+import { useState, useEffect, useMemo } from "react";
 
 const PRESET_TOPICS = [
   "디자인 특허의 중요성",
@@ -32,6 +34,17 @@ export default function CardNewsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [model, setModel] = useState("claude-sonnet-4-6");
+  const [savedTemplates, setSavedTemplates] = useState<SavedTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<SavedTemplate | null>(null);
+
+  useEffect(() => {
+    setSavedTemplates(getTemplates());
+  }, []);
+
+  const compiledTemplate = useMemo(() => {
+    if (!selectedTemplate) return null;
+    return compileCode(selectedTemplate.code);
+  }, [selectedTemplate]);
 
   const generate = async (t: string) => {
     setLoading(true);
@@ -102,6 +115,58 @@ export default function CardNewsPage() {
             </button>
           ))}
         </div>
+
+        {/* Saved templates */}
+        {savedTemplates.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4">📦 저장된 템플릿</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {savedTemplates.map((t) => (
+                <div key={t.id} className="relative group">
+                  <button
+                    onClick={() => { setSelectedTemplate(t); setSlides(null); }}
+                    className={`w-full text-left rounded-xl border p-4 transition-all ${
+                      selectedTemplate?.id === t.id
+                        ? "border-[#00AEEF] bg-[#00AEEF]/10"
+                        : "border-gray-700 bg-gray-900 hover:border-gray-500"
+                    }`}
+                  >
+                    <div className="text-sm font-semibold text-white truncate">{t.name}</div>
+                    <div className="text-xs text-gray-400 mt-1 truncate">{t.description}</div>
+                    <div className="text-xs text-gray-500 mt-2">{t.aspectRatio} · {Math.round(t.durationInFrames / t.fps)}s</div>
+                  </button>
+                  <button
+                    onClick={() => { deleteTemplate(t.id); setSavedTemplates(getTemplates()); if (selectedTemplate?.id === t.id) setSelectedTemplate(null); }}
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 text-xs transition-opacity"
+                  >✕</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Selected template preview */}
+        {selectedTemplate && compiledTemplate?.Component && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4">미리보기 — {selectedTemplate.name}</h2>
+            <div className="rounded-xl overflow-hidden border border-gray-700" style={{ aspectRatio: selectedTemplate.aspectRatio === "4:5" ? "4/5" : selectedTemplate.aspectRatio === "9:16" ? "9/16" : "16/9" }}>
+              <Player
+                component={compiledTemplate.Component}
+                durationInFrames={selectedTemplate.durationInFrames}
+                fps={selectedTemplate.fps}
+                compositionWidth={selectedTemplate.aspectRatio === "4:5" ? 1080 : selectedTemplate.aspectRatio === "9:16" ? 1080 : 1920}
+                compositionHeight={selectedTemplate.aspectRatio === "4:5" ? 1350 : selectedTemplate.aspectRatio === "9:16" ? 1920 : 1080}
+                style={{ width: "100%", height: "100%" }}
+                controls
+                loop
+                autoPlay
+              />
+            </div>
+            {compiledTemplate.error && (
+              <div className="mt-2 text-sm text-red-400">컴파일 에러: {compiledTemplate.error}</div>
+            )}
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 rounded-xl bg-red-900/50 border border-red-700 p-4 text-red-200">
