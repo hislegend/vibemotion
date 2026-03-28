@@ -63,17 +63,22 @@ function extractComponentBody(code: string): string {
 
   cleaned = cleaned.trim();
 
-  // Fix escaped backticks from AI output: \` → `
-  // AI sometimes produces escaped template literals that Babel can't parse
+  // === AI output sanitization (order matters) ===
+
+  // 1. Fix single/double-quoted strings containing ${} → backtick template literals
+  // Must run BEFORE backtick unescape to catch patterns like '1px solid ${COLOR}'
+  // Use global multipass to catch nested cases
+  let prevCleaned = "";
+  while (prevCleaned !== cleaned) {
+    prevCleaned = cleaned;
+    cleaned = cleaned.replace(/'([^']*\$\{[^}]+\}[^']*)'/g, "`$1`");
+    cleaned = cleaned.replace(/"([^"]*\$\{[^}]+\}[^"]*)"/g, "`$1`");
+  }
+
+  // 2. Fix escaped backticks: \` → `
   cleaned = cleaned.replace(/\\`/g, "`");
 
-  // Fix single-quoted strings containing ${} interpolation → convert to backtick template literals
-  // Opus tends to write: '1px solid ${COLOR}' instead of `1px solid ${COLOR}`
-  cleaned = cleaned.replace(/'([^']*\$\{[^}]+\}[^']*)'/g, "`$1`");
-  cleaned = cleaned.replace(/"([^"]*\$\{[^}]+\}[^"]*)"/g, "`$1`");
-
-  // Fix hex+opacity concatenation: `${COLOR}0F` → `${COLOR + "0F"}` or full hex
-  // Pattern: }XX where XX is hex chars immediately after template expression close
+  // 3. Fix hex+opacity concatenation: `${COLOR}0F` → string concat
   cleaned = cleaned.replace(/\}([0-9A-Fa-f]{2})(?=[`'"])/g, ' + "$1"}');
 
   // Extract body from "export const MyAnimation = () => { ... };"
