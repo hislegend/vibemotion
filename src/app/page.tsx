@@ -25,6 +25,7 @@ interface StyleCard {
   prefillPrompt?: string;
   aspectRatio?: AspectRatioId;
   href?: string;
+  template?: string;
 }
 
 const STYLE_CARDS: StyleCard[] = [
@@ -48,8 +49,10 @@ const STYLE_CARDS: StyleCard[] = [
     emoji: "📱",
     title: "카드뉴스",
     description: "인스타그램 카루셀 슬라이드. 표지→본문→마무리 자동 구성",
-    action: "link" as const,
-    href: "/cardnews",
+    action: "prefill",
+    prefillPrompt: "",
+    aspectRatio: "4:5",
+    template: "cardnews",
   },
   {
     id: "cinematic",
@@ -374,6 +377,7 @@ const Home: NextPage = () => {
   const [prefillPrompt, setPrefillPrompt] = useState("");
   const [prefillAspectRatio, setPrefillAspectRatio] = useState<AspectRatioId | null>(null);
   const [prefillDuration, setPrefillDuration] = useState<number | null>(null);
+  const [prefillTemplate, setPrefillTemplate] = useState<string | null>(null);
   const [isSmartSelected, setIsSmartSelected] = useState(false);
   const [smartAnalyzing, setSmartAnalyzing] = useState(false);
   const [smartError, setSmartError] = useState("");
@@ -463,13 +467,15 @@ const Home: NextPage = () => {
         sessionStorage.removeItem("initialAttachedImages");
       }
       const params = new URLSearchParams({ prompt, model, aspectRatio });
-      // Add duration for presets that specify it (prevents 1-second video)
       if (prefillDuration) {
         params.set("duration", String(prefillDuration));
       }
+      if (prefillTemplate) {
+        params.set("template", prefillTemplate);
+      }
       router.push(`/generate?${params.toString()}`);
     },
-    [router, isSmartSelected, runSmartAnalysis, prefillDuration],
+    [router, isSmartSelected, runSmartAnalysis, prefillDuration, prefillTemplate],
   );
 
   const handleStyleClick = (card: StyleCard) => {
@@ -486,6 +492,7 @@ const Home: NextPage = () => {
       setIsSmartSelected(false);
       setPrefillPrompt(card.prefillPrompt || "");
       setPrefillAspectRatio(card.aspectRatio || null);
+      setPrefillTemplate(card.template || null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };

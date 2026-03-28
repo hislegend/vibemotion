@@ -9,7 +9,7 @@ import {
 
 // ─── Types ───
 
-interface SlideContent {
+export interface SlideContent {
   type: "cover" | "list" | "split" | "flow" | "focus" | "closing";
   title: string;
   subtitle?: string;
@@ -24,7 +24,7 @@ interface SlideContent {
   brand?: string;
 }
 
-interface CardNewsProps {
+export interface CardNewsProps {
   slides: SlideContent[];
   theme?: {
     bg: string;

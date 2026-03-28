@@ -20,6 +20,8 @@ import {
   updateProject,
 } from "../../lib/project-storage";
 import { saveTemplate } from "../../lib/template-storage";
+import { Player } from "@remotion/player";
+import { CardNewsTemplate, type SlideContent } from "../../remotion/CardNewsTemplate";
 import type {
   AssistantMetadata,
   EditOperation,
@@ -42,14 +44,16 @@ function GeneratePageContent() {
 
   const initialPrompt = loadedProject?.prompt || searchParams.get("prompt") || "";
   const initialModel = loadedProject?.model || searchParams.get("model") || undefined;
+  const templateParam = searchParams.get("template"); // "cardnews" etc.
   const durationParam = loadedProject
     ? String(loadedProject.duration)
-    : searchParams.get("duration");
+    : searchParams.get("duration") || (templateParam === "cardnews" ? "18" : null);
   const hasVoice = loadedProject?.voiceAudioUrl
     ? true
     : searchParams.get("voice") === "true";
   const aspectRatioParam = (loadedProject?.aspectRatio ||
     searchParams.get("aspectRatio") ||
+    (templateParam === "cardnews" ? "4:5" : null) ||
     DEFAULT_ASPECT_RATIO) as AspectRatioId;
   const aspectRatioConfig = ASPECT_RATIOS.find(
     (ar) => ar.id === aspectRatioParam,
@@ -89,6 +93,10 @@ function GeneratePageContent() {
     }
   }, [hasVoice, loadedProject]);
   const [hasGeneratedOnce, setHasGeneratedOnce] = useState(false);
+
+  // Template mode state
+  const [templateSlides, setTemplateSlides] = useState<SlideContent[] | null>(null);
+  const [templateLoading, setTemplateLoading] = useState(false);
   const [generationError, setGenerationError] = useState<{
     message: string;
     type: GenerationErrorType;
@@ -137,6 +145,37 @@ function GeneratePageContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Template mode: auto-generate JSON when prompt is available
+  useEffect(() => {
+    if (templateParam === "cardnews" && initialPrompt && !templateSlides && !templateLoading && !hasAutoStarted) {
+      setHasAutoStarted(true);
+      setTemplateLoading(true);
+      const model = initialModel || "claude-sonnet-4-6";
+      fetch("/api/generate-cardnews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: initialPrompt, model }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.slides) {
+            setTemplateSlides(data.slides);
+            setDurationInFrames(data.slides.length * 90);
+            setHasGeneratedOnce(true);
+            addAssistantMessage(
+              `📱 카드뉴스 ${data.slides.length}장을 생성했습니다. 수정하고 싶은 부분이 있으면 말씀해주세요.`,
+              "" // no code snapshot for template mode
+            );
+          }
+        })
+        .catch(() => {
+          addAssistantMessage("카드뉴스 생성에 실패했습니다. 다시 시도해주세요.", "");
+        })
+        .finally(() => setTemplateLoading(false));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [templateParam, initialPrompt, templateSlides, templateLoading, hasAutoStarted]);
 
   // Runtime errors from the Player (e.g., "cannot access variable before initialization")
   const [runtimeError, setRuntimeError] = useState<string | null>(null);
@@ -455,6 +494,28 @@ function GeneratePageContent() {
               />
             }
             previewContent={
+              templateSlides ? (
+                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#0a0a0a" }}>
+                  {templateLoading ? (
+                    <div style={{ color: "#888", fontSize: 14 }}>카드뉴스 생성 중...</div>
+                  ) : (
+                    <div style={{ width: "100%", maxWidth: 480, aspectRatio: "4/5" }}>
+                      <Player
+                        component={CardNewsTemplate}
+                        inputProps={{ slides: templateSlides }}
+                        durationInFrames={templateSlides.length * 90}
+                        fps={30}
+                        compositionWidth={1080}
+                        compositionHeight={1350}
+                        style={{ width: "100%", height: "100%" }}
+                        controls
+                        loop
+                        autoPlay
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
               <AnimationPlayer
                 Component={generationError ? null : Component}
                 durationInFrames={durationInFrames}
@@ -472,6 +533,7 @@ function GeneratePageContent() {
                 compositionHeight={compositionHeight}
                 audioSrc={voiceAudioUrl}
               />
+              )
             }
           />
         </div>
