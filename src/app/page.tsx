@@ -378,7 +378,29 @@ const Home: NextPage = () => {
           "smartVoiceEnabled",
           JSON.stringify(voiceEnabled),
         );
-        // Pass selected model to smart-result
+        // Voice OFF: skip /smart-result, go directly to /generate
+        if (!voiceEnabled) {
+          const bestStyle = stylesData.length > 0
+            ? (stylesData[0] as { style: string }).style
+            : "cinematic";
+          const density = data.suggestedDuration <= 15 ? "short" : data.suggestedDuration <= 30 ? "normal" : "long";
+          const { generateRemotionPrompt } = await import("@/lib/generate-prompt");
+          const densityDuration: Record<string, number> = { short: 12, normal: 20, long: 45 };
+          const dur = densityDuration[density] || 20;
+          const promptText = generateRemotionPrompt(data, bestStyle, dur, density);
+          const model = smartModel || "claude-sonnet-4-6";
+          const params = new URLSearchParams({
+            prompt: promptText,
+            model,
+            aspectRatio: "9:16",
+            duration: String(dur),
+          });
+          setSmartAnalyzing(false);
+          router.push(`/generate?${params.toString()}`);
+          return;
+        }
+
+        // Voice ON: go to /smart-result for script editing
         if (smartModel) {
           sessionStorage.setItem("smartModel", smartModel);
         }
