@@ -67,8 +67,8 @@ export default function CardNewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-y-auto" style={{ WebkitOverflowScrolling: "touch" }}>
+      <div className="mx-auto max-w-5xl px-4 py-8 pb-24">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">📱 카드뉴스 (템플릿 모드)</h1>
@@ -174,12 +174,11 @@ export default function CardNewsPage() {
           </div>
         )}
 
-        {/* Result: side by side */}
+        {/* Result: preview centered, full width */}
         {slides && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Preview */}
-            <div>
-              <h2 className="text-lg font-semibold mb-4">미리보기</h2>
+          <div className="flex flex-col items-center gap-6">
+            {/* Preview — large, centered */}
+            <div className="w-full" style={{ maxWidth: 480 }}>
               <div className="rounded-xl overflow-hidden border border-gray-700" style={{ aspectRatio: "4/5" }}>
                 <Player
                   component={CardNewsTemplate}
@@ -194,20 +193,22 @@ export default function CardNewsPage() {
                   autoPlay
                 />
               </div>
+              <p className="mt-3 text-sm text-gray-500 text-center">
+                {slides.length}장 × 3초 = {slides.length * 3}초
+              </p>
             </div>
 
-            {/* JSON */}
-            <div>
-              <h2 className="text-lg font-semibold mb-4">생성된 구조 (JSON)</h2>
-              <div className="rounded-xl border border-gray-700 bg-gray-900 p-4 overflow-y-auto" style={{ maxHeight: 600 }}>
-                <pre className="text-sm text-gray-300 whitespace-pre-wrap">
+            {/* JSON — collapsible */}
+            <details className="w-full">
+              <summary className="cursor-pointer text-sm text-gray-400 hover:text-white transition-colors">
+                📋 생성된 JSON 구조 보기
+              </summary>
+              <div className="mt-3 rounded-xl border border-gray-700 bg-gray-900 p-4 overflow-y-auto" style={{ maxHeight: 400 }}>
+                <pre className="text-xs text-gray-400 whitespace-pre-wrap">
                   {JSON.stringify(slides, null, 2)}
                 </pre>
               </div>
-              <p className="mt-3 text-sm text-gray-500">
-                {slides.length}장 × 3초 = {slides.length * 3}초 | 코드 에러 없음 (고정 템플릿)
-              </p>
-            </div>
+            </details>
           </div>
         )}
       </div>
