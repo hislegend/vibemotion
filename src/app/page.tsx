@@ -9,6 +9,7 @@ import {
   type Project,
 } from "@/lib/project-storage";
 import type { AspectRatioId, ModelId } from "@/types/generation";
+import { getTemplates, deleteTemplate, type SavedTemplate } from "@/lib/template-storage";
 import { X } from "lucide-react";
 import type { NextPage } from "next";
 import { useRouter } from "next/navigation";
@@ -319,6 +320,70 @@ function ProjectHistory() {
   );
 }
 
+/* ─── Saved Templates ─── */
+
+function SavedTemplates() {
+  const router = useRouter();
+  const [templates, setTemplates] = useState<SavedTemplate[]>([]);
+
+  useEffect(() => {
+    setTemplates(getTemplates());
+  }, []);
+
+  if (templates.length === 0) return null;
+
+  return (
+    <section className="mx-auto w-full max-w-3xl px-4 pb-10">
+      <div className="mb-4 text-center">
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          📦 내 템플릿
+        </h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          저장된 템플릿으로 바로 시작하세요
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {templates.map((t) => (
+          <div key={t.id} className="relative group">
+            <button
+              type="button"
+              onClick={() => {
+                sessionStorage.setItem("templateCode", t.code);
+                const params = new URLSearchParams({
+                  prompt: `"${t.name}" 템플릿 기반으로: `,
+                  model: "claude-sonnet-4-6",
+                  aspectRatio: t.aspectRatio || "9:16",
+                  duration: String(Math.round(t.durationInFrames / t.fps)),
+                });
+                router.push(`/generate?${params.toString()}`);
+              }}
+              className="w-full rounded-xl border border-border bg-secondary/30 p-4 text-left transition-all hover:border-primary/40 hover:bg-secondary/60"
+            >
+              <div className="text-sm font-semibold text-foreground truncate">{t.name}</div>
+              <div className="text-xs text-muted-foreground mt-1 truncate">{t.description}</div>
+              <div className="text-xs text-primary mt-2">
+                {t.aspectRatio} · {Math.round(t.durationInFrames / t.fps)}s
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm("이 템플릿을 삭제할까요?")) {
+                  deleteTemplate(t.id);
+                  setTemplates(getTemplates());
+                }
+              }}
+              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive text-xs transition-opacity p-1 rounded-md hover:bg-destructive/20"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ─── Main page ─── */
 
 const Home: NextPage = () => {
@@ -562,6 +627,8 @@ const Home: NextPage = () => {
           ))}
         </div>
       </section>
+
+      <SavedTemplates />
 
       <ProjectHistory />
     </PageLayout>
