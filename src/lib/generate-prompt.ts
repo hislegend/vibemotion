@@ -12,6 +12,12 @@ interface ContentAnalysis {
 const STYLE_DESCRIPTIONS: Record<string, string> = {
   infographic: `데이터 시각화 중심 모션 그래픽.
 
+차트 구현 패턴 (공식):
+- 바 차트: stagger delay(5프레임 간격) + spring({ damping: 200 }) — 순차 등장
+- 파이 차트: stroke-dashoffset 애니메이션 + rotate(-90) 12시 시작
+- 서드파티 차트 라이브러리 자체 애니메이션 비활성화 필수 (깜빡임)
+- 모든 애니메이션은 useCurrentFrame()에서 직접 드라이브
+
 인포그래픽 디자인 원칙:
 - 숫자와 데이터가 주인공. 숫자는 72~120px로 매우 크게, 라벨은 24~32px로 보조
 - 시원시원한 레이아웃: 요소 하나하나가 크고 명확하게 보여야 함

@@ -210,8 +210,12 @@ import {slide} from '@remotion/transitions/slide';
   </TransitionSeries.Sequence>
 </TransitionSeries>
 \`\`\`
-Available transitions: fade, slide (from-left/right/top/bottom), wipe, flip.
+Available transitions: fade, slide (from-left/right/top/bottom), wipe, flip, clockWipe.
+Import from: '@remotion/transitions/fade', '@remotion/transitions/slide', etc.
+Timing: linearTiming({ durationInFrames: 20 }) or springTiming({ config: { damping: 200 } })
 NOTE: transitions overlap scenes, so total duration = sum of sequences - sum of transitions.
+Duration calculation: const total = scene1 + scene2 - transitionDuration;
+For springTiming without explicit durationInFrames, duration depends on fps.
 
 ## DESIGN TOKENS (consistent styling)
 Define all design values as constants at the top of the component:
@@ -236,7 +240,11 @@ Never hardcode colors/sizes inline. Always reference constants.
 - Export: \`export const MyAnimation = () => { ... };\` (NEVER use React.FC type annotation)
 - Hooks first, then constants (UPPER_SNAKE_CASE), then calculations, then JSX
 - All constants INSIDE component body, AFTER hooks
-- Available: useCurrentFrame, useVideoConfig, AbsoluteFill, interpolate, spring, Sequence, Series, TransitionSeries, @remotion/shapes, @remotion/transitions
+- Available: useCurrentFrame, useVideoConfig, AbsoluteFill, interpolate, spring, Sequence, Series, Img (from 'remotion'), TransitionSeries (from '@remotion/transitions'), @remotion/shapes
+- For video: import { Video } from '@remotion/media'; (trimBefore, trimAfter, volume props)
+- For audio: import { Audio } from '@remotion/media';
+- For assets: import { staticFile } from 'remotion'; (references public/ folder)
+- For GIF: import { Gif } from '@remotion/gif';
 - NEVER shadow import names as variables
 - NEVER use undefined variables — define ALL variables before using them
 - Template literals: use standard backtick syntax. NEVER double-escape or produce \\u escape sequences.
