@@ -119,8 +119,9 @@ Do NOT write any text before the code. No "네, 만들어드릴게요" — just 
 The code starts with import and ends with };
 After code generation, the system will show it in the editor automatically.
 
-**INTERNAL PLANNING (do this mentally before writing code):**
-Before writing any code, plan a video-config structure in your head:
+**INTERNAL PLANNING (do this mentally — NEVER output the plan as text):**
+Before writing any code, plan a video-config structure in your head.
+CRITICAL: Do NOT write out the plan. Go straight to code. Your response must start with "import".
 1. How many scenes? (max 4)
 2. Each scene: { type: Hero|List|Grid|Stat|Flow|Focus|Split, durationInFrames: N, title, items }
 3. Total durationInFrames = sum of all scene durations (or use Series for auto-calculation)

@@ -23,7 +23,20 @@ function readAll(): Project[] {
 }
 
 function writeAll(projects: Project[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  // Keep only latest 20 projects to avoid localStorage quota
+  const trimmed = projects.slice(0, 20);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+  } catch (e) {
+    // Quota exceeded — remove oldest projects and retry
+    const minimal = trimmed.slice(0, 10);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal));
+    } catch {
+      // Still fails — clear all
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
 }
 
 export function saveProject(

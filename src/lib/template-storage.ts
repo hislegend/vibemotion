@@ -22,7 +22,17 @@ function readAll(): SavedTemplate[] {
 }
 
 function writeAll(templates: SavedTemplate[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
+  const trimmed = templates.slice(0, 20);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+  } catch {
+    // Quota exceeded — keep only 5
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed.slice(0, 5)));
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
 }
 
 export function saveTemplate(
