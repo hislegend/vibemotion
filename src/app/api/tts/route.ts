@@ -41,7 +41,7 @@ export async function POST(req: Request) {
         'Content-Type': 'audio/mpeg',
       },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'TTS generation failed' }, { status: 500 });
   }
 }

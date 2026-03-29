@@ -37,7 +37,7 @@ export const MyAnimation = () => {
 
   const DATA_ITEMS = [
     { target: 12500, label: "Users", prefix: "", suffix: "+", delay: 20 },
-    { target: 2.4, label: "Revenue", prefix: "\$", suffix: "M", delay: 35, decimals: 1 },
+    { target: 2.4, label: "Revenue", prefix: "$", suffix: "M", delay: 35, decimals: 1 },
     { target: 340, label: "Growth", prefix: "", suffix: "%", delay: 50 },
   ];
 
@@ -72,7 +72,7 @@ export const MyAnimation = () => {
     const opacity = frame > delay
       ? interpolate(frame - delay, [0, 25, 70, 90], [0, 0.15, 0.15, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
       : 0;
-    return <div key={i} style={{ position: "absolute", left: \\\`\\\${x}%\\\`, top: \\\`\\\${y}%\\\`, width: size, height: size, borderRadius: "50%", background: COLOR_ACCENT, opacity, filter: "blur(1px)" }} />;
+    return <div key={i} style={{ position: "absolute", left: \\\`\${x}%\\\`, top: \\\`\${y}%\\\`, width: size, height: size, borderRadius: "50%", background: COLOR_ACCENT, opacity, filter: "blur(1px)" }} />;
   });
 
   // ═══════════════════════════════════════════
@@ -99,10 +99,10 @@ export const MyAnimation = () => {
         padding: "32px 24px",
         borderRadius: 20,
         background: COLOR_CARD_BG,
-        border: \\\`1px solid \\\${COLOR_CARD_BORDER}\\\`,
+        border: \\\`1px solid \${COLOR_CARD_BORDER}\\\`,
         backdropFilter: "blur(8px)",
         opacity: cardEntry,
-        transform: \\\`translateY(\\\${cardY}px)\\\`,
+        transform: \\\`translateY(\${cardY}px)\\\`,
         width: width * 0.72,
       }}>
         <div style={{
@@ -112,11 +112,11 @@ export const MyAnimation = () => {
           {item.prefix}{currentValue}{item.suffix}
         </div>
         <div style={{
-          width: \\\`\\\${highlightWidth}%\\\`,
+          width: \\\`\${highlightWidth}%\\\`,
           height: 3,
           borderRadius: 2,
           background: COLOR_HIGHLIGHT,
-          boxShadow: \\\`0 0 \\\${highlightGlow}px \\\${COLOR_HIGHLIGHT}\\\`,
+          boxShadow: \\\`0 0 \${highlightGlow}px \${COLOR_HIGHLIGHT}\\\`,
         }} />
         <div style={{
           fontFamily: FONT_FAMILY, fontSize: 16, fontWeight: 500, color: COLOR_TEXT_DIM,
@@ -130,7 +130,7 @@ export const MyAnimation = () => {
 
   return (
     <AbsoluteFill style={{
-      background: \\\`linear-gradient(160deg, \\\${COLOR_BG_1}, \\\${COLOR_BG_2})\\\`,
+      background: \\\`linear-gradient(160deg, \${COLOR_BG_1}, \${COLOR_BG_2})\\\`,
       fontFamily: FONT_FAMILY,
       display: "flex",
       flexDirection: "column",
@@ -144,7 +144,7 @@ export const MyAnimation = () => {
       <div style={{
         fontFamily: FONT_FAMILY, fontSize: 44, fontWeight: 800, color: COLOR_TEXT_LIGHT,
         opacity: headingEntry,
-        transform: \\\`translateY(\\\${headingY}px)\\\`,
+        transform: \\\`translateY(\${headingY}px)\\\`,
         marginBottom: 12,
         letterSpacing: -1,
       }}>
