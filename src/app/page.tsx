@@ -394,10 +394,11 @@ const Home: NextPage = () => {
   const [prefillAspectRatio, setPrefillAspectRatio] = useState<AspectRatioId | null>(null);
   const [prefillDuration, setPrefillDuration] = useState<number | null>(null);
   const [prefillTemplate, setPrefillTemplate] = useState<string | null>(null);
+  const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
   const [isSmartSelected, setIsSmartSelected] = useState(false);
   const [smartAnalyzing, setSmartAnalyzing] = useState(false);
   const [smartError, setSmartError] = useState("");
-  const [voiceEnabled] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
 
   const [smartModel, setSmartModel] = useState<string | null>(null);
 
@@ -521,14 +522,34 @@ const Home: NextPage = () => {
       router.push(card.href);
       return;
     }
+
+    // Toggle: click same card again to deselect
+    if (selectedStyleId === card.id) {
+      setSelectedStyleId(null);
+      setIsSmartSelected(false);
+      setPrefillPrompt("");
+      setPrefillAspectRatio(null);
+      setPrefillTemplate(null);
+      return;
+    }
+
+    setSelectedStyleId(card.id);
+
     if (card.action === "smart") {
-      setIsSmartSelected((prev) => !prev);
+      setIsSmartSelected(true);
       setSmartError("");
       setPrefillPrompt("");
       setPrefillAspectRatio(null);
+      setPrefillTemplate(null);
     } else {
       setIsSmartSelected(false);
-      setPrefillPrompt(card.prefillPrompt || "");
+      // Set meaningful placeholder prompts for each style
+      const stylePlaceholders: Record<string, string> = {
+        motion: "모션그래픽으로 만들 주제를 입력하세요 (예: 크랩스 브랜드 소개)",
+        cardnews: "카드뉴스로 만들 주제를 입력하세요 (예: 디자인 특허의 중요성)",
+        cinematic: "시네마틱 영상으로 만들 주제를 입력하세요 (예: AI 스타트업의 여정)",
+      };
+      setPrefillPrompt(stylePlaceholders[card.id] || "");
       setPrefillAspectRatio(card.aspectRatio || null);
       setPrefillTemplate(card.template || null);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -554,6 +575,29 @@ const Home: NextPage = () => {
         prefillAspectRatio={prefillAspectRatio}
         onAspectRatioConsumed={() => setPrefillAspectRatio(null)}
       />
+
+      {/* Smart mode voice toggle */}
+      {selectedStyleId === "smart" && !smartAnalyzing && (
+        <div className="mx-auto w-full max-w-3xl px-4 pb-4">
+          <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 px-5 py-3">
+            <div>
+              <span className="text-sm font-semibold text-foreground">🔊 음성 내레이션</span>
+              <p className="text-xs text-muted-foreground">대본 생성 + TTS 음성 합성</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setVoiceEnabled((v) => !v)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                voiceEnabled
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {voiceEnabled ? "ON" : "OFF"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Smart analyzing overlay */}
       {smartAnalyzing && (
@@ -586,7 +630,7 @@ const Home: NextPage = () => {
               type="button"
               onClick={() => handleStyleClick(card)}
               className={`group flex flex-col items-center gap-2 rounded-xl border p-5 text-center transition-all ${
-                card.action === "smart" && isSmartSelected
+                selectedStyleId === card.id
                   ? "border-primary bg-primary/15 ring-2 ring-primary/40"
                   : "border-border bg-secondary/50 hover:border-primary/40 hover:bg-secondary"
               }`}
