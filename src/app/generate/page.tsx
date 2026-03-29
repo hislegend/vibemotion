@@ -14,10 +14,7 @@ import { useAnimationState } from "../../hooks/useAnimationState";
 import { useAutoCorrection } from "../../hooks/useAutoCorrection";
 import { useConversationState } from "../../hooks/useConversationState";
 import {
-  generateTitle,
   getProject,
-  saveProject,
-  updateProject,
 } from "../../lib/project-storage";
 import { saveTemplate } from "../../lib/template-storage";
 import { Player } from "@remotion/player";
@@ -78,9 +75,7 @@ function GeneratePageContent() {
   const [prompt, setPrompt] = useState(initialPrompt);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
   const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null);
-  const [currentProjectId, setCurrentProjectId] = useState<string | null>(
-    loadedProject?.id ?? null,
-  );
+  const currentProjectId = loadedProject?.id ?? null;
 
   // Load voice audio from project or sessionStorage
   useEffect(() => {
