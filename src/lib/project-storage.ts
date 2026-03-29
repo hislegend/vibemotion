@@ -68,7 +68,12 @@ export function updateProject(
 }
 
 export function getProjects(): Project[] {
-  return readAll().sort((a, b) => b.updatedAt - a.updatedAt);
+  // Auto-save disabled — return empty until server-side storage
+  return [];
+}
+
+export function clearAllProjects(): void {
+  localStorage.removeItem(STORAGE_KEY);
 }
 
 export function getProject(id: string): Project | null {

@@ -368,28 +368,8 @@ function GeneratePageContent() {
       addAssistantMessage(content, generatedCode, metadata);
       markAsAiGenerated();
 
-      // Auto-save project
-      const durationSec = Math.round(durationInFrames / fps);
-      const currentVoice = voiceAudioUrl ?? undefined;
-      if (currentProjectId) {
-        updateProject(currentProjectId, {
-          code: generatedCode,
-          duration: durationSec,
-          voiceAudioUrl: currentVoice,
-        });
-      } else {
-        const promptText = initialPrompt || "Untitled";
-        const saved = saveProject({
-          title: generateTitle(promptText),
-          prompt: promptText,
-          code: generatedCode,
-          model: initialModel || "claude-sonnet-4-6",
-          aspectRatio: aspectRatioParam,
-          duration: durationSec,
-          voiceAudioUrl: currentVoice,
-        });
-        setCurrentProjectId(saved.id);
-      }
+      // Auto-save disabled — localStorage quota issues + not useful yet
+      // TODO: re-enable when server-side storage is implemented
     },
     [
       addAssistantMessage,

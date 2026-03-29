@@ -397,6 +397,13 @@ const Home: NextPage = () => {
   const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
   const [isSmartSelected, setIsSmartSelected] = useState(false);
   const [smartAnalyzing, setSmartAnalyzing] = useState(false);
+
+  // Clear old localStorage data on mount (prevents quota issues)
+  useEffect(() => {
+    try {
+      localStorage.removeItem("vibemotion_projects");
+    } catch { /* ignore */ }
+  }, []);
   const [smartError, setSmartError] = useState("");
   const [voiceEnabled, setVoiceEnabled] = useState(false);
 
