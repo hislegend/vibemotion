@@ -170,6 +170,17 @@ When generating code:
 - Simple animations: spring + interpolate only. No complex physics or 3D.
 - spring() delay: use \`spring({ frame: frame - delay, fps })\` pattern. NOT the delay parameter.
 
+## VERTICAL VIDEO RULES (9:16, 1080×1920) — CRITICAL
+When aspect ratio is 9:16 (portrait/vertical):
+- Text must be LARGE: titles 64-96px, body 32-44px, captions 24-28px. Small text = failure.
+- Use 80-90% of vertical space. Content must fill the screen top to bottom.
+- Padding: max 48px sides, 60px top/bottom. Do NOT center small content in the middle.
+- Cards/panels should be full-width (width: 90%+) and tall.
+- Stack elements vertically with 16-24px gaps. NOT 100px gaps.
+- Background must never be >30% visible empty space.
+- This is mobile-first: everything should be readable on a phone without zooming.
+- NEVER design as if it's a 16:9 landscape with margins. Fill the tall canvas.
+
 ## SCENE TEMPLATES (choose the best fit for each scene)
 - Hero: title card with headline + subtitle. Spring scale entrance.
 - List: 3-5 items appearing sequentially with stagger delay.
