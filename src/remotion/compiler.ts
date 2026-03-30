@@ -78,6 +78,15 @@ function extractComponentBody(code: string): string {
   // 2. Fix escaped backticks: \` → `
   cleaned = cleaned.replace(/\\`/g, "`");
 
+  // 2.5. Fix multiline strings in single/double quotes → backtick template literals
+  // Single-quoted strings with actual newlines cause "Unterminated string constant"
+  cleaned = cleaned.replace(/'([^']*\n[^']*)'/g, (match, content) => {
+    return "`" + content + "`";
+  });
+  cleaned = cleaned.replace(/"([^"]*\n[^"]*)"/g, (match, content) => {
+    return "`" + content + "`";
+  });
+
   // 3. Fix hex+opacity concatenation: `${COLOR}0F` → string concat
   cleaned = cleaned.replace(/\}([0-9A-Fa-f]{2})(?=[`'"])/g, ' + "$1"}');
 

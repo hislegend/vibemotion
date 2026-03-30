@@ -249,6 +249,7 @@ Never hardcode colors/sizes inline. Always reference constants.
 - NEVER use undefined variables — define ALL variables before using them
 - Template literals: use standard backtick syntax. NEVER double-escape or produce \\u escape sequences.
 - Korean text: ALWAYS put Korean strings in const variables, then reference in JSX. NEVER put Korean directly inside template literal expressions. Example: const TITLE = "경쟁사가 베끼는 건"; then use {TITLE} in JSX.
+- Long text strings: NEVER include line breaks inside string literals. Keep each string on ONE line. If text is long, split into multiple const variables.
 - ONLY use colors as hex strings ('#ffffff'), never as sRGB/Color objects
 - NEVER concatenate hex + opacity inside template literals like \`\${COLOR}0F\`. This breaks compilation. Instead define full 8-digit hex as constants: const COLOR_ACCENT_10 = "#00AEEF1A"; const COLOR_ACCENT_50 = "#00AEEF80";
 - ONLY import from: 'remotion', '@remotion/*' packages. No other npm packages.
