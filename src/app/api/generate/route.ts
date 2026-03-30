@@ -5,6 +5,7 @@ import {
   type SkillName,
 } from "@/skills";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateObject, streamText } from "ai";
 import { z } from "zod";
@@ -495,11 +496,12 @@ export async function POST(req: Request) {
 
   const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
   const openaiApiKey = process.env.OPENAI_API_KEY;
+  const googleApiKey = process.env.GOOGLE_AI_API_KEY;
 
-  if (!anthropicApiKey && !openaiApiKey) {
+  if (!anthropicApiKey && !openaiApiKey && !googleApiKey) {
     return new Response(
       JSON.stringify({
-        error: 'No API key found. Set ANTHROPIC_API_KEY or OPENAI_API_KEY in your .env file.',
+        error: 'No API key found. Set ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_AI_API_KEY in your .env file.',
       }),
       { status: 400, headers: { "Content-Type": "application/json" } },
     );
@@ -508,23 +510,27 @@ export async function POST(req: Request) {
   // Parse model ID - format can be "model-name" or "model-name:reasoning_effort"
   const [modelName, reasoningEffort] = model.split(":");
 
-  // Determine provider per model: claude-* → anthropic, otherwise → openai
+  // Determine provider per model
   const isClaudeModel = (id: string) => id.startsWith("claude-");
+  const isGeminiModel = (id: string) => id.startsWith("gemini-");
 
   // Default model: prefer env AI_MODEL, else pick based on available keys
   const defaultModel = process.env.AI_MODEL ||
-    (anthropicApiKey ? "claude-sonnet-4-6" : "gpt-5.4");
+    (anthropicApiKey ? "claude-sonnet-4-6" : googleApiKey ? "gemini-3.1-pro-preview" : "gpt-5.4");
   const resolvedModel = modelName || defaultModel;
 
   // Create provider instance dynamically based on model name
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const aiModel = (id: string) => {
+  const aiModel = (id: string): any => {
     if (isClaudeModel(id)) {
       if (!anthropicApiKey) throw new Error("ANTHROPIC_API_KEY required for Claude models");
-      return createAnthropic({ apiKey: anthropicApiKey })(id) as any;
+      return createAnthropic({ apiKey: anthropicApiKey })(id);
+    } else if (isGeminiModel(id)) {
+      if (!googleApiKey) throw new Error("GOOGLE_AI_API_KEY required for Gemini models");
+      return createGoogleGenerativeAI({ apiKey: googleApiKey })(id);
     } else {
       if (!openaiApiKey) throw new Error("OPENAI_API_KEY required for OpenAI models");
-      return createOpenAI({ apiKey: openaiApiKey })(id) as any;
+      return createOpenAI({ apiKey: openaiApiKey })(id);
     }
   };
 

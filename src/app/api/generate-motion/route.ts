@@ -1,4 +1,5 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
@@ -48,18 +49,23 @@ export async function POST(req: Request) {
 
   const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
   const openaiApiKey = process.env.OPENAI_API_KEY;
+  const googleApiKey = process.env.GOOGLE_AI_API_KEY;
 
   if (!anthropicApiKey && !openaiApiKey) {
     return new Response(JSON.stringify({ error: "No API key" }), { status: 400 });
   }
 
   const isClaudeModel = (id: string) => id.startsWith("claude-");
+  const isGeminiModel = (id: string) => id.startsWith("gemini-");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const aiModel = (id: string): any => {
     if (isClaudeModel(id)) {
       if (!anthropicApiKey) throw new Error("ANTHROPIC_API_KEY required");
       return createAnthropic({ apiKey: anthropicApiKey })(id);
+    } else if (isGeminiModel(id)) {
+      if (!googleApiKey) throw new Error("GOOGLE_AI_API_KEY required");
+      return createGoogleGenerativeAI({ apiKey: googleApiKey })(id);
     } else {
       if (!openaiApiKey) throw new Error("OPENAI_API_KEY required");
       return createOpenAI({ apiKey: openaiApiKey })(id);
