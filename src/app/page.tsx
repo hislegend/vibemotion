@@ -115,6 +115,24 @@ const PRESET_PROMPTS: PresetPrompt[] = [
     prompt:
       '이벤트 D-day 카운트다운. 3-2-1 글로우 타이핑 효과, 스파클 파티클, "Grand Opening" 리빌, 다크 네이비 배경에 골드 악센트. 15초',
   },
+  {
+    id: "dark-premium",
+    label: "다크 프리미엄",
+    prompt:
+      '핀테크 서비스 소개 영상. 다크 프리미엄 테마: 배경 #0A0A0A, 포인트 #E8A84C, 텍스트 #F0EBE3, 보조 #6B5B4E, 카드 #1E1A14. 고급스러운 금색 악센트. 후킹→문제→솔루션→CTA 4단계 구조. 20초',
+  },
+  {
+    id: "clean-white",
+    label: "클린 화이트",
+    prompt:
+      '헬스케어 앱 소개 영상. 클린 화이트 테마: 배경 #FAFAFA, 포인트 #2563EB, 텍스트 #111827, 보조 #6B7280, 카드 #FFFFFF. 깔끔하고 신뢰감 있는 디자인. 후킹→문제→솔루션→CTA 4단계 구조. 20초',
+  },
+  {
+    id: "neon-gradient",
+    label: "네온 그라데이션",
+    prompt:
+      '크리에이터 플랫폼 소개 영상. 네온 그라데이션 테마: 배경 #0F0720, 포인트 #A855F7, 텍스트 #F8FAFC, 보조 #94A3B8, 카드 #1E1B4B. 보라빛 그라데이션 배경. 후킹→문제→솔루션→CTA 4단계 구조. 20초',
+  },
 ];
 
 /* ─── small components ─── */

@@ -192,3 +192,19 @@ PPT처럼 보이면 실패. 카드뉴스 디자이너가 만든 것처럼 보여
 - ❌ "채우지 못해서 남은 여백" — 여백은 반드시 "강조를 위한 여백"이어야 함
 - ❌ accent 단색(#00AEEF)으로 카드 전체 배경을 채우기 — accent는 border/아이콘/작은 강조 면에만
 - ❌ 좌우 비교 카드의 배경색을 극단적으로 다르게 (양쪽 다 다크 네이비 기반)
+
+---
+
+## 씬 템플릿 5종 (프로덕트 영상용)
+- **TitleScene**: 배지 + 큰 제목 + 부제목, spring 순차 등장 (damping 12~15)
+- **FlowScene**: 단계별 FlowDiagram, 번호 + 아이콘 + 텍스트, 순차 slide-up
+- **CodeScene**: 좌 설명 + 우 CodeBlock 타이핑 효과 (1글자씩 frame 기반)
+- **StatScene**: CountUp 숫자 + 원형 ProgressRing, damping 25+ (무겁고 느리게)
+- **OutroScene**: 로고 spring 등장 + CTA 버튼 + 웹사이트 주소
+
+## 모션 컴포넌트 5종 (퀄리티 UP)
+- **TextReveal**: 키네틱 타이포 (fadeUp, blur, typewriter, scale, rotate)
+- **Glow/GlowOrb**: 빛 효과로 포인트 칼러 강조, boxShadow + opacity 애니메이션
+- **MaskReveal**: 와이프 드러남 (씬 전환용), clipPath 또는 width 애니메이션
+- **ParticleField**: 배경 파티클 (random, rise, snow 등), 절대 위치 + opacity 변화
+- **SVGDraw**: 선 그리기 애니메이션 (strokeDashoffset 기반, 로고 드로잉/밑줄)

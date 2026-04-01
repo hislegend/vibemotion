@@ -75,6 +75,11 @@ function extractComponentBody(code: string): string {
   // 0.5. Remove React.FC type annotations that cause issues with Remotion compiler
   cleaned = cleaned.replace(/:\s*React\.FC(?:<[^>]*>)?\s*=/g, ' =');
 
+  // 0.6. Fix spring() >= 1 comparison (spring never reaches exactly 1.0)
+  cleaned = cleaned.replace(/spring\([^)]*\)\s*>=\s*1(?:\.0)?/g, 'true /* spring>=1 auto-fixed */');
+  cleaned = cleaned.replace(/spring\([^)]*\)\s*===?\s*1(?:\.0)?/g, 'true /* spring===1 auto-fixed */');
+  cleaned = cleaned.replace(/spring\([^)]*\)\s*<=\s*0(?:\.0)?/g, 'false /* spring<=0 auto-fixed */');
+
   // 1. Fix single/double-quoted strings containing ${} → backtick template literals
   // Must run BEFORE backtick unescape to catch patterns like '1px solid ${COLOR}'
   // Use global multipass to catch nested cases

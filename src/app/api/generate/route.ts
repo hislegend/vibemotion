@@ -171,6 +171,29 @@ When generating code:
 - Simple animations: spring + interpolate only. No complex physics or 3D.
 - spring() delay: use \`spring({ frame: frame - delay, fps })\` pattern. NOT the delay parameter.
 
+## 절대 규칙 (코드 생성 시 반드시 준수)
+- CSS transition, animation, @keyframes, Tailwind 애니메이션 클래스 전부 사용 금지. 모든 애니메이션은 useCurrentFrame() 기반 spring() 또는 interpolate()로.
+- 외부 CDN 폰트 URL 절대 금지 (Google Fonts, jsDelivr 등). 시스템 폰트만 사용 (Inter, system-ui, sans-serif).
+- spring()은 정확히 1.0에 도달하지 않음. spring >= 1 조건 대신 프레임 번호로 조건 걸 것.
+- 3D perspective는 회전 요소의 부모 div에 CSS style 속성으로 적용 (transform: perspective() 아님). transformStyle: "preserve-3d" 필수. overflow: hidden 사용 금지.
+- transform 순서: translate 먼저, rotate 나중.
+- 색상은 반드시 헥스 코드로 (#1a1a2e). rgba() 사용 금지. 투명도는 헥스 8자리 (#ffffff1a).
+- 한글 문자열은 반드시 const 상수로 분리. JSX 안에 직접 한글 문자열 넣지 말 것.
+
+## 영상 구조 4단계 (마케팅/프로덕트 영상 시)
+프로덕트 소개, 마케팅, 서비스 홍보 영상을 만들 때:
+1. 후킹 (0~3초) — 가장 인상적인 화면/결과물로 시작. 로고로 시작 금지.
+2. 문제 (3~8초) — "이런 경험 있지 않나요?" 공감 유발.
+3. 솔루션 (8~20초) — 핵심 기능 하나만. 전부 보여주면 메시지 흐려짐.
+4. CTA (마지막 3~5초) — 링크, QR, "지금 시작하기".
+
+## spring 애니메이션 가이드 (damping 값 기준)
+- UI 요소 등장: damping 12~15 (빠르고 탄력적)
+- 씬 전환: damping 18~22 (부드럽고 무게감)
+- 숫자/통계: damping 25+ (무겁고 느리게)
+- 타이틀 임팩트: damping 8~10 (극적 감속, 바운스)
+- 배경 요소: damping 30+ (느리고 우아하게)
+
 ## VERTICAL VIDEO RULES (9:16, 1080×1920) — CRITICAL
 When aspect ratio is 9:16 (portrait/vertical):
 - Text must be LARGE: titles 64-96px, body 32-44px, captions 24-28px. Small text = failure.
