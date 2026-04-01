@@ -65,6 +65,16 @@ function extractComponentBody(code: string): string {
 
   // === AI output sanitization (order matters) ===
 
+  // 0. Remove Unicode box-drawing / decorative characters in comments that confuse Babel
+  // e.g. // ═══════════ or // ──────────
+  cleaned = cleaned.replace(/\/\/[^\n]*[═─━│┃┌┐└┘├┤┬┴┼╔╗╚╝╠╣╦╩╬][^\n]*/g, (match) => {
+    // Keep as simple comment without special chars
+    return match.replace(/[═─━│┃┌┐└┘├┤┬┴┼╔╗╚╝╠╣╦╩╬]+/g, '---');
+  });
+
+  // 0.5. Remove React.FC type annotations that cause issues with Remotion compiler
+  cleaned = cleaned.replace(/:\s*React\.FC(?:<[^>]*>)?\s*=/g, ' =');
+
   // 1. Fix single/double-quoted strings containing ${} → backtick template literals
   // Must run BEFORE backtick unescape to catch patterns like '1px solid ${COLOR}'
   // Use global multipass to catch nested cases

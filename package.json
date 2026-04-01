@@ -17,10 +17,10 @@
     "deploy": "node deploy.mjs"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^2.0.70",
+    "@ai-sdk/anthropic": "^3.0.64",
     "@ai-sdk/google": "^3.0.53",
-    "@ai-sdk/openai": "2.0.74",
-    "@ai-sdk/react": "2.0.104",
+    "@ai-sdk/openai": "^3.0.48",
+    "@ai-sdk/react": "^3.0.143",
     "@babel/standalone": "7.28.5",
     "@monaco-editor/react": "4.7.0",
     "@radix-ui/react-dialog": "1.1.15",
@@ -43,7 +43,7 @@
     "@remotion/transitions": "^4.0.0",
     "@remotion/web-renderer": "^4.0.0",
     "@remotion/webcodecs": "^4.0.438",
-    "ai": "5.0.104",
+    "ai": "^6.0.141",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "0.555.0",

@@ -534,11 +534,11 @@ export async function POST(req: Request) {
     }
   };
 
-  // Validate the prompt first (skip for follow-ups — they're already in conversation)
-  if (!isFollowUp) {
+  // Validate the prompt first (skip for follow-ups and error corrections — they're already in conversation)
+  if (!isFollowUp && !errorCorrection) {
     try {
       const validationResult = await generateObject({
-        model: aiModel(defaultModel),
+        model: aiModel(resolvedModel),
         system: VALIDATION_PROMPT,
         prompt: `User prompt: "${prompt}"`,
         schema: z.object({ valid: z.boolean() }),
@@ -564,7 +564,7 @@ export async function POST(req: Request) {
   let detectedSkills: SkillName[] = [];
   try {
     const skillResult = await generateObject({
-      model: aiModel(defaultModel),
+      model: aiModel(resolvedModel),
       system: SKILL_DETECTION_PROMPT,
       prompt: `User prompt: "${prompt}"`,
       schema: z.object({
@@ -923,7 +923,7 @@ Analyze the request and decide: use targeted edits (type: "edit") for small chan
     console.error("Error generating code:", error);
     return new Response(
       JSON.stringify({
-        error: `Something went wrong while trying to reach ${isClaudeModel(resolvedModel) ? "Anthropic" : "OpenAI"} APIs.`,
+        error: `Something went wrong while trying to reach ${isClaudeModel(resolvedModel) ? "Anthropic" : isGeminiModel(resolvedModel) ? "Google AI" : "OpenAI"} APIs. ${error instanceof Error ? error.message : ""}`,
       }),
       { status: 500, headers: { "Content-Type": "application/json" } },
     );
