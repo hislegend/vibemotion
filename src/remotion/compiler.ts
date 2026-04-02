@@ -65,14 +65,16 @@ function extractComponentBody(code: string): string {
 
   // === AI output sanitization (order matters) ===
 
-  // 0. Remove Unicode box-drawing / decorative characters in comments that confuse Babel
-  // e.g. // ═══════════ or // ──────────
-  cleaned = cleaned.replace(/\/\/[^\n]*[═─━│┃┌┐└┘├┤┬┴┼╔╗╚╝╠╣╦╩╬][^\n]*/g, (match) => {
-    // Keep as simple comment without special chars
-    return match.replace(/[═─━│┃┌┐└┘├┤┬┴┼╔╗╚╝╠╣╦╩╬]+/g, '---');
-  });
+  // 0. Remove decorative comment lines that confuse Babel
+  // e.g. // ═══════ or // ────── or // ****** or // ######
+  cleaned = cleaned.replace(/\/\/\s*[=\-*#~_]{3,}[^\n]*/g, '');
 
-  // 0.5. Remove React.FC type annotations that cause issues with Remotion compiler
+  // 0.5. Fix smart/curly quotes → straight quotes (Gemini sometimes generates these)
+  cleaned = cleaned.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"');
+  cleaned = cleaned.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
+  cleaned = cleaned.replace(/[\u2013\u2014]/g, '-');
+
+  // 0.6. Remove React.FC type annotations that cause issues with Remotion compiler
   cleaned = cleaned.replace(/:\s*React\.FC(?:<[^>]*>)?\s*=/g, ' =');
 
   // 0.6. Fix spring() >= 1 comparison (spring never reaches exactly 1.0)
