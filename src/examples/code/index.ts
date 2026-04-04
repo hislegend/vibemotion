@@ -34,9 +34,17 @@ import { motionTitleSequenceExample } from "./motion-title-sequence";
 
 // ─── Product (v2) ───
 import { productSaasExample } from "./product-saas";
+import { productMobileAppExample } from "./product-mobile-app";
+import { productEcommerceExample } from "./product-ecommerce";
+import { productEducationExample } from "./product-education";
+import { productAiToolExample } from "./product-ai-tool";
 
 // ─── Cinematic (v2) ───
 import { cinematicCountdownExample } from "./cinematic-countdown";
+import { cinematicTitleExample } from "./cinematic-title";
+import { cinematicQuoteExample } from "./cinematic-quote";
+import { cinematicEventExample } from "./cinematic-event";
+import { cinematicShowreelExample } from "./cinematic-showreel";
 
 export interface RemotionExample {
   id: string;
@@ -79,8 +87,16 @@ export const examples: RemotionExample[] = [
   motionTitleSequenceExample,
   // 🏢 Product
   productSaasExample,
+  productMobileAppExample,
+  productEcommerceExample,
+  productEducationExample,
+  productAiToolExample,
   // 🎥 Cinematic
   cinematicCountdownExample,
+  cinematicTitleExample,
+  cinematicQuoteExample,
+  cinematicEventExample,
+  cinematicShowreelExample,
 ];
 
 export function getExampleById(id: string): RemotionExample | undefined {
