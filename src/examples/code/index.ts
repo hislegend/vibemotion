@@ -18,6 +18,26 @@ import { animatedShapesExample } from "./animated-shapes";
 import { lottieAnimationExample } from "./lottie-animation";
 import { fallingSpheresExample } from "./falling-spheres";
 
+// ─── Card News (v2) ───
+import { cardnewsDarkPremiumExample } from "./cardnews-dark-premium";
+import { cardnewsCleanWhiteExample } from "./cardnews-clean-white";
+import { cardnewsNeonExample } from "./cardnews-neon";
+import { cardnewsCyanDarkExample } from "./cardnews-cyan-dark";
+import { cardnewsRedAlertExample } from "./cardnews-red-alert";
+
+// ─── Motion Graphics (v2) ───
+import { motionBrandIntroExample } from "./motion-brand-intro";
+import { motionDataDashboardExample } from "./motion-data-dashboard";
+import { motionCodeTypingExample } from "./motion-code-typing";
+import { motionFlowDiagramExample } from "./motion-flow-diagram";
+import { motionTitleSequenceExample } from "./motion-title-sequence";
+
+// ─── Product (v2) ───
+import { productSaasExample } from "./product-saas";
+
+// ─── Cinematic (v2) ───
+import { cinematicCountdownExample } from "./cinematic-countdown";
+
 export interface RemotionExample {
   id: string;
   name: string;
@@ -45,6 +65,22 @@ export const examples: RemotionExample[] = [
   animatedShapesExample,
   lottieAnimationExample,
   fallingSpheresExample,
+  // 📱 Card News v2
+  cardnewsDarkPremiumExample,
+  cardnewsCleanWhiteExample,
+  cardnewsNeonExample,
+  cardnewsCyanDarkExample,
+  cardnewsRedAlertExample,
+  // 🎬 Motion Graphics v2
+  motionBrandIntroExample,
+  motionDataDashboardExample,
+  motionCodeTypingExample,
+  motionFlowDiagramExample,
+  motionTitleSequenceExample,
+  // 🏢 Product
+  productSaasExample,
+  // 🎥 Cinematic
+  cinematicCountdownExample,
 ];
 
 export function getExampleById(id: string): RemotionExample | undefined {
