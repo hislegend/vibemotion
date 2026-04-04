@@ -20,7 +20,7 @@ import { uploadAssetForAnalysis } from '@/editor/utils/upload-asset-for-analysis
 import { finishUpload } from '@/editor/state/actions/finish-upload';
 import { Wand2, Scissors, Loader2, AlertCircle, CheckCircle2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
-import { useSearchParams } from 'react-router-dom';
+// [STUB] react-router-dom removed
 
 interface AutoCutControlsProps {
   item: VideoItem;

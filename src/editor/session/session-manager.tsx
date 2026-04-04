@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+// [STUB] react-router-dom removed
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -26,7 +26,7 @@ export const SessionManager: React.FC<SessionManagerProps> = ({children, project
 	const [exitCallback, setExitCallback] = useState<(() => void) | null>(null);
 	const state = useFullState();
 	const {setState} = useWriteContext();
-	const navigate = useNavigate();
+	const navigate = (path: string) => { window.location.href = path };
 
 	// 진입 시 이전 세션 복원 확인
 	useEffect(() => {

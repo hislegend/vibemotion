@@ -1,5 +1,5 @@
 import {useCallback, useMemo, useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+// [STUB] react-router-dom removed
 import {IconButton} from '../../icon-button';
 import {CheckIcon} from '../../icons/check';
 import {DownloadIcon} from '../../icons/download-state';
@@ -22,7 +22,7 @@ export const RenderProgress: React.FC<{
 }> = ({renderTask}) => {
 	const a = useRef<HTMLAnchorElement>(null);
 	const {setState} = useWriteContext();
-	const navigate = useNavigate();
+	const navigate = (path: string) => { window.location.href = path };
 
 	const onClick = useCallback(() => {
 		a.current?.click();
