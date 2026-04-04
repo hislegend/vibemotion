@@ -565,25 +565,37 @@ function GeneratePageContent() {
       {/* Template save button */}
       {hasGeneratedOnce && !generationError && !isStreaming && code && (
         <div className="fixed bottom-6 right-6 z-50">
-          <button
-            type="button"
-            onClick={() => {
-              const name = window.prompt("템플릿 이름을 입력하세요:", "카드뉴스 템플릿");
-              if (!name) return;
-              saveTemplate({
-                name,
-                description: initialPrompt?.slice(0, 100) || "커스텀 템플릿",
-                code,
-                aspectRatio: aspectRatioParam,
-                durationInFrames,
-                fps,
-              });
-              alert("템플릿이 저장되었습니다! /cardnews에서 사용할 수 있습니다.");
-            }}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-emerald-500 transition-all"
-          >
-            📦 템플릿으로 저장
-          </button>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                sessionStorage.setItem('vibemotion-editor-code', code);
+                window.open('/editor', '_blank');
+              }}
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-indigo-500 transition-all"
+            >
+              ✂️ 에디터에서 편집
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const name = window.prompt("템플릿 이름을 입력하세요:", "카드뉴스 템플릿");
+                if (!name) return;
+                saveTemplate({
+                  name,
+                  description: initialPrompt?.slice(0, 100) || "커스텀 템플릿",
+                  code,
+                  aspectRatio: aspectRatioParam,
+                  durationInFrames,
+                  fps,
+                });
+                alert("템플릿이 저장되었습니다!");
+              }}
+              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-emerald-500 transition-all"
+            >
+              📦 템플릿 저장
+            </button>
+          </div>
         </div>
       )}
 
