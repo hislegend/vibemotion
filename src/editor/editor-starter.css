@@ -1,0 +1,31 @@
+/* Editor Starter CSS - Tailwind v3 compatible */
+
+:root {
+	--color-editor-starter-bg: #28282e;
+	--color-editor-starter-panel: #212126;
+	--color-editor-starter-border: #000;
+	--color-editor-starter-accent: #0b84f3;
+	--color-editor-starter-scrollbar-track: rgba(255, 255, 255, 0.04);
+	--color-editor-starter-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+}
+
+.editor-starter-focus-ring {
+	@apply border border-transparent outline-none focus-visible:border-[var(--color-editor-starter-accent)];
+}
+
+.editor-starter-field {
+	@apply rounded-sm border border-transparent bg-[var(--color-editor-starter-bg)] outline-none hover:border-neutral-700 focus:border-[var(--color-editor-starter-accent)];
+}
+
+.bg-editor-starter-bg {
+	background-color: var(--color-editor-starter-bg);
+}
+
+.bg-editor-starter-panel {
+	background-color: var(--color-editor-starter-panel);
+}
+
+html,
+body {
+	overscroll-behavior-x: none;
+}
