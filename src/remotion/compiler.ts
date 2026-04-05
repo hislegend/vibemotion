@@ -67,7 +67,12 @@ function extractComponentBody(code: string): string {
 
   // 0. Remove decorative comment lines that confuse Babel
   // e.g. // ═══════ or // ────── or // ****** or // ######
+  // ASCII 장식 라인
   cleaned = cleaned.replace(/\/\/\s*[=\-*#~_]{3,}[^\n]*/g, '');
+  // 유니코드 박스 드로잉 문자(U+2500~U+257F, U+2550~U+256C 포함) 장식 라인
+  cleaned = cleaned.replace(/\/\/[^\n]*[\u2500-\u257F\u2550-\u256C\u2580-\u259F][^\n]*/g, '');
+  // 유니코드 박스 드로잉 문자 자체도 제거 (문자열 안에 들어간 경우 대비)
+  cleaned = cleaned.replace(/[\u2500-\u257F\u2550-\u256C]/g, '-');
 
   // 0.5. Fix smart/curly quotes → straight quotes (Gemini sometimes generates these)
   cleaned = cleaned.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"');
